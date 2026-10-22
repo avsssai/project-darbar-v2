@@ -39,7 +39,7 @@ const year = new Date().getFullYear();
 
         <section class="hero" aria-labelledby="hero-heading">
           <p class="hero-overline" data-reveal>INDIAN CARNATIC FUSION <span>—</span> MADE TO BE FELT LIVE</p>
-          <h1 id="hero-heading" data-reveal><span>THE PROJECT</span><strong>DARBAR</strong></h1>
+          <h1 id="hero-heading"><span class="hero-title-inner" data-reveal><span class="title-top">THE PROJECT</span><strong>DARBAR</strong></span></h1>
           <div class="hero-figures" aria-label={site.heroImage ? 'Band member photograph' : 'Stylized placeholder for a band member photograph'}>
             <div class="hero-figures-outline" aria-hidden="true">
               {site.heroImage ? <img src={site.heroImage} alt="" /> : <HeroGroup />}
@@ -178,9 +178,11 @@ const year = new Date().getFullYear();
         const chakraProgress = Math.max(0, Math.min(1, (progress - 0.86) / 0.14));
         route.style.strokeDashoffset = String(routeLength * (1 - routeProgress));
         chakra.style.strokeDashoffset = String(chakraLength * (1 - chakraProgress));
-        const heroProgress = Math.max(-1, Math.min(1, -hero.getBoundingClientRect().top / Math.max(1, hero.offsetHeight)));
-        figures.style.setProperty('--front-shift', heroProgress * 19 + 'px');
-        figures.style.setProperty('--outline-shift', heroProgress * -12 + 'px');
+        const heroProgress = Math.max(0, Math.min(1, -hero.getBoundingClientRect().top / Math.max(1, hero.offsetHeight)));
+        const travel = window.innerWidth <= 760 ? 0.45 : 1;
+        hero.style.setProperty('--title-shift', heroProgress * 24 * travel + 'px');
+        figures.style.setProperty('--front-shift', heroProgress * -64 * travel + 'px');
+        figures.style.setProperty('--outline-shift', heroProgress * -20 * travel + 'px');
         ticking = false;
       }
       const schedule = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
