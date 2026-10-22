@@ -1,15 +1,227 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
 
-:root{font-family:'DM Sans',Arial,sans-serif;color:#eee8dc;background:#101f2a;font-synthesis:none;scroll-behavior:smooth}
-*{box-sizing:border-box}html{scroll-padding-top:85px}body{margin:0;min-width:320px}button,a{font:inherit}a{color:inherit;text-decoration:none}button{cursor:pointer}img,svg{display:block;max-width:100%}::selection{background:#b67c5c;color:#fff}
-:focus-visible{outline:2px solid #e8c395;outline-offset:5px}.skip-link{position:absolute;z-index:100;top:-60px;left:16px;background:#f3e7d2;color:#102633;padding:10px 16px}.skip-link:focus{top:12px}.site-shell{max-width:1800px;margin:auto;overflow:hidden}.site-header{height:84px;padding:0 5.2%;display:flex;align-items:center;justify-content:space-between;gap:28px;background:#101f2a;border-bottom:1px solid rgba(226,205,177,.16);position:relative;z-index:5}.brand{display:flex;align-items:center;gap:13px;min-width:205px}.brand-symbol{width:33px;height:33px;display:grid;place-items:center;border:1px solid #bf8e68;border-radius:50%;transform:rotate(45deg)}.brand-symbol:before,.brand-symbol:after,.brand-symbol span{content:'';position:absolute;width:20px;height:20px;border:1px solid #bf8e68}.brand-symbol:after{transform:rotate(45deg);width:17px;height:17px}.brand-symbol span{width:5px;height:5px;background:#bf8e68;border-radius:50%}.brand-type{display:flex;flex-direction:column;line-height:.95;letter-spacing:.2em;font-size:13px}.brand-type strong{font-weight:700}.brand-type em{font-family:'Libre Baskerville',Georgia,serif;font-size:12px;color:#c69a75;letter-spacing:.25em;margin-top:5px}.main-nav{display:flex;align-items:center;gap:clamp(20px,3vw,51px)}.main-nav a,.header-cta{font-size:11px;text-transform:uppercase;letter-spacing:.18em;font-weight:700}.main-nav a{color:#d4d2cc;transition:color .2s}.main-nav a:hover{color:#e5b88b}.header-cta{border:1px solid rgba(226,205,177,.48);padding:14px 19px;white-space:nowrap;transition:background .2s,color .2s}.header-cta:hover{background:#e8d5b9;color:#102633}.header-cta span{margin-left:14px;color:#cc9c76}
-.hero{min-height:690px;display:grid;grid-template-columns:52% 48%;background:#142a38;position:relative}.hero:before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 75% 45%,rgba(101,134,151,.23),transparent 44%),linear-gradient(120deg,rgba(14,27,38,.6),transparent 60%);pointer-events:none}.hero-grain{position:absolute;inset:0;pointer-events:none;opacity:.15;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.32'/%3E%3C/svg%3E")}.hero-content{position:relative;z-index:2;padding:clamp(80px,9vw,143px) 0 28px 10%;display:flex;flex-direction:column;align-items:flex-start}.eyebrow,.section-kicker,.card-kicker,.music-number,.portrait-label,.artist-meta,.art-caption,.hero-footer,.content-note{font-size:10px;letter-spacing:.23em;text-transform:uppercase;font-weight:700}.eyebrow{display:flex;align-items:center;gap:13px;color:#d4a879;margin:0 0 30px}.eyebrow-line{width:28px;height:1px;background:#d4a879}.hero h1,h2,h3,p{margin-top:0}.hero h1,h2{font-family:'Libre Baskerville',Georgia,serif;font-weight:400;letter-spacing:-.055em}.hero h1{font-size:clamp(54px,5.15vw,92px);line-height:1.12;white-space:nowrap;margin-bottom:29px;color:#f4ecdc}.hero h1 i,h2 em{font-weight:400;color:#c39676}.hero-copy{font-size:15px;line-height:1.85;color:#c7cdd0;max-width:440px}.hero-copy strong{font-weight:500;color:#f4ecdc}.hero-actions{display:flex;align-items:center;gap:35px;margin-top:27px}.button{display:inline-flex;gap:23px;align-items:center;justify-content:space-between;padding:18px 25px;font-size:11px;font-weight:700;letter-spacing:.17em;text-transform:uppercase;border:1px solid transparent;min-height:55px}.button-light{background:#ece1ce;color:#152b38;transition:background .2s,transform .2s}.button-light:hover{background:#caa282;transform:translateY(-2px)}.button span{font-size:16px;line-height:1}.text-link,.inline-link{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;border-bottom:1px solid #a07762;padding-bottom:8px}.text-link span,.inline-link span{margin-left:15px}.hero-footer{display:flex;justify-content:space-between;width:89%;color:#9aabb1;letter-spacing:.16em;margin-top:auto;padding-top:90px}.hero-footer span span{margin-left:10px}.hero-art{position:relative;display:grid;place-items:center;min-width:0}.hero-art:before{content:'';width:65%;aspect-ratio:1;border-radius:50%;background:#52768a;opacity:.18;filter:blur(75px);position:absolute}.chakra-hero{position:relative;width:min(93%,675px);filter:drop-shadow(0 0 30px rgba(194,139,89,.17));animation:slow-turn 90s linear infinite}.art-orbit{position:absolute;border:1px solid rgba(205,167,124,.12);border-radius:50%;aspect-ratio:1}.art-orbit-one{width:93%}.art-orbit-two{width:75%}.art-caption{position:absolute;color:#a7b7b8;line-height:1.7}.art-caption-top{top:17%;right:8%}.art-caption-bottom{bottom:14%;left:10%}.marquee{height:79px;background:#7c5140;color:#f0d4ae;display:flex;align-items:center;justify-content:space-around;gap:26px;white-space:nowrap;overflow:hidden;font-size:13px;font-weight:700;letter-spacing:.36em}.marquee-star{font-size:23px;font-weight:400;color:#d1a376}
-.section-pad{padding:115px 8.2%}.about{background:#e9decc;color:#18303c}.section-kicker{color:#a8775a;margin-bottom:31px}.section-heading .section-kicker{display:flex;align-items:center;gap:26px}.small-rule{height:1px;background:#cba78c;flex:1;max-width:120px}.about h2,.music h2,.artists h2,.contact h2{font-size:clamp(42px,5vw,76px);line-height:1.17}.about h2{max-width:800px;margin-bottom:65px}.about h2 em,.artists h2 em{color:#8e604c}.about-body{display:grid;grid-template-columns:33% 1fr;gap:11%;border-top:1px solid #c5ad96;padding-top:48px}.about-mark{display:flex;flex-direction:column;justify-content:space-between;min-height:245px;color:#98694e}.about-mark svg{width:100px}.about-mark span{font-family:'Libre Baskerville',Georgia,serif;font-style:italic;font-size:17px;line-height:1.5}.about-text{max-width:750px}.about-text p{color:#5b6667;font-size:15px;line-height:1.9;max-width:660px}.about-text .large-copy{font-family:'Libre Baskerville',Georgia,serif;font-size:clamp(22px,2.5vw,34px);line-height:1.5;letter-spacing:-.025em;color:#19313e;margin-bottom:27px}.inline-link{display:inline-block;margin-top:23px;border-color:#956950}
-.music{background:#1a3342;background-image:radial-gradient(circle at 92% 6%,rgba(104,136,148,.16),transparent 31%)}.section-topline{display:flex;align-items:start;justify-content:space-between}.section-icon{width:52px;color:#b78b6e}.music-heading-row{display:flex;justify-content:space-between;align-items:end;gap:80px;margin-bottom:54px}.music h2{max-width:700px;margin-bottom:0}.music-heading-row>p{color:#b6c1c1;font-size:13px;line-height:1.8;max-width:300px;margin:0 0 8px}.music-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:21px}.music-card{min-width:0}.music-art{aspect-ratio:1.16;position:relative;overflow:hidden;display:grid;place-items:center;background:#65483b}.music-art-1{background:radial-gradient(circle at 50% 50%,#a87057 0,#5d4039 46%,#332f35 100%)}.music-art-2{background:radial-gradient(circle at 60% 25%,#608499 0,#355768 45%,#1d3744 100%)}.music-art-3{background:radial-gradient(circle at 45% 50%,#ae8f73 0,#756655 45%,#384c50 100%)}.music-art:before,.music-art:after{content:'';position:absolute;aspect-ratio:1;border:1px solid rgba(246,213,174,.3);width:65%;transform:rotate(45deg)}.music-art:after{width:48%;transform:rotate(0)}.music-art-ring{position:absolute;width:55%;aspect-ratio:1;border:1px solid rgba(246,213,174,.5);border-radius:50%;box-shadow:0 0 0 28px rgba(246,213,174,.07),0 0 0 57px rgba(246,213,174,.035)}.music-number{position:absolute;left:23px;top:23px;color:#f3dec3}.preview-pending{position:relative;text-align:center;color:#f5e1ca;font-size:11px;letter-spacing:.24em;line-height:1.8;font-weight:700;background:rgba(18,36,46,.52);padding:16px 20px}.play-button{position:relative;border:1px solid rgba(255,255,255,.75);border-radius:50%;width:73px;height:73px;background:rgba(15,35,45,.65);color:#f6e9d7;display:grid;place-items:center;transition:transform .2s,background .2s}.play-button:hover{transform:scale(1.08);background:#b77c5c}.play-button span{margin-left:4px;font-size:20px}.video-frame{width:100%;height:100%;border:0;position:absolute;inset:0;z-index:2}.music-card-copy{display:flex;justify-content:space-between;gap:15px;padding:25px 0;border-bottom:1px solid rgba(223,203,180,.25)}.card-kicker{color:#c69978}.music-card h3,.artist-card h3{font-family:'Libre Baskerville',Georgia,serif;font-weight:400;letter-spacing:-.035em}.music-card h3{font-size:25px;margin:9px 0}.music-card p{color:#aebdbd;font-size:12px;line-height:1.6;max-width:300px;margin:0}.card-arrow{color:#c69b7a;font-size:20px}.content-note{color:#91a5aa;letter-spacing:.08em;line-height:1.7;text-transform:none;font-weight:400;margin:28px 0 0}.content-note code{color:#dbc0a0}
-.artists{background:#eee4d5;color:#19313e}.artists-intro{display:flex;justify-content:space-between;align-items:end;gap:70px;margin-bottom:53px}.artists h2{max-width:650px;margin-bottom:0}.artists-intro>p{max-width:250px;color:#627071;font-size:13px;line-height:1.8;margin:0 0 7px}.artist-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}.artist-card{min-width:0}.artist-portrait{aspect-ratio:.82;position:relative;display:grid;place-items:center;overflow:hidden;background:#b3a08e}.artist-portrait-1{background:linear-gradient(155deg,#ac856b,#715a52 55%,#3f5360)}.artist-portrait-2{background:linear-gradient(155deg,#738b8b,#425966 55%,#283e4d)}.artist-portrait-3{background:linear-gradient(155deg,#c6a27c,#8f715b 55%,#5e534c)}.artist-portrait-4{background:linear-gradient(155deg,#8e9b9a,#557482 55%,#384f5d)}.artist-portrait:before,.artist-portrait:after{content:'';position:absolute;border:1px solid rgba(245,229,205,.28);width:75%;aspect-ratio:1;transform:rotate(45deg)}.artist-portrait:after{width:58%;border-radius:50%;transform:none}.artist-portrait img{width:100%;height:100%;object-fit:cover;position:relative;z-index:1}.portrait-glyph{font-family:'Libre Baskerville',Georgia,serif;font-size:clamp(80px,9vw,160px);font-style:italic;color:rgba(245,229,205,.72);letter-spacing:-.1em;position:relative;z-index:1}.portrait-label{position:absolute;z-index:2;left:16px;bottom:16px;color:#f1e5d2;background:rgba(20,42,56,.6);padding:7px 9px;letter-spacing:.14em}.artist-meta{display:flex;justify-content:space-between;color:#926b56;padding:19px 0 10px;border-bottom:1px solid #cdbdaa;letter-spacing:.15em}.artist-card h3{font-size:23px;margin:20px 0 11px}.artist-card p{font-size:12px;color:#687373;line-height:1.7;max-width:240px}.artists .content-note{color:#736f69}
-.contact{background:#7d5344;min-height:530px;position:relative;display:flex;align-items:center;overflow:hidden}.contact:before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(74,45,44,.43),transparent 70%)}.contact-chakra{position:absolute;width:650px;height:650px;right:-50px;top:50%;transform:translateY(-50%);opacity:.28;pointer-events:none}.contact-content{position:relative;z-index:1}.contact .section-kicker{color:#e3c19a}.contact h2{margin-bottom:24px}.contact h2 em{color:#f3d2a9}.contact-content>p:not(.section-kicker){font-size:14px;line-height:1.8;color:#f0ded1;max-width:460px}.contact-actions{display:flex;align-items:center;gap:26px;flex-wrap:wrap;margin-top:31px}.button-muted{background:rgba(243,226,206,.16);color:#f3e2ce;border-color:rgba(243,226,206,.4);cursor:default}.social-link{font-size:11px;letter-spacing:.15em;text-transform:uppercase;font-weight:700;border-bottom:1px solid #e4c7a6;padding-bottom:7px}.site-footer{background:#101f2a;padding:35px 8.2%;display:flex;align-items:center;justify-content:space-between;gap:20px;color:#9eb0b2;font-size:11px;letter-spacing:.08em}.footer-brand{font-weight:700;letter-spacing:.17em;color:#e9e2d7}.footer-brand em{color:#c99a74;font-style:normal}.site-footer p{margin:0}
-@keyframes slow-turn{to{transform:rotate(360deg)}}
-@media(max-width:1100px){.site-header{padding-inline:4%}.header-cta{display:none}.hero{min-height:650px}.hero-content{padding-left:8%}.hero h1{font-size:clamp(52px,5.6vw,70px)}.hero-footer{font-size:9px}.section-pad{padding:90px 6%}.music-grid{gap:13px}.artist-grid{gap:13px}}
-@media(max-width:760px){html{scroll-padding-top:115px}.site-header{height:auto;min-height:95px;align-items:flex-start;padding:18px 5%;flex-direction:column;gap:16px}.brand{min-width:0}.main-nav{width:100%;justify-content:space-between;gap:7px}.main-nav a{font-size:10px;letter-spacing:.12em}.hero{grid-template-columns:1fr;min-height:0}.hero-content{padding:76px 7% 42px}.hero h1{font-size:clamp(48px,9vw,70px);white-space:normal}.hero-copy{max-width:500px}.hero-footer{width:100%;padding-top:75px}.hero-art{height:420px;margin-top:-30px}.chakra-hero{width:min(95%,440px)}.art-caption-top{top:7%;right:8%}.art-caption-bottom{bottom:8%}.marquee{height:65px;font-size:11px;gap:18px}.section-pad{padding:75px 7%}.about h2,.music h2,.artists h2,.contact h2{font-size:clamp(40px,8vw,62px)}.about-body{grid-template-columns:1fr;gap:34px}.about-mark{min-height:0;flex-direction:row;align-items:end}.about-mark svg{width:75px}.about-mark span{text-align:right}.music-heading-row,.artists-intro{display:block}.music-heading-row>p,.artists-intro>p{max-width:500px;margin-top:21px}.music-grid{grid-template-columns:1fr 1fr;gap:23px}.artist-grid{grid-template-columns:1fr 1fr;gap:30px 20px}.contact-chakra{right:-270px}.site-footer{padding:35px 7%;flex-wrap:wrap}}
-@media(max-width:520px){.hero-content{padding-top:65px}.hero h1{font-size:clamp(43px,10.5vw,55px)}.hero-actions{gap:20px;flex-wrap:wrap}.hero-footer{font-size:8px;gap:12px}.hero-footer>span:last-child{display:none}.hero-art{height:340px}.section-pad{padding:65px 6%}.about h2,.music h2,.artists h2,.contact h2{font-size:clamp(39px,10vw,52px)}.about h2{margin-bottom:39px}.about-body{padding-top:30px}.music-grid,.artist-grid{grid-template-columns:1fr}.music-art{aspect-ratio:1.33}.artist-portrait{aspect-ratio:1.05}.portrait-glyph{font-size:130px}.contact{min-height:500px}.contact-chakra{width:510px;height:510px;right:-300px}.site-footer{display:block;line-height:2}.site-footer p{margin:10px 0}}
-@media(prefers-reduced-motion:reduce){:root{scroll-behavior:auto}.chakra-hero{animation:none}*,*:before,*:after{transition-duration:.01ms!important;animation-duration:.01ms!important}}
+:root {
+  font-family: 'DM Sans', Arial, sans-serif;
+  color: #26343a;
+  background: #fbf9f5;
+  font-synthesis: none;
+  scroll-behavior: smooth;
+  --brown: #78523f;
+  --brown-deep: #5e4033;
+  --blue: #385a6b;
+  --blue-deep: #213c4a;
+  --paper: #fbf9f5;
+  --muted: #657277;
+  --line: #dfd5c9;
+}
+* { box-sizing: border-box; }
+html { scroll-padding-top: 82px; }
+body { min-width: 320px; margin: 0; }
+button, a { font: inherit; }
+button { cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+img, svg { display: block; max-width: 100%; }
+h1, h2, h3, p, figure { margin: 0; }
+::selection { background: #caa98e; color: #26343a; }
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 5px; }
+.skip-link { position: absolute; z-index: 30; top: -60px; left: 14px; padding: 11px 16px; background: #fff; color: var(--blue-deep); }
+.skip-link:focus { top: 12px; }
+.site-shell { max-width: 1800px; margin: auto; overflow: hidden; }
+
+.site-header {
+  min-height: 82px; padding: 0 5.2%; display: flex; align-items: center;
+  justify-content: space-between; gap: 32px; border-bottom: 1px solid var(--line);
+  background: rgba(251,249,245,.97); position: relative; z-index: 10;
+}
+.brand { display: flex; align-items: center; gap: 12px; white-space: nowrap; }
+.brand-symbol { width: 31px; height: 31px; border: 1px solid var(--brown); border-radius: 50%; display: grid; place-items: center; transform: rotate(45deg); position: relative; }
+.brand-symbol::before, .brand-symbol::after, .brand-symbol span { content: ''; position: absolute; border: 1px solid var(--brown); width: 19px; height: 19px; }
+.brand-symbol::after { transform: rotate(45deg); width: 15px; height: 15px; }
+.brand-symbol span { width: 5px; height: 5px; background: var(--brown); border-radius: 50%; }
+.brand-name { font-size: 11px; letter-spacing: .2em; font-weight: 700; color: var(--blue-deep); }
+.brand-name strong { color: var(--brown); }
+.main-nav { display: flex; align-items: center; gap: clamp(22px, 3vw, 47px); }
+.main-nav a, .header-cta { font-size: 11px; text-transform: uppercase; letter-spacing: .13em; font-weight: 700; }
+.main-nav a { color: #4c5a5d; transition: color .2s; }
+.main-nav a:hover { color: var(--brown); }
+.header-cta { padding: 14px 18px; border: 1px solid var(--brown); color: var(--brown); white-space: nowrap; transition: background .2s, color .2s; }
+.header-cta:hover { color: #fff; background: var(--brown); }
+.header-cta span { font-size: 16px; margin-left: 17px; }
+
+.hero {
+  min-height: 650px; padding: 76px 5.2% 86px;
+  display: grid; grid-template-columns: 48% 52%; gap: 0; align-items: center;
+  position: relative; background: #fbf9f5;
+}
+.hero::before { content: ''; position: absolute; width: 420px; height: 420px; left: -240px; top: -180px; border: 1px solid #e6dacf; border-radius: 50%; pointer-events: none; }
+.hero-copy { position: relative; z-index: 2; padding-right: 20px; }
+.eyebrow, .section-kicker, .music-index, .music-meta, .artist-meta, .portrait-label, .sample-note, .hero-side-note, .photo-caption {
+  font-size: 10px; letter-spacing: .19em; text-transform: uppercase; font-weight: 700;
+}
+.eyebrow { display: flex; align-items: center; gap: 12px; color: var(--brown); margin-bottom: 34px; }
+.eyebrow-line { width: 29px; height: 1px; background: var(--brown); }
+h1, h2, h3 { font-family: 'Libre Baskerville', Georgia, serif; font-weight: 400; letter-spacing: -.055em; }
+.hero h1 { font-size: clamp(57px, 5.7vw, 96px); line-height: 1.08; color: var(--blue-deep); white-space: nowrap; }
+.hero h1 em { font-weight: 400; color: var(--brown); }
+.hero-statement { font-family: 'Libre Baskerville', Georgia, serif; font-size: clamp(22px, 2vw, 29px); line-height: 1.48; margin-top: 34px; color: var(--blue-deep); }
+.hero-statement span { color: var(--brown); font-style: italic; }
+.hero-description { max-width: 410px; color: var(--muted); font-size: 14px; line-height: 1.85; margin-top: 18px; }
+.hero-actions { display: flex; align-items: center; gap: 31px; flex-wrap: wrap; margin-top: 31px; }
+.button { display: inline-flex; justify-content: space-between; align-items: center; gap: 20px; min-height: 55px; padding: 17px 24px; font-size: 11px; text-transform: uppercase; letter-spacing: .13em; font-weight: 700; border: 1px solid transparent; }
+.button span { font-size: 17px; line-height: 1; }
+.button-primary { color: #fff; background: var(--brown); transition: transform .2s, background .2s; }
+.button-primary:hover { background: var(--brown-deep); transform: translateY(-2px); }
+.under-link { font-size: 11px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; border-bottom: 1px solid var(--brown); padding-bottom: 8px; color: var(--brown); display: inline-flex; gap: 16px; align-items: center; }
+.under-link:hover { color: var(--blue); border-color: var(--blue); }
+.hero-visual { position: relative; padding: 0 5% 14px 0; }
+.group-photo { width: 100%; aspect-ratio: 1.04; background: #a59b8d; overflow: hidden; position: relative; box-shadow: 30px 30px 0 #eee8df; }
+.group-photo img { width: 100%; height: 100%; object-fit: cover; }
+.photo-placeholder { position: absolute; inset: 0; background: linear-gradient(150deg, #c4ae96 0%, #917560 45%, #3e5966 100%); overflow: hidden; }
+.photo-placeholder::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 45px, rgba(255,255,255,.055) 46px, transparent 47px 90px); }
+.photo-light { width: 80%; height: 72%; position: absolute; left: 12%; top: 2%; background: #f6e6cd; filter: blur(70px); opacity: .4; border-radius: 50%; }
+.photo-figures { position: absolute; inset: 0; display: flex; align-items: end; justify-content: space-evenly; padding: 0 8% 0; }
+.photo-figures span { width: 23%; height: 61%; border-radius: 42% 42% 0 0; position: relative; background: #39454a; filter: blur(1px); }
+.photo-figures span::before { content: ''; position: absolute; width: 52%; aspect-ratio: .82; border-radius: 50%; left: 24%; top: -24%; background: inherit; }
+.photo-figures span:nth-child(1) { height: 49%; background: #595652; transform: translateX(11%); }
+.photo-figures span:nth-child(2) { height: 65%; background: #393f43; }
+.photo-figures span:nth-child(3) { height: 60%; background: #3f4b50; }
+.photo-figures span:nth-child(4) { height: 51%; background: #293b43; transform: translateX(-12%); }
+.photo-caption { position: absolute; bottom: 19px; left: 22px; color: #fff; line-height: 1.7; z-index: 1; text-shadow: 0 1px 4px #293b43; }
+.photo-caption small { font-size: 9px; letter-spacing: .16em; }
+.hero-seal { position: absolute; width: 155px; height: 155px; left: -73px; bottom: -48px; border-radius: 50%; background: var(--paper); padding: 13px; box-shadow: 0 5px 30px rgba(51,44,37,.07); }
+.hero-seal svg { width: 100%; height: 100%; }
+.hero-side-note { position: absolute; right: -8px; top: 32%; writing-mode: vertical-rl; color: var(--brown); }
+.rhythm-strip { height: 72px; display: flex; align-items: center; justify-content: center; gap: clamp(28px, 7vw, 135px); background: #eee6dc; color: var(--brown); font-size: 11px; font-weight: 700; letter-spacing: .27em; }
+.rhythm-strip span:nth-child(even) { color: #8c9fa5; font-size: 19px; font-weight: 400; }
+
+.section-pad { padding: 108px 8.2%; position: relative; overflow: hidden; }
+.section-content { position: relative; z-index: 1; }
+.section-kicker { color: var(--brown); margin-bottom: 25px; }
+h2 { font-size: clamp(42px, 4.6vw, 72px); line-height: 1.18; color: var(--blue-deep); }
+h2 em { color: var(--brown); font-weight: 400; }
+.scroll-motif { position: absolute; width: min(46vw, 530px); height: auto; pointer-events: none; stroke: var(--brown); stroke-width: 1.1; opacity: .29; }
+.scroll-motif .motif-dot { fill: var(--brown); stroke: none; }
+.scroll-motif-intro { right: -125px; top: 60px; }
+.scroll-motif-music { left: -140px; top: 10px; stroke: var(--blue); opacity: .18; }
+.scroll-motif-artists { right: -150px; top: 40px; opacity: .17; }
+.scroll-motif-contact { right: -100px; top: 50px; stroke: #f1dfc9; opacity: .33; }
+.about { background: #fff; }
+.about-layout { display: grid; grid-template-columns: 55% 1fr; gap: 8%; align-items: end; min-height: 240px; }
+.about h2 { max-width: 700px; }
+.about-prose { max-width: 390px; }
+.about-prose p { color: var(--muted); font-size: 14px; line-height: 1.9; margin-bottom: 16px; }
+.about-prose .under-link { margin-top: 17px; }
+
+.music { background: #f5f1eb; }
+.section-heading-row { display: flex; justify-content: space-between; align-items: end; gap: 45px; margin-bottom: 49px; }
+.section-heading-row h2 { max-width: 670px; }
+.section-heading-row > p { max-width: 310px; color: var(--muted); font-size: 13px; line-height: 1.8; margin-bottom: 6px; }
+.music-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+.music-art { aspect-ratio: 1.18; position: relative; display: grid; place-items: center; overflow: hidden; }
+.music-art-1 { background: radial-gradient(circle at 35% 20%, #b99a7a, #806251 62%, #6f5145); }
+.music-art-2 { background: radial-gradient(circle at 35% 20%, #819aa0, #4f6c78 58%, #304b5b); }
+.music-art-3 { background: radial-gradient(circle at 35% 20%, #bbab92, #85755e 58%, #5f635e); }
+.music-art::before, .music-art::after { content: ''; position: absolute; width: 58%; aspect-ratio: 1; border: 1px solid rgba(255,245,227,.55); transform: rotate(45deg); }
+.music-art::after { width: 43%; border-radius: 50%; transform: none; }
+.music-art-lines { width: 80%; aspect-ratio: 1; border: 1px solid rgba(255,245,227,.3); border-radius: 50%; position: absolute; box-shadow: 0 0 0 38px rgba(255,245,227,.04), 0 0 0 75px rgba(255,245,227,.03); }
+.music-index { position: absolute; top: 20px; left: 20px; color: #fff2df; }
+.preview-pending { position: relative; z-index: 1; color: #fff; background: rgba(24,44,53,.53); text-align: center; line-height: 1.65; padding: 16px 18px; font-size: 10px; letter-spacing: .2em; font-weight: 700; }
+.preview-pending small { font-size: 9px; }
+.play-button { position: relative; z-index: 1; width: 70px; height: 70px; border: 1px solid #fff; background: rgba(24,44,53,.55); border-radius: 50%; color: #fff; display: grid; place-items: center; transition: transform .2s, background .2s; }
+.play-button:hover { transform: scale(1.08); background: var(--brown); }
+.play-button span { margin-left: 4px; }
+.video-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; z-index: 2; }
+.music-meta, .artist-meta { display: flex; justify-content: space-between; color: var(--brown); padding: 17px 0 10px; border-bottom: 1px solid #d7cbbd; }
+.music-card h3 { font-size: clamp(22px, 2vw, 29px); margin-top: 18px; color: var(--blue-deep); }
+.sample-note { margin-top: 32px; color: #788184; font-size: 10px; line-height: 1.6; letter-spacing: .06em; text-transform: none; font-weight: 400; }
+
+.artists { background: #fff; }
+.artist-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+.artist-portrait { aspect-ratio: .84; position: relative; display: grid; place-items: center; overflow: hidden; }
+.artist-portrait-1 { background: linear-gradient(145deg, #bdab96, #876b58); }
+.artist-portrait-2 { background: linear-gradient(145deg, #a4b6b9, #547481); }
+.artist-portrait-3 { background: linear-gradient(145deg, #d1baa0, #9a785e); }
+.artist-portrait-4 { background: linear-gradient(145deg, #acbabc, #617f87); }
+.artist-portrait::before, .artist-portrait::after { content: ''; position: absolute; width: 74%; aspect-ratio: 1; border: 1px solid rgba(255,255,255,.4); transform: rotate(45deg); }
+.artist-portrait::after { width: 54%; border-radius: 50%; transform: none; }
+.artist-portrait img { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: cover; }
+.portrait-glyph { position: relative; z-index: 1; font-family: 'Libre Baskerville', Georgia, serif; font-size: clamp(85px, 8vw, 145px); font-style: italic; color: rgba(255,250,239,.75); letter-spacing: -.1em; }
+.portrait-label { position: absolute; z-index: 2; left: 13px; bottom: 13px; color: #fff; background: rgba(32,58,70,.64); padding: 7px 9px; font-size: 8px; letter-spacing: .12em; }
+.artist-card h3 { font-size: 22px; color: var(--blue-deep); margin-top: 16px; }
+.artist-card p { color: var(--muted); font-size: 12px; line-height: 1.7; margin-top: 9px; }
+
+.contact { background: var(--blue-deep); color: #fff; min-height: 510px; display: flex; align-items: center; }
+.contact .section-kicker { color: #d5ad8a; }
+.contact h2 { color: #fff; }
+.contact h2 em { color: #d5ad8a; }
+.contact-layout { display: flex; align-items: center; justify-content: space-between; gap: 35px; width: 100%; }
+.contact-layout > div { max-width: 760px; }
+.contact-layout p:not(.section-kicker) { max-width: 500px; color: #d4dfe0; font-size: 14px; line-height: 1.8; margin-top: 21px; }
+.contact-actions { display: flex; gap: 25px; align-items: center; flex-wrap: wrap; margin-top: 28px; }
+.button-unavailable { border-color: #9eacaf; color: #d7e0dc; background: rgba(255,255,255,.05); cursor: default; }
+.contact .under-link { color: #e3c6a5; border-color: #e3c6a5; }
+.contact-damaru { width: 150px; min-width: 150px; color: #d8b492; opacity: .8; margin-right: 8%; }
+.site-footer { background: #fbf9f5; padding: 34px 8.2%; display: flex; justify-content: space-between; align-items: center; gap: 20px; color: #69767a; font-size: 11px; }
+.site-footer a { color: var(--blue-deep); font-weight: 700; letter-spacing: .15em; }
+.site-footer strong { color: var(--brown); }
+
+@media (max-width: 1100px) {
+  .site-header { padding-inline: 4%; }
+  .hero { padding-inline: 5%; }
+  .hero h1 { font-size: clamp(56px, 5.4vw, 75px); }
+  .section-pad { padding: 90px 6%; }
+  .music-grid, .artist-grid { gap: 14px; }
+}
+@media (max-width: 760px) {
+  html { scroll-padding-top: 110px; }
+  .site-header { padding: 17px 5%; flex-wrap: wrap; gap: 15px; }
+  .main-nav { order: 3; width: 100%; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 13px; }
+  .header-cta { margin-left: auto; padding: 10px 12px; }
+  .header-cta span { margin-left: 8px; }
+  .hero { grid-template-columns: 1fr; gap: 50px; padding: 67px 7% 92px; }
+  .hero h1 { font-size: clamp(55px, 10vw, 83px); }
+  .hero-visual { padding-right: 6%; }
+  .group-photo { aspect-ratio: 1.25; }
+  .hero-seal { width: 120px; height: 120px; left: -35px; bottom: -45px; }
+  .hero-side-note { right: -4px; }
+  .section-pad { padding: 78px 7%; }
+  .about-layout { grid-template-columns: 1fr; gap: 35px; }
+  .about-prose { max-width: 620px; }
+  .section-heading-row { display: block; }
+  .section-heading-row > p { max-width: 520px; margin-top: 20px; }
+  .music-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 23px; }
+  .artist-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 28px 20px; }
+  .scroll-motif { width: 430px; }
+  .contact-damaru { width: 100px; min-width: 100px; margin-right: 0; }
+  .site-footer { padding-inline: 7%; flex-wrap: wrap; }
+}
+@media (max-width: 520px) {
+  .brand-name { font-size: 10px; }
+  .header-cta { font-size: 9px; letter-spacing: .08em; }
+  .main-nav a { font-size: 10px; }
+  .hero { padding: 58px 6% 83px; gap: 42px; }
+  .hero h1 { font-size: clamp(48px, 11vw, 62px); }
+  .hero-statement { margin-top: 26px; }
+  .hero-visual { padding-right: 4%; }
+  .group-photo { aspect-ratio: .98; box-shadow: 17px 17px 0 #eee8df; }
+  .hero-seal { width: 100px; height: 100px; left: -15px; bottom: -35px; }
+  .photo-figures span { height: 50%; }
+  .rhythm-strip { height: 60px; gap: 19px; font-size: 9px; }
+  .rhythm-strip span:nth-child(even) { font-size: 14px; }
+  .section-pad { padding: 67px 6%; }
+  h2 { font-size: clamp(39px, 10vw, 52px); }
+  .music-grid, .artist-grid { grid-template-columns: 1fr; }
+  .music-art { aspect-ratio: 1.3; }
+  .artist-portrait { aspect-ratio: 1.1; }
+  .portrait-glyph { font-size: 135px; }
+  .scroll-motif-intro, .scroll-motif-artists { right: -270px; }
+  .scroll-motif-music { left: -260px; }
+  .contact { min-height: 470px; }
+  .contact-damaru { display: none; }
+  .site-footer { display: block; line-height: 2; }
+  .site-footer span { display: block; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}

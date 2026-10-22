@@ -4,6 +4,7 @@ export const site = {
   tagline: 'Carnatic roots. New frequencies.',
   description:
     'A home for The Project Darbar, an Indian Carnatic fusion band exploring tradition and contemporary sound.',
+  heroImage: '',
   email: '',
   youtube: '',
   instagram: '',
