@@ -52,7 +52,7 @@ main::after { content: ''; position: absolute; right: 81px; top: 0; bottom: 0; b
 .motion-ready .journey-rail { display: block; }
 .journey-rail [data-rail-chakra] { stroke-width: 1.6; }
 .hero {
-  min-height: 770px; height: min(850px, calc(100svh - 80px)); position: relative;
+  min-height: 600px; height: min(690px, calc(100svh - 80px)); position: relative;
   overflow: hidden; background: var(--paper); padding: 45px 5.4% 65px;
   border-bottom: 1px solid var(--rule);
 }
@@ -95,14 +95,15 @@ main::after { content: ''; position: absolute; right: 81px; top: 0; bottom: 0; b
 .chapter-index span { border: 1px solid var(--maroon); border-radius: 50%; width: 32px; height: 32px; display: grid; place-items: center; letter-spacing: 0; }
 .chapter h2 { color: var(--maroon); font-weight: 900; font-size: clamp(75px, 10vw, 166px); letter-spacing: -.075em; line-height: .96; }
 .chapter h2 em { font-style: normal; color: transparent; -webkit-text-stroke: 2px var(--maroon); }
-.chapter-about { min-height: 690px; display: flex; align-items: center; background: #fff; }
+.chapter-about { min-height: 550px; display: flex; align-items: center; background: #fff; }
 .chapter-about h2 { max-width: 1050px; }
 .chapter-prose { max-width: 550px; margin-top: 40px; margin-left: 30%; color: #5a5050; font-size: clamp(17px, 1.7vw, 23px); line-height: 1.6; letter-spacing: -.025em; }
 
-.chapter-music { background: var(--paper); }
-.music-heading { display: flex; justify-content: space-between; align-items: end; gap: 40px; margin-bottom: 53px; }
-.music-heading > p { max-width: 240px; color: #6c6261; font-size: 15px; line-height: 1.6; padding-bottom: 10px; }
-.featured-music { width: min(100%, 1050px); height: clamp(380px, 47vw, 610px); position: relative; overflow: hidden; background: var(--maroon); color: #fff; }
+.chapter-music { background: var(--paper); padding-top: 54px; padding-bottom: 85px; }
+.chapter-music .chapter-index { margin-bottom: 22px; }
+.music-heading { margin-bottom: 28px; }
+.chapter-music h2 { font-size: clamp(55px, 7.4vw, 112px); }
+.featured-music { width: min(100%, 1050px); height: clamp(300px, 36vw, 470px); position: relative; overflow: hidden; background: var(--maroon); color: #fff; }
 .featured-music::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 70% 45%, #9d5361 0, #782b3a 38%, #4c1824 100%); }
 .featured-music::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(30,9,15,.78), transparent 75%); }
 .featured-art { position: absolute; right: -5%; top: -32%; width: 80%; aspect-ratio: 1; }
@@ -154,7 +155,7 @@ main::after { content: ''; position: absolute; right: 81px; top: 0; bottom: 0; b
 .motion-ready [data-reveal="mask"].is-visible { clip-path: inset(0); }
 
 @media (max-width: 1050px) {
-  .hero { min-height: 700px; }
+  .hero { min-height: 600px; }
   .hero h1 { top: 21%; }
   .hero h1 .title-top { font-size: 9.8vw; }
   .hero h1 strong { font-size: 18.4vw; }
@@ -170,11 +171,11 @@ main::after { content: ''; position: absolute; right: 81px; top: 0; bottom: 0; b
   .site-header { height: 78px; padding: 0 5%; }
   .main-nav { gap: 20px; }
   .main-nav a { font-size: 9px; letter-spacing: .08em; }
-  .hero { height: 730px; min-height: 0; padding: 40px 5%; }
+  .hero { height: 630px; min-height: 0; padding: 40px 5%; }
   .hero h1 { top: 21%; }
   .hero h1 .title-top { font-size: 11.3vw; }
   .hero h1 strong { font-size: 20.2vw; margin-top: .18em; }
-  .hero-figures { width: 89%; height: 52%; bottom: 115px; }
+  .hero-figures { width: 89%; height: 50%; bottom: 105px; }
   .hero-bottom { left: 5%; right: 12%; bottom: 45px; }
   .hero-bottom p { font-size: 16px; }
   .hero-actions { gap: 15px; }
@@ -185,12 +186,11 @@ main::after { content: ''; position: absolute; right: 81px; top: 0; bottom: 0; b
   .chapter-contact::after { right: 42px; }
   .fallback-chakra { width: 84px; right: 0; }
   .chapter { min-height: 580px; padding: 90px 15% 100px 7%; }
-  .chapter-about { min-height: 650px; }
+  .chapter-about { min-height: 520px; }
   .chapter h2 { font-size: clamp(58px, 10vw, 91px); }
   .chapter-prose { margin-left: 15%; }
-  .music-heading { display: block; }
-  .music-heading > p { margin-top: 23px; }
-  .featured-music { height: 430px; }
+  .chapter-music { padding-top: 50px; padding-bottom: 72px; }
+  .featured-music { height: 390px; }
   .artist-row { grid-template-columns: 40px 1fr 110px 20px; min-height: 85px; gap: 12px; }
   .artist-row h3 { font-size: 27px; }
   .artist-row p { font-size: 9px; }
@@ -202,12 +202,12 @@ main::after { content: ''; position: absolute; right: 81px; top: 0; bottom: 0; b
   .wordmark { font-size: 23px; }
   .main-nav { order: 3; width: 100%; justify-content: space-between; padding-top: 10px; border-top: 1px solid var(--rule); }
   .header-book { margin-left: auto; font-size: 9px; }
-  .hero { height: 650px; padding-inline: 5%; }
+  .hero { height: 580px; padding-inline: 5%; }
   .hero-overline { font-size: 8px; letter-spacing: .1em; }
   .hero h1 { top: 21%; }
   .hero h1 .title-top { font-size: 11.5vw; }
   .hero h1 strong { font-size: 20.3vw; }
-  .hero-figures { width: 100%; height: 52%; bottom: 110px; }
+  .hero-figures { width: 100%; height: 48%; bottom: 110px; }
   .hero-figures-outline { transform: translate(9px, var(--outline-shift, -4px)); }
   .hero-placeholder-label { right: 28px; font-size: 7px; }
   .hero-bottom { display: block; bottom: 32px; right: 11%; }
@@ -219,15 +219,18 @@ main::after { content: ''; position: absolute; right: 81px; top: 0; bottom: 0; b
   .chapter-contact::after { right: 30px; }
   .fallback-chakra { width: 60px; right: 0; bottom: 25px; }
   .chapter { padding: 82px 17% 92px 6%; min-height: 540px; }
-  .chapter-about { min-height: 600px; }
+  .chapter-about { min-height: 500px; }
   .chapter-index { margin-bottom: 40px; font-size: 9px; }
   .chapter h2 { font-size: clamp(50px, 12vw, 70px); }
   .chapter h2 em { -webkit-text-stroke-width: 1.2px; }
   .chapter-prose { margin: 35px 0 0 0; font-size: 16px; }
-  .featured-music { height: 340px; }
+  .chapter-music { padding-top: 42px; padding-bottom: 64px; }
+  .chapter-music .chapter-index { margin-bottom: 18px; }
+  .chapter-music h2 { font-size: clamp(47px, 11vw, 66px); }
+  .featured-music { height: 310px; }
   .featured-overlay { padding: 24px; }
   .featured-overlay h3 { font-size: 43px; }
-  .music-heading { margin-bottom: 35px; }
+  .music-heading { margin-bottom: 25px; }
   .artist-list { margin-top: 44px; }
   .artist-row { grid-template-columns: 26px 1fr 17px; min-height: 77px; }
   .artist-row h3 { font-size: 24px; }

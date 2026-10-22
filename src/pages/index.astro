@@ -25,7 +25,7 @@ const year = new Date().getFullYear();
       <header class="site-header" id="top">
         <a class="wordmark" href="#top" aria-label={site.name + ', back to top'}>P<span>✳</span>D</a>
         <nav class="main-nav" aria-label="Main navigation">
-          <a href="#about">The band</a><a href="#music">Music</a><a href="#artists">Artists</a>
+          <a href="#music">Music</a><a href="#about">The band</a><a href="#artists">Artists</a>
         </nav>
         <a class="header-book" href="#contact">Book us <span aria-hidden="true">↗</span></a>
       </header>
@@ -56,18 +56,10 @@ const year = new Date().getFullYear();
           <span class="hero-edge-label" aria-hidden="true">SCROLL TO FOLLOW THE LINE ↓</span>
         </section>
 
-        <section class="chapter chapter-about" id="about" aria-labelledby="about-heading">
-          <div class="chapter-inner">
-            <p class="chapter-index" data-reveal><span>01</span> / THE BAND</p>
-            <h2 id="about-heading" data-reveal>OLD ROOTS.<br /><em>NEW FIRE.</em></h2>
-            <p class="chapter-prose" data-reveal>The Project Darbar brings Carnatic influence into a contemporary band setting, following melody and rhythm wherever they lead.</p>
-          </div>
-        </section>
-
         <section class="chapter chapter-music" id="music" aria-labelledby="music-heading">
           <div class="chapter-inner">
-            <p class="chapter-index" data-reveal><span>02</span> / THE SOUND</p>
-            <div class="music-heading"><h2 id="music-heading" data-reveal>LISTEN<br /><em>CLOSER.</em></h2><p data-reveal>One performance can say more than a page of words.</p></div>
+            <p class="chapter-index" data-reveal><span>01</span> / THE SOUND</p>
+            <div class="music-heading"><h2 id="music-heading" data-reveal>LISTEN <em>CLOSER.</em></h2></div>
             <article class="featured-music" data-reveal="mask">
               <div class="featured-art" aria-hidden="true"><span class="record record-one"></span><span class="record record-two"></span><span class="record record-three"></span></div>
               <div class="featured-overlay">
@@ -77,6 +69,14 @@ const year = new Date().getFullYear();
               {featured.youtubeId && <button class="play-button" type="button" data-youtube-id={featured.youtubeId} aria-label={'Play ' + featured.title + ' on YouTube'}><span aria-hidden="true">▶</span></button>}
             </article>
             <p class="section-note" data-reveal>Performance title and preview are placeholders until a confirmed release is added.</p>
+          </div>
+        </section>
+
+        <section class="chapter chapter-about" id="about" aria-labelledby="about-heading">
+          <div class="chapter-inner">
+            <p class="chapter-index" data-reveal><span>02</span> / THE BAND</p>
+            <h2 id="about-heading" data-reveal>OLD ROOTS.<br /><em>NEW FIRE.</em></h2>
+            <p class="chapter-prose" data-reveal>The Project Darbar brings Carnatic influence into a contemporary band setting, following melody and rhythm wherever they lead.</p>
           </div>
         </section>
 
@@ -133,7 +133,7 @@ const year = new Date().getFullYear();
       const chakra = rail?.querySelector<SVGPathElement>('[data-rail-chakra]');
       const darkEnd = rail?.querySelector<SVGStopElement>('[data-rail-dark-end]');
       const lightStart = rail?.querySelector<SVGStopElement>('[data-rail-light-start]');
-      const sections = ['about', 'music', 'artists', 'contact'].map((id) => document.getElementById(id));
+      const sections = ['music', 'about', 'artists', 'contact'].map((id) => document.getElementById(id));
       const hero = document.querySelector<HTMLElement>('.hero');
       const figures = document.querySelector<HTMLElement>('.hero-figures');
       let routeLength = 0;
