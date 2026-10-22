@@ -1,10 +1,9 @@
 ---
-import ChakraArt from '../components/ChakraArt.astro';
-import Damaru from '../components/Damaru.astro';
-import ScrollMotif from '../components/ScrollMotif.astro';
+import HeroGroup from '../components/HeroGroup.astro';
 import { artists, music, site } from '../data/site';
 import '../styles/global.css';
 
+const featured = music[0];
 const year = new Date().getFullYear();
 ---
 <!doctype html>
@@ -12,7 +11,7 @@ const year = new Date().getFullYear();
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#fbf9f5" />
+    <meta name="theme-color" content="#faf7f2" />
     <meta name="description" content={site.description} />
     <meta property="og:title" content={site.name} />
     <meta property="og:description" content={site.description} />
@@ -24,169 +23,208 @@ const year = new Date().getFullYear();
     <a class="skip-link" href="#main">Skip to content</a>
     <div class="site-shell">
       <header class="site-header" id="top">
-        <a class="brand" href="#top" aria-label={site.name + ', back to top'}>
-          <span class="brand-symbol" aria-hidden="true"><span></span></span>
-          <span class="brand-name">THE PROJECT <strong>DARBAR</strong></span>
-        </a>
+        <a class="wordmark" href="#top" aria-label={site.name + ', back to top'}>P<span>✳</span>D</a>
         <nav class="main-nav" aria-label="Main navigation">
           <a href="#about">The band</a><a href="#music">Music</a><a href="#artists">Artists</a>
         </nav>
-        <a class="header-cta" href="#contact">Book the band <span aria-hidden="true">↗</span></a>
+        <a class="header-book" href="#contact">Book us <span aria-hidden="true">↗</span></a>
       </header>
 
       <main id="main">
+        <svg class="journey-rail" viewBox="0 0 180 1000" preserveAspectRatio="none" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="rail-ink" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#782b3a" /><stop data-rail-dark-end offset=".8" stop-color="#782b3a" /><stop data-rail-light-start offset=".801" stop-color="#fff" /><stop offset="1" stop-color="#fff" /></linearGradient></defs>
+          <path data-rail-route d="M99 0V870" stroke="url(#rail-ink)" />
+          <path data-rail-chakra d="M99 870 A62 62 0 1 1 98.9 870 M99 820 146 902H52l47-82Z M99 925 53 845h92l-46 80Z" stroke="#fff" />
+        </svg>
+
         <section class="hero" aria-labelledby="hero-heading">
-          <div class="hero-copy">
-            <p class="eyebrow"><span class="eyebrow-line"></span> Indian Carnatic fusion</p>
-            <h1 id="hero-heading"><span>The Project</span><br /><em>Darbar.</em></h1>
-            <p class="hero-statement">Carnatic roots.<br /><span>A sound of our own.</span></p>
-            <p class="hero-description">A live experience shaped by classical depth, contemporary energy, and the joy of making music together.</p>
-            <div class="hero-actions">
-              <a class="button button-primary" href="#contact">Book the band <span aria-hidden="true">↗</span></a>
-              <a class="under-link" href="#music">Explore the music <span aria-hidden="true">↓</span></a>
+          <p class="hero-overline" data-reveal>INDIAN CARNATIC FUSION <span>—</span> MADE TO BE FELT LIVE</p>
+          <h1 id="hero-heading" data-reveal><span>THE PROJECT</span><strong>DARBAR</strong></h1>
+          <div class="hero-figures" aria-label={site.heroImage ? 'Band member photograph' : 'Stylized placeholder for a band member photograph'}>
+            <div class="hero-figures-outline" aria-hidden="true">
+              {site.heroImage ? <img src={site.heroImage} alt="" /> : <HeroGroup />}
             </div>
-          </div>
-          <div class="hero-visual">
-            <figure class="group-photo">
-              {site.heroImage ? <img src={site.heroImage} alt="The Project Darbar band members" /> : <div class="photo-placeholder" role="img" aria-label="Placeholder for a group photograph of The Project Darbar">
-                <div class="photo-light" aria-hidden="true"></div>
-                <div class="photo-figures" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-                <span class="photo-caption">BAND PHOTOGRAPH<br /><small>IMAGE TO BE ADDED</small></span>
-              </div>}
-            </figure>
-            <div class="hero-seal" aria-hidden="true"><ChakraArt /></div>
-            <span class="hero-side-note">TRADITION IN MOTION &nbsp; / &nbsp; 01</span>
-          </div>
-        </section>
-
-        <div class="rhythm-strip" aria-hidden="true"><span>RAGA</span><span>✳</span><span>RHYTHM</span><span>✳</span><span>RESONANCE</span></div>
-
-        <section class="about section-pad" id="about" aria-labelledby="about-heading">
-          <ScrollMotif kind="intro" />
-          <div class="section-content about-layout">
-            <div><p class="section-kicker">01 / The band</p><h2 id="about-heading">A meeting of <em>tradition and now.</em></h2></div>
-            <div class="about-prose"><p>The Project Darbar brings Carnatic influence into a contemporary band setting. The music follows melody, rhythm, and the unexpected spaces between them.</p><p>The visual language follows the same idea: a line finds another line, and a rhythm becomes a form.</p><a class="under-link" href="#artists">Meet the ensemble <span aria-hidden="true">↗</span></a></div>
-          </div>
-        </section>
-
-        <section class="music section-pad" id="music" aria-labelledby="music-heading">
-          <ScrollMotif kind="music" />
-          <div class="section-content">
-            <div class="section-heading-row"><div><p class="section-kicker">02 / Hear the sound</p><h2 id="music-heading">Music to <em>move with.</em></h2></div><p>A place for performances and sessions. The first confirmed video previews will appear here.</p></div>
-            <div class="music-grid">
-              {music.map((entry, index) => (
-                <article class="music-card">
-                  <div class={'music-art music-art-' + (index + 1)}>
-                    <span class="music-art-lines" aria-hidden="true"></span>
-                    <span class="music-index">0{index + 1} / PERFORMANCE</span>
-                    {entry.youtubeId ? <button class="play-button" type="button" data-youtube-id={entry.youtubeId} aria-label={'Play ' + entry.title + ' on YouTube'}><span aria-hidden="true">▶</span></button> : <span class="preview-pending">YOUTUBE PREVIEW<br /><small>COMING SOON</small></span>}
-                  </div>
-                  <div class="music-meta"><span>{entry.subtitle}</span><span>0{index + 1}</span></div>
-                  <h3>{entry.title}</h3>
-                </article>
-              ))}
+            <div class="hero-figures-front">
+              {site.heroImage ? <img src={site.heroImage} alt="The Project Darbar band members" /> : <HeroGroup />}
             </div>
-            <p class="sample-note">Sample preview layout. Official performances will appear here.</p>
+            {!site.heroImage && <span class="hero-placeholder-label">BAND IMAGE PLACEHOLDER</span>}
+          </div>
+          <div class="hero-bottom" data-reveal>
+            <p>Carnatic roots.<br /><strong>An electric new pulse.</strong></p>
+            <div class="hero-actions"><a class="pill-link" href="#contact">Book the band <span aria-hidden="true">↗</span></a><a class="quiet-link" href="#music">Hear the sound <span aria-hidden="true">↓</span></a></div>
+          </div>
+          <span class="hero-edge-label" aria-hidden="true">SCROLL TO FOLLOW THE LINE ↓</span>
+        </section>
+
+        <section class="chapter chapter-about" id="about" aria-labelledby="about-heading">
+          <div class="chapter-inner">
+            <p class="chapter-index" data-reveal><span>01</span> / THE BAND</p>
+            <h2 id="about-heading" data-reveal>OLD ROOTS.<br /><em>NEW FIRE.</em></h2>
+            <p class="chapter-prose" data-reveal>The Project Darbar brings Carnatic influence into a contemporary band setting, following melody and rhythm wherever they lead.</p>
           </div>
         </section>
 
-        <section class="artists section-pad" id="artists" aria-labelledby="artists-heading">
-          <ScrollMotif kind="artists" />
-          <div class="section-content">
-            <div class="section-heading-row"><div><p class="section-kicker">03 / Meet the artists</p><h2 id="artists-heading">The people behind <em>the pulse.</em></h2></div><p>Each voice adds a new dimension to the music. The lineup below is ready for the band’s confirmed profiles.</p></div>
-            <div class="artist-grid">
-              {artists.map((artist, index) => (
-                <article class="artist-card">
-                  <div class={'artist-portrait artist-portrait-' + (index + 1)}>
-                    {artist.image ? <img src={artist.image} alt={'Portrait of ' + artist.name} loading="lazy" /> : <span class="portrait-glyph" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>}
-                    {!artist.image && <span class="portrait-label">PHOTO TO BE ADDED</span>}
-                  </div>
-                  <div class="artist-meta"><span>{artist.role}</span><span>0{index + 1}</span></div>
-                  <h3>{artist.name}</h3><p>{artist.bio}</p>
-                </article>
-              ))}
-            </div>
-            <p class="sample-note">Sample profiles shown. The confirmed artist lineup will appear here.</p>
-          </div>
-        </section>
-
-        <section class="contact section-pad" id="contact" aria-labelledby="contact-heading">
-          <ScrollMotif kind="contact" />
-          <div class="section-content contact-layout">
-            <div><p class="section-kicker">04 / Bring the music to you</p><h2 id="contact-heading">Let’s make<br /><em>something resonate.</em></h2><p>For concerts, festivals, private events, and collaborations, connect with The Project Darbar.</p>
-              <div class="contact-actions">
-                {site.email ? <a class="button button-primary" href={'mailto:' + site.email}>Send a booking enquiry <span aria-hidden="true">↗</span></a> : <span class="button button-unavailable">Booking email coming soon</span>}
-                {site.youtube && <a class="under-link" href={site.youtube} target="_blank" rel="noopener noreferrer">YouTube ↗</a>}
-                {site.instagram && <a class="under-link" href={site.instagram} target="_blank" rel="noopener noreferrer">Instagram ↗</a>}
+        <section class="chapter chapter-music" id="music" aria-labelledby="music-heading">
+          <div class="chapter-inner">
+            <p class="chapter-index" data-reveal><span>02</span> / THE SOUND</p>
+            <div class="music-heading"><h2 id="music-heading" data-reveal>LISTEN<br /><em>CLOSER.</em></h2><p data-reveal>One performance can say more than a page of words.</p></div>
+            <article class="featured-music" data-reveal="mask">
+              <div class="featured-art" aria-hidden="true"><span class="record record-one"></span><span class="record record-two"></span><span class="record record-three"></span></div>
+              <div class="featured-overlay">
+                <span class="sample-label">FEATURED PERFORMANCE / SAMPLE</span>
+                <div><h3>{featured.title}</h3><p>{featured.youtubeId ? 'Watch the performance' : 'YouTube preview coming soon'}</p></div>
               </div>
+              {featured.youtubeId && <button class="play-button" type="button" data-youtube-id={featured.youtubeId} aria-label={'Play ' + featured.title + ' on YouTube'}><span aria-hidden="true">▶</span></button>}
+            </article>
+            <p class="section-note" data-reveal>Performance title and preview are placeholders until a confirmed release is added.</p>
+          </div>
+        </section>
+
+        <section class="chapter chapter-artists" id="artists" aria-labelledby="artists-heading">
+          <div class="chapter-inner">
+            <p class="chapter-index" data-reveal><span>03</span> / THE PEOPLE</p>
+            <h2 id="artists-heading" data-reveal>THE<br /><em>ENSEMBLE.</em></h2>
+            <div class="artist-list">
+              {artists.map((artist, index) => (
+                <article class="artist-row" data-reveal style={'--stagger:' + index * 75 + 'ms'}>
+                  <span class="artist-number">0{index + 1}</span>
+                  <h3>{artist.name}</h3>
+                  <p>{artist.role}</p>
+                  <span class="artist-row-arrow" aria-hidden="true">↗</span>
+                </article>
+              ))}
             </div>
-            <Damaru class="contact-damaru" />
+            <p class="section-note" data-reveal>Artist names and roles are sample content until the lineup is confirmed.</p>
+          </div>
+        </section>
+
+        <section class="chapter chapter-contact" id="contact" aria-labelledby="contact-heading">
+          <svg class="fallback-chakra" viewBox="0 0 160 160" fill="none" aria-hidden="true"><circle cx="80" cy="80" r="67" /><path d="M80 21 132 111H28L80 21ZM80 137 28 48h104L80 137Z" /><circle cx="80" cy="80" r="5" /></svg>
+          <div class="chapter-inner">
+            <p class="chapter-index" data-reveal><span>04</span> / THE INVITATION</p>
+            <h2 id="contact-heading" data-reveal>LET'S<br /><em>PLAY.</em></h2>
+            <p class="contact-copy" data-reveal>For stages, festivals, private events, and collaborations, bring The Project Darbar into the room.</p>
+            <div class="contact-actions" data-reveal>
+              {site.email ? <a class="pill-link pill-light" href={'mailto:' + site.email}>Send a booking enquiry <span aria-hidden="true">↗</span></a> : <span class="pill-link pill-disabled">Booking email coming soon</span>}
+              {site.youtube && <a class="quiet-link" href={site.youtube} target="_blank" rel="noopener noreferrer">YouTube ↗</a>}
+              {site.instagram && <a class="quiet-link" href={site.instagram} target="_blank" rel="noopener noreferrer">Instagram ↗</a>}
+            </div>
+            <span class="chakra-caption" aria-hidden="true">THE LINE RETURNS TO THE CENTRE</span>
           </div>
         </section>
       </main>
-      <footer class="site-footer"><a href="#top">THE PROJECT <strong>DARBAR</strong></a><span>Carnatic roots. New frequencies.</span><span>© {year} The Project Darbar</span></footer>
+      <footer class="site-footer"><a href="#top">THE PROJECT DARBAR</a><span>© {year} THE PROJECT DARBAR</span></footer>
     </div>
+
+    <svg class="filter-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <filter id="cutout-outline" x="-10%" y="-10%" width="120%" height="120%">
+        <feMorphology in="SourceAlpha" operator="dilate" radius="4" result="expanded" />
+        <feComposite in="expanded" in2="SourceAlpha" operator="out" result="edge" />
+        <feFlood flood-color="#782b3a" result="maroon" />
+        <feComposite in="maroon" in2="edge" operator="in" />
+      </filter>
+    </svg>
+
     <script>
-      document.querySelectorAll<HTMLButtonElement>('[data-youtube-id]').forEach((button) => {
-        button.addEventListener('click', () => {
-          const id = button.dataset.youtubeId;
-          const art = button.closest('.music-art');
-          if (!id || !art || !/^[a-zA-Z0-9_-]{11}$/.test(id)) return;
-          const frame = document.createElement('iframe');
-          frame.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1';
-          frame.title = button.getAttribute('aria-label') ?? 'YouTube video';
-          frame.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-          frame.allowFullscreen = true;
-          frame.className = 'video-frame';
-          art.replaceChildren(frame);
-        });
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const main = document.querySelector<HTMLElement>('main');
+      const rail = document.querySelector<SVGSVGElement>('.journey-rail');
+      const route = rail?.querySelector<SVGPathElement>('[data-rail-route]');
+      const chakra = rail?.querySelector<SVGPathElement>('[data-rail-chakra]');
+      const darkEnd = rail?.querySelector<SVGStopElement>('[data-rail-dark-end]');
+      const lightStart = rail?.querySelector<SVGStopElement>('[data-rail-light-start]');
+      const sections = ['about', 'music', 'artists', 'contact'].map((id) => document.getElementById(id));
+      const hero = document.querySelector<HTMLElement>('.hero');
+      const figures = document.querySelector<HTMLElement>('.hero-figures');
+      let routeLength = 0;
+      let chakraLength = 0;
+      let ticking = false;
+      let observer: IntersectionObserver | undefined;
+
+      function measureRail() {
+        if (!main || !rail || !route || !chakra) return;
+        const height = main.offsetHeight;
+        const mainTop = main.getBoundingClientRect().top + window.scrollY;
+        const midpoints = sections.map((section) => section ? section.getBoundingClientRect().top + window.scrollY - mainTop + section.offsetHeight * 0.45 : 0);
+        let d = 'M99 0';
+        for (const y of midpoints) {
+          d += ' L99 ' + (y - 105) + ' C99 ' + (y - 45) + ' 38 ' + (y - 44) + ' 38 ' + y;
+          d += ' C38 ' + (y + 44) + ' 99 ' + (y + 45) + ' 99 ' + (y + 105);
+        }
+        const centerY = height - 138;
+        d += ' L99 ' + (centerY - 62);
+        route.setAttribute('d', d);
+        chakra.setAttribute('d', 'M99 ' + (centerY - 62) + ' A62 62 0 1 1 98.9 ' + (centerY - 62) + ' M99 ' + (centerY - 49) + ' L146 ' + (centerY + 32) + ' H52 Z M99 ' + (centerY + 54) + ' L53 ' + (centerY - 27) + ' H145 Z');
+        const contact = sections[3];
+        if (contact && darkEnd && lightStart) {
+          const contactTop = contact.getBoundingClientRect().top + window.scrollY - mainTop;
+          const split = Math.max(0, Math.min(1, contactTop / Math.max(1, centerY - 62)));
+          darkEnd.setAttribute('offset', String(split));
+          lightStart.setAttribute('offset', String(Math.min(1, split + 0.001)));
+        }
+        rail.setAttribute('viewBox', '0 0 180 ' + height);
+        routeLength = route.getTotalLength();
+        chakraLength = chakra.getTotalLength();
+        route.style.strokeDasharray = String(routeLength);
+        chakra.style.strokeDasharray = String(chakraLength);
+        update();
+      }
+
+      function update() {
+        if (!main || !route || !chakra || !hero || !figures || reduceMotion.matches) { ticking = false; return; }
+        const top = main.getBoundingClientRect().top + window.scrollY;
+        const progress = Math.max(0, Math.min(1, (window.scrollY + window.innerHeight * 0.72 - top) / Math.max(1, main.offsetHeight - 80)));
+        const routeProgress = Math.min(1, progress / 0.86);
+        const chakraProgress = Math.max(0, Math.min(1, (progress - 0.86) / 0.14));
+        route.style.strokeDashoffset = String(routeLength * (1 - routeProgress));
+        chakra.style.strokeDashoffset = String(chakraLength * (1 - chakraProgress));
+        const heroProgress = Math.max(-1, Math.min(1, -hero.getBoundingClientRect().top / Math.max(1, hero.offsetHeight)));
+        figures.style.setProperty('--front-shift', heroProgress * 19 + 'px');
+        figures.style.setProperty('--outline-shift', heroProgress * -12 + 'px');
+        ticking = false;
+      }
+      const schedule = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
+
+      if (!reduceMotion.matches) {
+        document.documentElement.classList.add('motion-ready');
+        const revealObserver = new IntersectionObserver((entries) => {
+          for (const entry of entries) if (entry.isIntersecting) { entry.target.classList.add('is-visible'); revealObserver.unobserve(entry.target); }
+        }, { threshold: 0.12, rootMargin: '0px 0px -5% 0px' });
+        observer = revealObserver;
+        document.querySelectorAll<HTMLElement>('[data-reveal]').forEach((element) => revealObserver.observe(element));
+        measureRail();
+        window.addEventListener('scroll', schedule, { passive: true });
+        window.addEventListener('resize', measureRail);
+        window.addEventListener('load', measureRail, { once: true });
+      }
+      reduceMotion.addEventListener('change', () => {
+        if (reduceMotion.matches) {
+          document.documentElement.classList.remove('motion-ready');
+          observer?.disconnect();
+          window.removeEventListener('scroll', schedule);
+          window.removeEventListener('resize', measureRail);
+        } else {
+          document.querySelectorAll<HTMLElement>('[data-reveal]').forEach((element) => element.classList.add('is-visible'));
+          document.documentElement.classList.add('motion-ready');
+          measureRail();
+          window.addEventListener('scroll', schedule, { passive: true });
+          window.addEventListener('resize', measureRail);
+        }
       });
 
-      const motifs = [...document.querySelectorAll<SVGSVGElement>('[data-scroll-art]')];
-      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-      if (!reduceMotion.matches && motifs.length) {
-        const paths = motifs.map((svg) => {
-          let offset = 0;
-          const parts = [...svg.querySelectorAll<SVGGeometryElement>('[data-draw]')].map((part) => {
-            const length = part.getTotalLength();
-            part.style.strokeDasharray = String(length);
-            part.style.strokeDashoffset = String(length);
-            const start = offset;
-            offset += length;
-            return { part, length, start };
-          });
-          return { svg, parts, total: offset };
-        });
-        let scheduled = false;
-        const update = () => {
-          const height = window.innerHeight;
-          for (const { svg, parts, total } of paths) {
-            const rect = svg.closest('section')?.getBoundingClientRect();
-            if (!rect) continue;
-            const progress = Math.max(0, Math.min(1, (height * 0.82 - rect.top) / (rect.height + height * 0.34)));
-            for (const { part, length, start } of parts) {
-              const drawn = Math.max(0, Math.min(1, (progress * total - start) / length));
-              part.style.strokeDashoffset = String(length * (1 - drawn));
-            }
-          }
-          scheduled = false;
-        };
-        const schedule = () => { if (!scheduled) { scheduled = true; requestAnimationFrame(update); } };
-        window.addEventListener('scroll', schedule, { passive: true });
-        window.addEventListener('resize', schedule);
-        reduceMotion.addEventListener('change', () => {
-          if (reduceMotion.matches) {
-            window.removeEventListener('scroll', schedule);
-            window.removeEventListener('resize', schedule);
-            for (const { parts } of paths) for (const { part } of parts) part.style.strokeDashoffset = '0';
-          } else {
-            window.addEventListener('scroll', schedule, { passive: true });
-            window.addEventListener('resize', schedule);
-            schedule();
-          }
-        });
-        schedule();
-      }
+      document.querySelector<HTMLButtonElement>('[data-youtube-id]')?.addEventListener('click', (event) => {
+        const button = event.currentTarget as HTMLButtonElement;
+        const id = button.dataset.youtubeId;
+        const panel = button.closest('.featured-music');
+        if (!id || !panel || !/^[a-zA-Z0-9_-]{11}$/.test(id)) return;
+        const frame = document.createElement('iframe');
+        frame.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1';
+        frame.title = button.getAttribute('aria-label') ?? 'YouTube video';
+        frame.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        frame.allowFullscreen = true;
+        frame.className = 'video-frame';
+        panel.replaceChildren(frame);
+      });
     </script>
   </body>
 </html>
