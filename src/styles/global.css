@@ -150,7 +150,7 @@ main { position: relative; }
 @media (hover: hover) and (pointer: fine) { .pill-link:hover { background: var(--maroon-deep); transform: translateY(-3px); } }
 .pill-link span { font-size: 17px; }
 /* Entrance transforms are isolated from the heading and ensemble parallax. */
-.hero { --title-enter: 100%; --band-enter: 24px; }
+.hero { --title-enter: 120%; --band-enter: 28.8px; }
 [data-hero-entrance="pending"] :is(.title-top, .title-name) { transform: translateY(var(--title-enter)); }
 [data-hero-entrance="pending"] .hero-entrance { transform: translateY(var(--band-enter)); opacity: 0; }
 [data-hero-entrance="pending"] .hero-field::before { opacity: 0; }
@@ -161,7 +161,7 @@ main { position: relative; }
 @keyframes masthead-enter { from { transform: translateY(var(--title-enter)); } to { transform: translateY(0); } }
 @keyframes textile-enter { from { opacity: 0; } to { opacity: 1; } }
 @keyframes band-enter { from { transform: translateY(var(--band-enter)); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-@media (max-width: 760px) { .hero { --title-enter: 40%; --band-enter: 12px; } }
+@media (max-width: 760px) { .hero { --title-enter: 48%; --band-enter: 14.4px; } }
 @media (prefers-reduced-motion: reduce) {
   [data-hero-entrance] :is(.title-top, .title-name, .hero-entrance),
   [data-hero-entrance] .hero-field::before { animation: none; transform: none; opacity: 1; }
