@@ -2,8 +2,7 @@
 import { site } from '../data/site';
 interface Props { placement: 'header' | 'footer' }
 const { placement } = Astro.props;
-// Use the platform home until the band's confirmed Instagram profile is supplied.
-const instagram = site.instagram || 'https://www.instagram.com/';
+const instagram = site.instagram;
 ---
 <nav class:list={['social-links', `social-links--${placement}`]} aria-label={`${placement === 'header' ? 'Header' : 'Footer'} social media`}>
   <a href={instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram (opens in a new tab)">

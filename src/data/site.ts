@@ -8,7 +8,7 @@ export const site = {
   heroImageStyle: 'cutout' as 'cutout' | 'original-photo',
   email: '',
   youtube: 'https://www.youtube.com/results?search_query=the+project+darbar',
-  instagram: '',
+  instagram: 'https://www.instagram.com/the_project_darbar/',
 } as const;
 
 export type MusicEntry = {
