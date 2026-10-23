@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="75 55 335 680" fill="none">
+  <title>The Project Darbar</title>
+  <path d="M332 116C346 94 363 58 335 73C269 99 95 247 93 324C89 376 173 397 233 397C292 395 380 330 388 384C406 484 233 660 152 706C122 724 141 694 154 674" stroke="#dca83c" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M87 160C184 157 284 160 379 160L233 397ZM112 177L233 391L352 175C270 178 190 176 112 177Z" fill="#782b3a" fill-rule="evenodd"/>
+  <path d="M233 397L377 628C281 626 190 629 93 626ZM233 403L111 615C191 617 273 612 354 615Z" fill="#dca83c" fill-rule="evenodd"/>
+  <circle cx="230" cy="263" r="11" fill="#782b3a"/>
+  <circle cx="332" cy="116" r="9" fill="#faf7f2" stroke="#dca83c" stroke-width="5"/>
+  <circle cx="154" cy="674" r="9" fill="#faf7f2" stroke="#dca83c" stroke-width="5"/>
+</svg>

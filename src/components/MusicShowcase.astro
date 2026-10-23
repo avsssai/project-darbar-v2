@@ -1,0 +1,35 @@
+---
+import MusicPreview from './MusicPreview.astro';
+import { music } from '../data/site';
+const entries = music.filter((entry) => entry.youtubeId && /^[\w-]{11}$/.test(entry.youtubeId));
+---
+<div class="music-showcase" data-showcase role="region" aria-label="Band performances">
+  <div class="showcase-topline"><span>THE LISTENING ROOM</span><span>CHOOSE A SESSION. FIND YOUR FREQUENCY.</span></div>
+  <div class="showcase-board" data-showcase-board>
+    {entries.map((entry, index) => (
+      <div class="showcase-tile" data-slide data-slot={index}>
+        <MusicPreview entry={entry} featured={index === 0} />
+        <span class="showcase-tile-label" aria-hidden="true"><span class="showcase-tile-number">{String(index + 1).padStart(2, '0')}</span><span>{entry.title}<small>{entry.subtitle}</small></span><span class="showcase-tile-arrow">↗</span></span>
+      </div>
+    ))}
+  </div>
+  <div class="showcase-bottom" data-showcase-controls hidden>
+    <div class="showcase-detail" data-showcase-detail></div>
+    <div class="showcase-navigation">
+      <p class="showcase-status" aria-live="polite" aria-atomic="true"><span data-showcase-count>01 / {String(entries.length).padStart(2, '0')}</span><span data-showcase-state>READY TO PLAY</span></p>
+      <p class="showcase-hint">Pick any tile to play.</p>
+      <div class="showcase-arrows">
+        <button type="button" data-showcase-prev aria-label="Play previous performance"><span aria-hidden="true">←</span><span>Prev</span></button>
+        <button type="button" data-showcase-next aria-label="Play next performance"><span>Next</span><span aria-hidden="true">→</span></button>
+      </div>
+    </div>
+  </div>
+  <div class="sound-thread" data-sound-stage aria-hidden="true">
+    <svg viewBox="0 0 600 80" preserveAspectRatio="none"><rect x="0" y="39" width="600" height="2" /><path data-sound-wave d="M0 40H600" /></svg>
+  </div>
+  <p class="showcase-feedback" data-player-feedback role="status" aria-live="polite"></p>
+</div>
+<script>
+  import { initShowcase } from '../lib/music-showcase';
+  document.querySelectorAll<HTMLElement>('[data-showcase]').forEach(initShowcase);
+</script>

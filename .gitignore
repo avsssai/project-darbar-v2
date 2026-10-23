@@ -4,3 +4,14 @@ dist/
 .DS_Store
 *.log
 artifacts/
+
+# Local agent tooling, credentials, and cloud filesystem placeholders
+.agents/
+.codex/
+.pnpm-store/
+skills-lock.json
+.env
+.env.*
+!.env.example
+*.icloud
+/public/favicon 2.svg

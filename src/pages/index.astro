@@ -1,9 +1,15 @@
 ---
 import HeroGroup from '../components/HeroGroup.astro';
-import { artists, music, site } from '../data/site';
+import MusicShowcase from '../components/MusicShowcase.astro';
+import ArtistCutout from '../components/ArtistCutout.astro';
+import BrandMark from '../components/BrandMark.astro';
+import SocialLinks from '../components/SocialLinks.astro';
+import { brandLineAt, brandLinePartsAt } from '../data/brand';
+import { instrumentThreadAt } from '../data/instrument-thread';
+import { artists, site } from '../data/site';
 import '../styles/global.css';
+import { assetPath } from '../lib/asset-path';
 
-const featured = music[0];
 const year = new Date().getFullYear();
 ---
 <!doctype html>
@@ -16,36 +22,53 @@ const year = new Date().getFullYear();
     <meta property="og:title" content={site.name} />
     <meta property="og:description" content={site.description} />
     <meta property="og:type" content="website" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="preload" href="/fonts/italiana-latin-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="icon" type="image/svg+xml" href={assetPath('/favicon.svg')} />
+    <link rel="preload" href={assetPath('/fonts/italiana-latin-400.woff2')} as="font" type="font/woff2" crossorigin />
+    {site.heroImage && <link rel="preload" href={assetPath(site.heroImage)} as="image" fetchpriority="high" />}
     <title>{site.name} — Carnatic fusion</title>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <div class="site-shell">
       <header class="site-header" id="top">
-        <a class="wordmark" href="#top" aria-label={site.name + ', back to top'}>P<span aria-hidden="true">/</span>D</a>
+        <a class="wordmark" href="#top" aria-label={site.name + ', back to top'}><BrandMark /></a>
         <nav class="main-nav" aria-label="Main navigation">
           <a href="#music">Music</a><a href="#about">The band</a><a href="#artists">Artists</a>
         </nav>
-        <a class="header-book" href="#contact">Bookings <span aria-hidden="true">↗</span></a>
+        <div class="header-actions"><a class="header-book" href="#contact">Bookings <span aria-hidden="true">↗</span></a><SocialLinks placement="header" /></div>
       </header>
 
       <main id="main" tabindex="-1">
         <svg class="journey-rail" viewBox="0 0 1000 1000" preserveAspectRatio="none" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-          <defs><linearGradient id="rail-ink" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#782b3a" /><stop data-rail-dark-end offset=".8" stop-color="#782b3a" /><stop data-rail-light-start offset=".801" stop-color="#fff" /><stop offset="1" stop-color="#fff" /></linearGradient></defs>
-          <path data-rail-route d="M946 0V60C946 95 735 70 735 115S955 150 955 190V930" stroke="url(#rail-ink)" />
-          <path data-rail-chakra d="M955 930a25 25 0 1 1-.1 0M955 935l19 32h-38ZM955 976l-19-32h38Z" stroke="#fff" />
+          <defs>
+            <linearGradient id="rail-ink" x1="0" y1="0" x2="0" y2="1000" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#782b3a" />
+              <stop data-hero-dark-end offset=".1" stop-color="#782b3a" />
+              <stop data-hero-light-start offset=".101" stop-color="#dca83c" />
+              <stop data-hero-light-end offset=".18" stop-color="#dca83c" />
+              <stop data-hero-dark-start offset=".181" stop-color="#782b3a" />
+              <stop data-rail-dark-end offset=".8" stop-color="#782b3a" />
+              <stop data-rail-light-start offset=".801" stop-color="#fff" />
+              <stop offset="1" stop-color="#fff" />
+            </linearGradient>
+          </defs>
+          <path data-rail-route d="M946 0V60C946 95 735 70 735 115S955 150 955 190V900" stroke="url(#rail-ink)" />
+          <path data-rail-chakra d={brandLineAt(955, 900, .13)} visibility="hidden" />
+          <g stroke="#fff" data-rail-symbol>
+            {brandLinePartsAt(955, 900, .13).map((d) => <path data-rail-symbol-part d={d} />)}
+          </g>
         </svg>
 
         <section class="hero" aria-labelledby="hero-heading">
+          <div class="hero-field" aria-hidden="true"></div>
           <h1 id="hero-heading" aria-label={site.name}>
             <span class="title-mask"><span class="title-top">THE PROJECT</span></span>
             <span class="title-mask"><span class="title-name">DARBAR</span></span>
           </h1>
-          <div class="hero-figures" role={site.heroImage ? undefined : 'img'} aria-label={site.heroImage ? undefined : 'Four band silhouettes, awaiting the ensemble photograph'}>
+          <p class="hero-caption">Carnatic roots.<br />New frequencies.</p>
+          <div class:list={['hero-figures', { 'hero-figures--original': site.heroImageStyle === 'original-photo' }]} role={site.heroImage ? undefined : 'img'} aria-label={site.heroImage ? undefined : 'Four band silhouettes, awaiting the ensemble photograph'}>
             <div class="hero-figures-front">
-              {site.heroImage ? <img src={site.heroImage} alt="The Project Darbar band members" fetchpriority="high" /> : <HeroGroup />}
+              {site.heroImage ? <img class="band-photo" src={assetPath(site.heroImage)} alt="The four members of The Project Darbar with their instruments" fetchpriority="high" /> : <HeroGroup />}
             </div>
           </div>
           <div class="hero-bottom">
@@ -58,23 +81,26 @@ const year = new Date().getFullYear();
           <div class="chapter-inner">
             <p class="chapter-index" data-reveal><span>01</span> / THE SOUND</p>
             <div class="music-heading"><h2 id="music-heading" data-reveal>LISTEN <em>CLOSER.</em></h2></div>
-            <article class="featured-music" data-reveal="mask">
-              <div class="featured-art" aria-hidden="true"><span class="record record-one"></span><span class="record record-two"></span><span class="record record-three"></span></div>
-              <div class="featured-overlay">
-                <span class="sample-label">FEATURED PERFORMANCE / SAMPLE</span>
-                <div><h3>{featured.title}</h3><p>{featured.youtubeId ? 'Watch the performance' : 'YouTube preview coming soon'}</p></div>
-              </div>
-              {featured.youtubeId && <button class="play-button" type="button" data-youtube-id={featured.youtubeId} aria-label={'Play ' + featured.title + ' on YouTube'}><span aria-hidden="true">▶</span></button>}
-            </article>
-            <p class="section-note" data-reveal>Performance title and preview are placeholders until a confirmed release is added.</p>
+            <MusicShowcase />
+            {site.youtube && <a class="quiet-link music-channel" href={site.youtube} target="_blank" rel="noopener noreferrer">More from The Project Darbar on YouTube <span aria-hidden="true">↗</span></a>}
           </div>
         </section>
 
         <section class="chapter chapter-about" id="about" aria-labelledby="about-heading">
           <div class="chapter-inner">
             <p class="chapter-index" data-reveal><span>02</span> / THE BAND</p>
-            <h2 id="about-heading" data-reveal>OLD ROOTS.<br /><em>NEW FIRE.</em></h2>
-            <p class="chapter-prose" data-reveal>The Project Darbar brings Carnatic influence into a contemporary band setting, following melody and rhythm wherever they lead.</p>
+            <div class="about-layout">
+              <div class="about-copy">
+                <h2 id="about-heading" data-reveal>OLD ROOTS.<br /><em>NEW FIRE.</em></h2>
+                <p class="chapter-prose" data-reveal>The Project Darbar brings Carnatic influence into a contemporary band setting, following melody and rhythm wherever they lead.</p>
+              </div>
+              <figure class="instrument-figure">
+                <div class="instrument-stage" data-instrument-stage role="img" aria-label="One continuous thread forming a keyboard, percussion, violin and bass together">
+                  <svg class="instrument-static" viewBox="0 0 600 480" aria-hidden="true"><path d={'M600 0' + instrumentThreadAt(0, 0, 600, 480)} /></svg>
+                </div>
+                <figcaption>KEYS / PERCUSSION / VIOLIN / BASS</figcaption>
+              </figure>
+            </div>
           </div>
         </section>
 
@@ -86,13 +112,17 @@ const year = new Date().getFullYear();
               {artists.map((artist, index) => (
                 <article class="artist-row" data-reveal style={'--stagger:' + index * 75 + 'ms'}>
                   <span class="artist-number">0{index + 1}</span>
-                  <h3>{artist.name}</h3>
-                  <p>{artist.role}</p>
-                  <span class="artist-row-arrow" aria-hidden="true">↗</span>
+                  <div class="artist-details">
+                    <h3>{artist.name || artist.role}</h3>
+                    <p class="artist-instrument">{artist.name ? artist.role : artist.bio}</p>
+                    {artist.name && <p class="artist-description">{artist.bio}</p>}
+                  </div>
+                  {artist.image && artist.cutout ? (
+                    <ArtistCutout source={artist.image} viewBox={artist.cutout.viewBox} outline={artist.cutout.outline} label={`${artist.role} player from The Project Darbar`} clipId={`artist-cutout-${index + 1}`} />
+                  ) : artist.image && <span class="artist-portrait"><img class="artist-cutout" src={assetPath(artist.image)} alt={artist.name || `${artist.role} player`} loading="lazy" /></span>}
                 </article>
               ))}
             </div>
-            <p class="section-note" data-reveal>Artist names and roles are sample content until the lineup is confirmed.</p>
           </div>
         </section>
 
@@ -106,26 +136,57 @@ const year = new Date().getFullYear();
               {site.youtube && <a class="quiet-link" href={site.youtube} target="_blank" rel="noopener noreferrer">YouTube ↗</a>}
               {site.instagram && <a class="quiet-link" href={site.instagram} target="_blank" rel="noopener noreferrer">Instagram ↗</a>}
             </div>
-            <span class="chakra-caption" aria-hidden="true">THE LINE RETURNS TO THE CENTRE</span>
           </div>
         </section>
+        <div class="mobile-finale" data-logo-stage aria-hidden="true"><BrandMark class="finale-static" width={104} height={212} /></div>
       </main>
-      <footer class="site-footer"><a href="#top">THE PROJECT DARBAR</a><span>© {year} THE PROJECT DARBAR</span></footer>
+      <footer class="site-footer"><a class="footer-brand" href="#top"><BrandMark width={28} height={52} /><span>THE PROJECT DARBAR</span></a><SocialLinks placement="footer" /><span class="footer-copyright">© {year} THE PROJECT DARBAR</span></footer>
     </div>
 
+    <svg class="print-filters" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <filter id="ensemble-edge" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+          <feMorphology in="SourceAlpha" operator="dilate" radius="3" result="expanded" />
+          <feFlood flood-color="#dca83c" result="ochre" />
+          <feComposite in="ochre" in2="expanded" operator="in" result="edge" />
+          <feMerge><feMergeNode in="edge" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+        <filter id="ensemble-duotone" color-interpolation-filters="sRGB">
+          <feColorMatrix type="saturate" values="0" />
+          <feComponentTransfer>
+            <feFuncR type="table" tableValues=".24 .98" />
+            <feFuncG type="table" tableValues=".07 .91" />
+            <feFuncB type="table" tableValues=".12 .78" />
+          </feComponentTransfer>
+        </filter>
+      </defs>
+    </svg>
+
     <script>
+      import { railOffsets, scrollStrokeDistance, strokePartOffsets, type StrokeAnchor } from '../lib/rail-progress';
+      import { brandLineAt, brandLinePartsAt } from '../data/brand';
+      import { instrumentThreadAt } from '../data/instrument-thread';
+
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
       const main = document.querySelector<HTMLElement>('main');
       const rail = document.querySelector<SVGSVGElement>('.journey-rail');
       const route = rail?.querySelector<SVGPathElement>('[data-rail-route]');
       const chakra = rail?.querySelector<SVGPathElement>('[data-rail-chakra]');
+      const symbolParts = [...document.querySelectorAll<SVGPathElement>('[data-rail-symbol-part]')];
       const darkEnd = rail?.querySelector<SVGStopElement>('[data-rail-dark-end]');
       const lightStart = rail?.querySelector<SVGStopElement>('[data-rail-light-start]');
+      const railInk = rail?.querySelector<SVGLinearGradientElement>('#rail-ink');
+      const heroField = document.querySelector<HTMLElement>('.hero-field');
       const sections = ['music', 'about', 'artists', 'contact'].map((id) => document.getElementById(id));
       const hero = document.querySelector<HTMLElement>('.hero');
       const figures = document.querySelector<HTMLElement>('.hero-figures');
+      const instrumentStage = document.querySelector<HTMLElement>('[data-instrument-stage]');
+      const soundStage = document.querySelector<HTMLElement>('[data-sound-stage]');
+      const logoStage = document.querySelector<HTMLElement>('[data-logo-stage]');
       let routeLength = 0;
       let chakraLength = 0;
+      let symbolLengths: number[] = [];
+      let drawAnchors: StrokeAnchor[] = [];
       let ticking = false;
       let observer: IntersectionObserver | undefined;
 
@@ -133,6 +194,23 @@ const year = new Date().getFullYear();
         if (!main || !rail || !route || !chakra) return;
         const height = main.offsetHeight;
         const mainTop = main.getBoundingClientRect().top + window.scrollY;
+        const mainLeft = main.getBoundingClientRect().left;
+        const stage = instrumentStage?.getBoundingClientRect();
+        let instrumentStartLength = 0;
+        let instrumentEndLength = 0;
+        const sectionCheckpoints: StrokeAnchor[] = [];
+        railInk?.setAttribute('y2', String(height));
+        // Match the ink to the actual background boundaries at every viewport size.
+        const setInkBoundary = (selector: string, y: number) => {
+          rail?.querySelector<SVGStopElement>(selector)?.setAttribute('offset', String(Math.max(0, Math.min(1, y / height))));
+        };
+        if (heroField && hero) {
+          const fieldTop = heroField.getBoundingClientRect().top + window.scrollY - mainTop;
+          setInkBoundary('[data-hero-dark-end]', fieldTop);
+          setInkBoundary('[data-hero-light-start]', fieldTop);
+          setInkBoundary('[data-hero-light-end]', hero.offsetHeight);
+          setInkBoundary('[data-hero-dark-start]', hero.offsetHeight);
+        }
         const midpoints = sections.map((section) => section ? section.getBoundingClientRect().top + window.scrollY - mainTop + section.offsetHeight * 0.45 : 0);
         const width = main.clientWidth;
         const x = width - (width <= 520 ? 30 : width <= 760 ? 42 : width <= 1050 ? 62 : 81);
@@ -141,41 +219,111 @@ const year = new Date().getFullYear();
         const loopY = heroHeight * 0.62;
         // One continuous path leaves the header, loops behind the band, and enters the chapter rail.
         let d = `M${width * 0.946} 0 V${heroHeight * 0.29} C${width * 0.946} ${loopY - 80} ${shoulderX - 85} ${loopY - 110} ${shoulderX - 85} ${loopY} C${shoulderX - 85} ${loopY + 100} ${x} ${loopY + 100} ${x} ${heroHeight * 0.9}`;
-        for (const y of midpoints) {
+        for (const [index, y] of midpoints.entries()) {
+          if (index === 0 && soundStage) {
+            const sound = soundStage.getBoundingClientRect();
+            const left = sound.left - mainLeft;
+            const top = sound.top + window.scrollY - mainTop;
+            const cy = top + 40;
+            const right = left + sound.width;
+            // The live overlay shares these endpoints; animation never changes route length.
+            d += ` L${x} ${top - 24} C${x} ${top} ${left} ${top} ${left} ${cy} L${right} ${cy} C${x} ${cy} ${x} ${cy + 24} ${x} ${cy + 40}`;
+            continue;
+          }
+          if (index === 1 && stage) {
+            const stageX = stage.left - mainLeft;
+            const stageY = stage.top + window.scrollY - mainTop;
+            const entryX = stageX + stage.width;
+            d += ` L${x} ${stageY - 40} C${x} ${stageY - 12} ${entryX + 20} ${stageY} ${entryX} ${stageY}`;
+            route.setAttribute('d', d);
+            instrumentStartLength = route.getTotalLength();
+            d += instrumentThreadAt(stageX, stageY, stage.width, stage.height);
+            route.setAttribute('d', d);
+            instrumentEndLength = route.getTotalLength();
+            d += ` C${entryX + 20} ${stageY + stage.height} ${x} ${stageY + stage.height + 12} ${x} ${stageY + stage.height + 40}`;
+            continue;
+          }
+          if (index === 3 && sections[3]) {
+            const contactY = sections[3].getBoundingClientRect().top + window.scrollY - mainTop;
+            d += ` L${x} ${contactY}`;
+            route.setAttribute('d', d);
+            sectionCheckpoints.push({ scroll: mainTop + contactY - window.innerHeight * .72, length: route.getTotalLength() });
+          }
+          if (index === 2) {
+            d += ` L${x} ${y - 105}`;
+            route.setAttribute('d', d);
+            sectionCheckpoints.push({ scroll: mainTop + y - 105 - window.innerHeight * .72, length: route.getTotalLength() });
+          }
           d += ` L${x} ${y - 105} C${x} ${y - 45} ${x - 61} ${y - 44} ${x - 61} ${y}`;
           d += ` C${x - 61} ${y + 44} ${x} ${y + 45} ${x} ${y + 105}`;
+          if (index === 2) {
+            route.setAttribute('d', d);
+            sectionCheckpoints.push({ scroll: mainTop + y + 105 - window.innerHeight * .72, length: route.getTotalLength() });
+          }
         }
-        const centerY = height - 138;
-        d += ` L${x} ${centerY - 62}`;
+        const mobileLogo = width <= 760 && logoStage ? logoStage.getBoundingClientRect() : undefined;
+        const logoScale = mobileLogo ? .32 : .2;
+        const logoX = mobileLogo ? width / 2 + 26 : x;
+        const logoJoinY = mobileLogo ? mobileLogo.top + window.scrollY - mainTop + 54 : height - 170;
+        d += mobileLogo
+          ? ` L${x} ${logoJoinY - 40} C${x} ${logoJoinY - 12} ${logoX + 28} ${logoJoinY - 24} ${logoX} ${logoJoinY}`
+          : ` L${x} ${logoJoinY}`;
         route.setAttribute('d', d);
-        const radius = Math.min(62, width - x - 4);
-        chakra.setAttribute('d', `M${x} ${centerY - 62} a${radius} ${radius} 0 1 1 -0.1 0 M${x} ${centerY - 62 + radius * 0.2} l${radius * 0.76} ${radius * 1.3} h${-radius * 1.52} Z M${x} ${centerY - 62 + radius * 1.85} l${-radius * 0.74} ${-radius * 1.3} h${radius * 1.48} Z`);
+        // Join the thread to the upper terminal of the supplied logo.
+        chakra.setAttribute('d', brandLineAt(logoX, logoJoinY, logoScale));
+        const symbolPaths = brandLinePartsAt(logoX, logoJoinY, logoScale);
+        symbolParts.forEach((part, index) => part.setAttribute('d', symbolPaths[index]));
         const contact = sections[3];
         if (contact && darkEnd && lightStart) {
           const contactTop = contact.getBoundingClientRect().top + window.scrollY - mainTop;
-          const split = Math.max(0, Math.min(1, contactTop / Math.max(1, centerY - 62)));
+          const split = Math.max(0, Math.min(1, contactTop / height));
           darkEnd.setAttribute('offset', String(split));
-          lightStart.setAttribute('offset', String(Math.min(1, split + 0.001)));
+          lightStart.setAttribute('offset', String(split));
         }
         rail.setAttribute('viewBox', `0 0 ${width} ${height}`);
         routeLength = route.getTotalLength();
-        chakraLength = chakra.getTotalLength();
+        symbolLengths = symbolParts.map((part) => part.getTotalLength());
+        chakraLength = symbolLengths.reduce((total, length) => total + length, 0);
+        const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        const startScroll = mainTop - window.innerHeight * .72;
+        drawAnchors = [{ scroll: startScroll, length: 0 }];
+        if (stage && instrumentEndLength > instrumentStartLength) {
+          const stageTop = stage.top + window.scrollY;
+          const end = Math.min(maxScroll - 1, stageTop + stage.height - window.innerHeight * .3);
+          const start = Math.max(startScroll + 1, Math.min(end - 1, stageTop - window.innerHeight * .8));
+          drawAnchors.push({ scroll: start, length: instrumentStartLength }, { scroll: end, length: instrumentEndLength });
+        }
+        const instrumentScrollStart = drawAnchors[1]?.scroll ?? startScroll;
+        const instrumentScrollEnd = drawAnchors[2]?.scroll ?? maxScroll;
+        for (const checkpoint of sectionCheckpoints) {
+          // Skip unavailable spans instead of squeezing a section into one scroll pixel.
+          if (checkpoint.scroll > drawAnchors[drawAnchors.length - 1].scroll && checkpoint.scroll < maxScroll) drawAnchors.push(checkpoint);
+        }
+        drawAnchors.push({ scroll: maxScroll, length: routeLength + chakraLength });
+        document.documentElement.classList.add('rail-ready');
+        rail.dataset.instrumentStart = String(instrumentStartLength);
+        rail.dataset.instrumentEnd = String(instrumentEndLength);
+        rail.dataset.instrumentScrollStart = String(instrumentScrollStart);
+        rail.dataset.instrumentScrollEnd = String(instrumentScrollEnd);
+        rail.dataset.drawAnchors = JSON.stringify(drawAnchors);
         route.style.strokeDasharray = String(routeLength);
         chakra.style.strokeDasharray = String(chakraLength);
+        symbolParts.forEach((part, index) => { part.style.strokeDasharray = String(symbolLengths[index]); });
         if (reduceMotion.matches) {
           route.style.strokeDashoffset = '0';
           chakra.style.strokeDashoffset = '0';
+          symbolParts.forEach((part) => { part.style.strokeDashoffset = '0'; });
         } else update();
       }
 
       function update() {
         if (!main || !route || !chakra || !hero || !figures || reduceMotion.matches) { ticking = false; return; }
-        const top = main.getBoundingClientRect().top + window.scrollY;
-        const progress = Math.max(0, Math.min(1, (window.scrollY + window.innerHeight * 0.72 - top) / Math.max(1, main.offsetHeight - 80)));
-        const routeProgress = Math.min(1, progress / 0.86);
-        const chakraProgress = Math.max(0, Math.min(1, (progress - 0.86) / 0.14));
-        route.style.strokeDashoffset = String(routeLength * (1 - routeProgress));
-        chakra.style.strokeDashoffset = String(chakraLength * (1 - chakraProgress));
+        const drawn = scrollStrokeDistance(window.scrollY, drawAnchors);
+        const offsets = railOffsets(drawn / Math.max(1, routeLength + chakraLength), routeLength, chakraLength);
+        route.style.strokeDashoffset = String(offsets.route);
+        chakra.style.strokeDashoffset = String(offsets.chakra);
+        const symbolOffsets = strokePartOffsets(chakraLength - offsets.chakra, symbolLengths);
+        symbolParts.forEach((part, index) => { part.style.strokeDashoffset = String(symbolOffsets[index]); });
         const heroProgress = Math.max(0, Math.min(1, -hero.getBoundingClientRect().top / Math.max(1, hero.offsetHeight)));
         const travel = window.innerWidth <= 760 ? 0.45 : 1;
         hero.style.setProperty('--title-shift', heroProgress * -20 * travel + 'px');
@@ -198,6 +346,7 @@ const year = new Date().getFullYear();
       window.addEventListener('resize', measureRail);
       window.addEventListener('load', measureRail, { once: true });
       document.fonts.ready.then(measureRail);
+      if (main) new ResizeObserver(measureRail).observe(main);
       reduceMotion.addEventListener('change', () => {
         if (reduceMotion.matches) {
           document.documentElement.classList.remove('motion-ready');
@@ -214,19 +363,6 @@ const year = new Date().getFullYear();
         }
       });
 
-      document.querySelector<HTMLButtonElement>('[data-youtube-id]')?.addEventListener('click', (event) => {
-        const button = event.currentTarget as HTMLButtonElement;
-        const id = button.dataset.youtubeId;
-        const panel = button.closest('.featured-music');
-        if (!id || !panel || !/^[a-zA-Z0-9_-]{11}$/.test(id)) return;
-        const frame = document.createElement('iframe');
-        frame.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1';
-        frame.title = button.getAttribute('aria-label') ?? 'YouTube video';
-        frame.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-        frame.allowFullscreen = true;
-        frame.className = 'video-frame';
-        panel.replaceChildren(frame);
-      });
     </script>
   </body>
 </html>

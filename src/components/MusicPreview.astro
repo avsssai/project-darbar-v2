@@ -1,0 +1,30 @@
+---
+import { site, type MusicEntry } from '../data/site';
+import { assetPath } from '../lib/asset-path';
+
+interface Props { entry: MusicEntry; featured?: boolean }
+const { entry, featured = false } = Astro.props;
+const id = entry.youtubeId && /^[a-zA-Z0-9_-]{11}$/.test(entry.youtubeId) ? entry.youtubeId : undefined;
+const watchURL = id ? `https://www.youtube.com/watch?v=${id}` : undefined;
+---
+<article class:list={['music-preview', { 'featured-music': featured }]}>
+  <div class="music-player">
+    {id ? (
+      <>
+        <img class="music-thumbnail" src={entry.thumbnail ? assetPath(entry.thumbnail) : `https://i.ytimg.com/vi/${id}/hqdefault.jpg`} alt="" width={entry.thumbnailWidth ?? 480} height={entry.thumbnailHeight ?? 360} loading="lazy" decoding="async" />
+        <button class="music-play" type="button" data-youtube-id={id} aria-label={`Play ${entry.title}`}>
+          <span class="music-play-disc" aria-hidden="true">▶</span>
+          <span class="music-play-label">Play performance</span>
+        </button>
+      </>
+    ) : (
+      <a class="music-awaiting" href={site.youtube} target="_blank" rel="noopener noreferrer"><span>THE PROJECT DARBAR</span><p>Explore the sound <span aria-hidden="true">↗</span></p><span>Watch performances on YouTube</span></a>
+    )}
+  </div>
+  <div class="music-caption">
+    <p class="music-eyebrow">{featured ? 'FEATURED / ' : ''}{entry.subtitle}</p>
+    <h3>{entry.title}</h3>
+    <p class="music-note">{entry.note}</p>
+    {watchURL && <a class="quiet-link music-external" href={watchURL} target="_blank" rel="noopener noreferrer">Watch on YouTube <span aria-hidden="true">↗</span></a>}
+  </div>
+</article>

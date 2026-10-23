@@ -1,0 +1,17 @@
+---
+import { site } from '../data/site';
+interface Props { placement: 'header' | 'footer' }
+const { placement } = Astro.props;
+// Use the platform home until the band's confirmed Instagram profile is supplied.
+const instagram = site.instagram || 'https://www.instagram.com/';
+---
+<nav class:list={['social-links', `social-links--${placement}`]} aria-label={`${placement === 'header' ? 'Header' : 'Footer'} social media`}>
+  <a href={instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram (opens in a new tab)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r=".8" fill="currentColor" stroke="none" /></svg>
+    <span class="social-label">Instagram</span>
+  </a>
+  <a href={site.youtube} target="_blank" rel="noopener noreferrer" aria-label="YouTube (opens in a new tab)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="4" /><path d="m10 9 5 3-5 3Z" fill="currentColor" stroke="none" /></svg>
+    <span class="social-label">YouTube</span>
+  </a>
+</nav>

@@ -1,0 +1,6 @@
+---
+import { assetPath } from '../lib/asset-path';
+interface Props { class?: string; width?: number; height?: number }
+const { class: className = '', width = 24, height = 44 } = Astro.props;
+---
+<img class:list={['brand-mark', className]} src={assetPath('/images/darbar-mark.svg')} width={width} height={height} alt="" aria-hidden="true" />
