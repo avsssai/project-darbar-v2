@@ -32,3 +32,24 @@ test('published asset check validates CSS, images and inline SVG hrefs beneath a
     await rm(folder, { recursive: true, force: true });
   }
 });
+
+test('embedded SVG filters in CSS data URLs are not separate file requests', async () => {
+  const folder = await mkdtemp(path.join(tmpdir(), 'darbar-svg-css-'));
+  try {
+    await mkdir(path.join(folder, '_astro'));
+    await mkdir(path.join(folder, 'images'));
+    await writeFile(path.join(folder, 'images/cover image.svg'), '<svg/>');
+    await writeFile(path.join(folder, 'index.html'), '<link href="/project-darbar-v2/_astro/site.css">');
+    await writeFile(path.join(folder, '_astro/site.css'), `
+      .grain{background:url("data:image/svg+xml,%3Csvg%3E%3Cpath filter='url(%23grain)'/%3E%3C/svg%3E")}
+      .other{background:url('data:image/svg+xml,%3Csvg filter="url(%23other)" href="/embedded.svg"/%3E')}
+      .local{filter:url(#ensemble-edge)}
+      .cover{background:url('../images/cover image.svg')}
+    `);
+    assert.equal(await verifyDist(folder, '/project-darbar-v2/'), 2);
+    await rm(path.join(folder, 'images/cover image.svg'));
+    await assert.rejects(verifyDist(folder, '/project-darbar-v2/'), /missing asset \.\.\/images\/cover image\.svg/);
+  } finally {
+    await rm(folder, { recursive: true, force: true });
+  }
+});

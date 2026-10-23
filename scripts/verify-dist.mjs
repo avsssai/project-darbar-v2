@@ -14,12 +14,16 @@ export async function verifyDist(directory, base = '/') {
       if (entry.isDirectory()) { await visit(file); continue; }
       if (!/\.(html|css)$/.test(file)) continue;
       const text = await readFile(file, 'utf8');
-      const references = [
-        ...text.matchAll(/\b(?:src|href|poster)=["']([^"']+)["']/g),
-        ...text.matchAll(/url\(\s*["']?([^\s"')]+)["']?\s*\)/g),
-      ];
+      // Consume complete quoted url() values so an SVG data URI's nested
+      // filter="url(%23grain)" is never mistaken for a second file request.
+      const references = [...text.matchAll(/\burl\(\s*(?:"((?:\\.|[^"\\])*)"|'((?:\\.|[^'\\])*)'|([^"'()\s]+))\s*\)/gi)]
+        .map((match) => match[1] ?? match[2] ?? match[3]);
+      // SVG markup encoded inside CSS is not part of the HTML document.
+      if (file.endsWith('.html')) {
+        references.push(...[...text.matchAll(/\b(?:src|href|poster)=["']([^"']+)["']/g)].map((match) => match[1]));
+      }
       const resourceURL = new URL(prefix + path.relative(directory, file).split(path.sep).join('/'), 'https://pages.example');
-      for (const [, reference] of references) {
+      for (const reference of references) {
         if (/^(?:[a-z][a-z\d+.-]*:|\/\/|#)/i.test(reference)) continue;
         const url = new URL(reference.replace(/&amp;/g, '&'), resourceURL);
         assert(url.pathname.startsWith(prefix), `${file}: ${reference} escapes Pages base ${prefix}`);
