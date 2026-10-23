@@ -1,6 +1,9 @@
 // Start pnpm dev separately; requires Playwright and a browser installation.
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
+import { mkdir } from 'node:fs/promises';
+const output = new URL('../artifacts/showcase/', import.meta.url);
+await mkdir(output, { recursive: true });
 import { mockYoutube } from './helpers/mock-youtube.mjs';
 const browser = await chromium.launch();
 const baseURL = process.env.PREVIEW_URL || 'http://127.0.0.1:4321';
@@ -15,27 +18,41 @@ try {
     await showcase.scrollIntoViewIfNeeded();
     await page.waitForFunction(() => document.querySelector('[data-showcase]').classList.contains('is-enhanced'));
     const layout = await showcase.evaluate((root) => {
-      const viewport = root.querySelector('[data-showcase-board]').getBoundingClientRect();
-      const tiles = [...root.querySelectorAll('[data-slide]')].map((tile) => {
-        const box = tile.getBoundingClientRect();
-        return { slot: Number(tile.dataset.slot), left: box.left, right: box.right, top: box.top, bottom: box.bottom, width: box.width, height: box.height };
+      const section = root.closest('#music').getBoundingClientRect();
+      const board = root.querySelector('[data-showcase-board]').getBoundingClientRect();
+      const wave = root.querySelector('[data-sound-stage]').getBoundingClientRect();
+      const sessions = [...root.querySelectorAll('[data-session]')].map((button) => {
+        const box = button.getBoundingClientRect();
+        return { left: box.left, right: box.right, bottom: box.bottom, height: box.height };
       });
-      return { overflow: document.documentElement.scrollWidth > innerWidth, board: { left: viewport.left, right: viewport.right, top: viewport.top, bottom: viewport.bottom }, tiles };
+      return {
+        overflow: document.documentElement.scrollWidth > innerWidth,
+        sectionHeight: section.height,
+        board: { left: board.left, right: board.right, height: board.height },
+        wave: { left: wave.left, width: wave.width, height: wave.height },
+        visible: [...root.querySelectorAll('[data-slide]')].filter((slide) => !slide.hidden).length,
+        sessions,
+      };
     });
     assert.equal(layout.overflow, false);
-    assert.equal(layout.tiles.length, 5, 'Exactly five directly selectable video tiles');
-    const active = layout.tiles.find((tile) => tile.slot === 0);
-    assert(layout.tiles.filter((tile) => tile.slot !== 0).every((tile) => tile.width < active.width && tile.left >= layout.board.left && tile.right <= layout.board.right + 1 && tile.bottom <= layout.board.bottom + 1), 'All four smaller previews fit within the board');
-    for (const [i, tile] of layout.tiles.entries()) {
-      for (const other of layout.tiles.slice(i + 1)) {
-        assert(tile.right <= other.left + 1 || other.right <= tile.left + 1 || tile.bottom <= other.top + 1 || other.bottom <= tile.top + 1, 'Grid tiles do not overlap at rest');
-      }
-    }
+    assert.equal(layout.visible, 1, 'One large video occupies the stage');
+    assert(Math.abs(layout.sectionHeight - 900) <= 1, 'Music occupies one viewport');
+    assert(layout.board.height >= 200 && layout.board.right <= width);
+    assert(layout.wave.height > layout.wave.width * 5, 'Waveform runs vertically');
+    assert(layout.wave.left > layout.board.right, 'Waveform has a dedicated gutter');
+    assert.equal(layout.sessions.length, 5, 'Every performance is directly selectable');
+    assert(layout.sessions.every((button) => button.left >= 0 && button.right <= width && button.height >= 44), 'All sessions fit and have usable touch targets');
+    assert.equal(await page.locator('.showcase-detail .music-note, .showcase-topline, .showcase-hint').count(), 0, 'Playback UI omits redundant copy');
+    const restingWave = await page.locator('[data-sound-wave]').getAttribute('d');
+    assert(restingWave.startsWith('M40 0L40 0L'), 'Idle waveform is already formed');
+    await page.waitForTimeout(100);
+    assert.equal(await page.locator('[data-sound-wave]').getAttribute('d'), restingWave, 'Idle waveform remains still');
+    await page.screenshot({ path: new URL(`${width}-idle.png`, output).pathname });
     assert.equal(await page.locator('iframe').count(), 0, 'No third-party player before interaction');
     const waitIndex = (index) => page.waitForFunction((expected) => document.querySelector('[data-showcase-count]').textContent.startsWith(expected), String(index + 1).padStart(2, '0'));
     const waitPlayback = (state) => page.waitForFunction((expected) => document.querySelector('[data-showcase]').dataset.playback === expected, state);
-    // Every visible tile is a direct play action; no horizontal scroll gesture is required.
-    await page.locator('[data-slide]').nth(4).locator('[data-youtube-id]').click();
+    // Every numbered session is a direct play action.
+    await page.locator('[data-session]').nth(4).click();
     await waitIndex(4);
     await waitPlayback('playing');
     await page.locator('[data-showcase-next]').click();
@@ -57,6 +74,7 @@ try {
     await waitPlayback('playing');
     await page.evaluate(() => window.__youtube.players.at(-1).setState(2));
     await waitPlayback('paused');
+    assert.equal(await page.locator('[data-sound-wave]').getAttribute('d'), restingWave, 'Pause restores the resting waveform');
     await page.locator('[data-showcase-next]').click();
     await waitIndex(1);
     await waitPlayback('playing');
@@ -106,6 +124,7 @@ try {
     await page.waitForTimeout(100);
     assert.equal(await page.locator('[data-sound-wave]').getAttribute('d'), staticPath, 'Reduced-motion waveform stays still');
     assert.equal(await page.evaluate(() => window.__youtube.maxPlaying), 1, 'Audio never overlaps');
+    await page.screenshot({ path: new URL(`${width}-playing.png`, output).pathname });
     if (width < 760) {
       await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }));
       const finale = await page.evaluate(() => {
@@ -129,7 +148,7 @@ try {
     });
     await waitIndex(3);
     await waitPlayback('playing');
-    assert.equal(await page.locator('.video-frame').count(), 1, 'Rapid rotations leave only the final session playing');
+    assert.equal(await page.locator('.video-frame').count(), 1, 'Rapid selections leave only the final session playing');
     assert.equal(await page.evaluate(() => window.__youtube.maxPlaying), 1);
     assert.deepEqual(errors, []);
     console.log(`PASS showcase ${width}px`);

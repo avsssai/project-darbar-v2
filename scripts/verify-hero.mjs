@@ -161,9 +161,9 @@ try {
       const controls = await page.locator('.showcase-navigation').evaluate((element) => {
         const status = element.querySelector('.showcase-status').getBoundingClientRect();
         const arrows = element.querySelector('.showcase-arrows').getBoundingClientRect();
-        return arrows.top >= status.bottom;
+        return arrows.left >= status.right || arrows.top >= status.bottom;
       });
-      assert(controls, 'Session status and navigation occupy separate mobile rows');
+      assert(controls, 'Session status and navigation do not overlap');
     }
 
     assert(layout.title.x >= 0 && layout.title.right <= viewport.width, 'Complete DARBAR title fits');
@@ -274,6 +274,20 @@ try {
       }, fraction));
     }
     for (const [index, expected] of [0, .5, 1, .5, 0].entries()) assert(Math.abs(formation[index] - expected) < .01, 'Instrument motif draws and undraws with section scroll');
+
+    const ensemble = await page.locator('.journey-rail').evaluate((rail) => JSON.parse(rail.dataset.ensembleSpans));
+    assert.equal(ensemble.length, 4, 'The thread visits all four musician cutouts');
+    for (const span of ensemble) {
+      for (const progress of [0, .5, 1, .5, 0]) {
+        const drawn = await page.evaluate(async ({ span, progress }) => {
+          scrollTo({ top: span.scrollStart + (span.scrollEnd - span.scrollStart) * progress, behavior: 'instant' });
+          await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+          const route = document.querySelector('[data-rail-route]');
+          return route.getTotalLength() - parseFloat(route.style.strokeDashoffset);
+        }, { span, progress });
+        assert(Math.abs(drawn - (span.start + (span.end - span.start) * progress)) < 2, 'Each musician loop follows scroll in both directions');
+      }
+    }
 
     // Exercise verified video entries when present, without depending on YouTube playback/network.
     const previews = page.locator('[data-youtube-id]');

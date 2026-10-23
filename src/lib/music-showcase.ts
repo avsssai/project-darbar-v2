@@ -1,3 +1,5 @@
+import { soundThreadAt } from '../data/sound-thread';
+
 type Player = {
   playVideo(): void;
   pauseVideo(): void;
@@ -48,12 +50,17 @@ function loadYoutube(): Promise<Youtube> {
 }
 
 export function initShowcase(root: HTMLElement) {
-  const board = root.querySelector<HTMLElement>('[data-showcase-board]')!;
   const slides = [...root.querySelectorAll<HTMLElement>('[data-slide]')];
   if (!slides.length) return;
   const controls = root.querySelector<HTMLElement>('[data-showcase-controls]')!;
   const detail = root.querySelector<HTMLElement>('[data-showcase-detail]')!;
-  const captions = slides.map((slide) => slide.querySelector<HTMLElement>('.music-caption')!.cloneNode(true) as HTMLElement);
+  const sessions = [...root.querySelectorAll<HTMLButtonElement>('[data-session]')];
+  const captions = slides.map((slide) => {
+    const caption = slide.querySelector<HTMLElement>('.music-caption')!.cloneNode(true) as HTMLElement;
+    caption.querySelector('.music-note')?.remove();
+    caption.querySelector('.music-eyebrow')?.remove();
+    return caption;
+  });
   const feedback = root.querySelector<HTMLElement>('[data-player-feedback]')!;
   const soundStage = root.querySelector<HTMLElement>('[data-sound-stage]')!;
   const wave = root.querySelector<SVGPathElement>('[data-sound-wave]')!;
@@ -66,41 +73,30 @@ export function initShowcase(root: HTMLElement) {
   let state = -1;
   let ended = false;
   let pendingPlay = false;
-  let navigating = false;
   let waveFrame = 0;
   let waveTime = 0;
   let playerObserver: IntersectionObserver | undefined;
   let panelRestore: (() => void) | undefined;
 
-  let transition = 0;
-  const animations = new Map<HTMLElement, Animation>();
   function visible() {
     const box = slides[selected].querySelector('.music-player')!.getBoundingClientRect();
     return !document.hidden && box.bottom > 0 && box.top < innerHeight && box.right > 0 && box.left < innerWidth;
   }
   function drawWave(time: number) {
     if (time - waveTime >= 32) {
-      const phase = time / 260;
-      let d = 'M0 40';
-      for (let i = 1; i <= 100; i++) {
-        const x = i * 6;
-        const envelope = Math.sin(Math.PI * i / 100) ** 2;
-        const y = 40 + envelope * (Math.sin(x / 12 + phase) * 18 + Math.sin(x / 25 - phase * .7) * 8);
-        d += `L${x} ${y.toFixed(2)}`;
-      }
-      wave.setAttribute('d', d);
+      wave.setAttribute('d', 'M40 0' + soundThreadAt(0, 0, 80, 600, time / 260));
       waveTime = time;
     }
     waveFrame = requestAnimationFrame(drawWave);
   }
   function updateWave() {
     cancelAnimationFrame(waveFrame);
-    const playing = state === 1 && visible() && !navigating;
+    const playing = state === 1 && visible();
     soundStage.classList.toggle('is-playing', playing);
     root.dataset.playback = playing ? 'playing' : 'paused';
     root.querySelector('[data-showcase-state]')!.textContent = playing ? 'NOW PLAYING' : pendingPlay ? 'LOADING SESSION' : state === 0 ? 'SESSION FINISHED' : 'READY TO PLAY';
     if (playing && !reduce.matches) waveFrame = requestAnimationFrame(drawWave);
-    else wave.setAttribute('d', playing ? 'M0 40H180Q195 40 205 24T225 40T245 56T265 40T285 20T305 40T325 60T345 40T365 26T385 40H600' : 'M0 40H600');
+    else wave.setAttribute('d', 'M40 0' + soundThreadAt(0, 0, 80, 600));
   }
   function remember() {
     if (player && playerIndex >= 0 && !ended) {
@@ -143,7 +139,7 @@ export function initShowcase(root: HTMLElement) {
     updateWave();
     const observedPanel = slides[index].querySelector<HTMLElement>('.music-player')!;
     playerObserver = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting && !navigating && !document.fullscreenElement) pause();
+      if (!entry.isIntersecting && !document.fullscreenElement) pause();
     }, { threshold: 0 });
     playerObserver.observe(observedPanel);
     try {
@@ -173,7 +169,7 @@ export function initShowcase(root: HTMLElement) {
           onStateChange: ({ data, target }) => {
             if (!current()) return;
             state = data;
-            if (data === 1 && (!visible() || navigating)) { pause(); return; }
+            if (data === 1 && !visible()) { pause(); return; }
             if (data === 1) { ended = false; pendingPlay = false; feedback.textContent = ''; }
             if (data === 0) { ended = true; positions.set(index, 0); pendingPlay = false; }
             // Native play controls are observed, rather than assuming a click meant playback.
@@ -202,9 +198,9 @@ export function initShowcase(root: HTMLElement) {
   }
   function updateSelection() {
     for (const [index, slide] of slides.entries()) {
-      const slot = (index - selected + slides.length) % slides.length;
-      const active = slot === 0;
-      slide.dataset.slot = String(slot);
+      const active = index === selected;
+      slide.hidden = !active;
+      sessions[index].setAttribute('aria-current', String(active));
       slide.classList.toggle('is-selected', active);
       const button = slide.querySelector<HTMLButtonElement>('[data-youtube-id]');
       if (button) {
@@ -216,51 +212,29 @@ export function initShowcase(root: HTMLElement) {
     detail.replaceChildren(captions[selected].cloneNode(true));
     root.querySelector('[data-showcase-count]')!.textContent = `${String(selected + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
   }
-  async function select(index: number, animate = true) {
+  function select(index: number) {
     index = (index + slides.length) % slides.length;
-    if (index === selected && !navigating) { void play(); return; }
-    const token = ++transition;
-    // Read the currently painted bounds, so another selection can interrupt a rotation.
-    const before = slides.map((slide) => slide.getBoundingClientRect());
-    for (const animation of animations.values()) animation.cancel();
-    animations.clear();
+    if (index === selected) { void play(); return; }
     disposePlayer();
     selected = index;
-    navigating = true;
     feedback.textContent = '';
     updateSelection();
-    const pending: Promise<unknown>[] = [];
-    if (animate && !reduce.matches) {
-      for (const [i, slide] of slides.entries()) {
-        const after = slide.getBoundingClientRect();
-        const from = before[i];
-        const animation = slide.animate([
-          { transform: `translate(${from.left - after.left}px, ${from.top - after.top}px) scale(${from.width / after.width}, ${from.height / after.height})` },
-          { transform: 'translate(0, 0) scale(1, 1)' },
-        ], { duration: 280, easing: 'cubic-bezier(.23, 1, .32, 1)' });
-        animations.set(slide, animation);
-        pending.push(animation.finished.catch(() => {}));
-      }
-    }
-    await Promise.all(pending);
-    if (token !== transition) return;
-    animations.clear();
-    navigating = false;
-    // Bring the promoted video back into view if a lower mobile tile was selected.
-    if (!document.hidden && !visible()) slides[selected].querySelector('.music-player')!.scrollIntoView({ block: 'nearest', behavior: 'instant' });
-    // Selecting a session always plays it; loading events from old selections are ignored.
+    // Keep keyboard focus on the session picker; changing a session is instant.
     void play();
   }
   root.classList.add('is-enhanced');
   controls.hidden = false;
+  root.querySelector<HTMLElement>('[data-showcase-sessions]')!.hidden = false;
   updateSelection();
   updateWave();
   root.querySelector('[data-showcase-prev]')!.addEventListener('click', () => void select(selected - 1));
   root.querySelector('[data-showcase-next]')!.addEventListener('click', () => void select(selected + 1));
+  sessions.forEach((button, index) => button.addEventListener('click', () => select(index)));
   root.addEventListener('keydown', (event) => {
-    if (event.target instanceof HTMLIFrameElement || !['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+    if (!(event.target instanceof Element) || !event.target.closest('[data-showcase-sessions], .showcase-arrows') || !['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
     event.preventDefault();
-    void select(selected + (event.key === 'ArrowRight' ? 1 : -1), false);
+    select(selected + (event.key === 'ArrowRight' ? 1 : -1));
+    if (event.target.closest('[data-showcase-sessions]')) sessions[selected].focus();
   });
   root.addEventListener('click', (event) => {
     if (!(event.target instanceof Element)) return;
@@ -270,12 +244,5 @@ export function initShowcase(root: HTMLElement) {
     if (index >= 0) void select(index);
   });
   document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
-  reduce.addEventListener('change', () => {
-    if (reduce.matches) for (const animation of animations.values()) animation.finish();
-    updateWave();
-  });
-  new ResizeObserver(() => {
-    // A responsive breakpoint must not leave cards between two grid positions.
-    for (const animation of animations.values()) animation.finish();
-  }).observe(board);
+  reduce.addEventListener('change', updateWave);
 }

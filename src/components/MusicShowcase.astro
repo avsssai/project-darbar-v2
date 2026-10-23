@@ -2,31 +2,41 @@
 import Icon from './Icon.astro';
 import MusicPreview from './MusicPreview.astro';
 import { music } from '../data/site';
+import { soundThreadAt } from '../data/sound-thread';
 const entries = music.filter((entry) => entry.youtubeId && /^[\w-]{11}$/.test(entry.youtubeId));
 ---
 <div class="music-showcase" data-showcase role="region" aria-label="Band performances">
-  <div class="showcase-topline"><span>THE LISTENING ROOM</span><span>CHOOSE A SESSION. FIND YOUR FREQUENCY.</span></div>
+  <div class="showcase-heading">
+    <p class="chapter-index"><span>01</span> / THE SOUND</p>
+    <h2 id="music-heading">LISTEN <em>CLOSER.</em></h2>
+  </div>
   <div class="showcase-board" data-showcase-board>
     {entries.map((entry, index) => (
-      <div class="showcase-tile" data-slide data-slot={index}>
+      <div class="showcase-tile" data-slide>
         <MusicPreview entry={entry} featured={index === 0} />
-        <span class="showcase-tile-label" aria-hidden="true"><span class="showcase-tile-number">{String(index + 1).padStart(2, '0')}</span><span>{entry.title}<small>{entry.subtitle}</small></span><span class="showcase-tile-arrow"><Icon name="up-right" /></span></span>
       </div>
     ))}
   </div>
   <div class="showcase-bottom" data-showcase-controls hidden>
-    <div class="showcase-detail" data-showcase-detail></div>
+    <div class="showcase-detail" data-showcase-detail aria-live="polite" aria-atomic="true"></div>
     <div class="showcase-navigation">
       <p class="showcase-status" aria-live="polite" aria-atomic="true"><span data-showcase-count>01 / {String(entries.length).padStart(2, '0')}</span><span data-showcase-state>READY TO PLAY</span></p>
-      <p class="showcase-hint">Pick any tile to play.</p>
       <div class="showcase-arrows">
-        <button type="button" data-showcase-prev aria-label="Play previous performance"><span aria-hidden="true"><Icon name="left" /></span><span>Prev</span></button>
-        <button type="button" data-showcase-next aria-label="Play next performance"><span>Next</span><span aria-hidden="true"><Icon name="right" /></span></button>
+        <button type="button" data-showcase-prev aria-label="Play previous performance"><Icon name="left" /></button>
+        <button type="button" data-showcase-next aria-label="Play next performance"><Icon name="right" /></button>
       </div>
     </div>
   </div>
+  <nav class="showcase-sessions" data-showcase-sessions aria-label="Choose a performance" hidden>
+    {entries.map((entry, index) => (
+      <button type="button" data-session={index} aria-label={`Play ${entry.title}, ${entry.subtitle}`}>
+        <span class="session-number">{String(index + 1).padStart(2, '0')}</span>
+        <span class="session-title">{entry.title}</span>
+      </button>
+    ))}
+  </nav>
   <div class="sound-thread" data-sound-stage aria-hidden="true">
-    <svg viewBox="0 0 600 80" preserveAspectRatio="none"><rect x="0" y="39" width="600" height="2" /><path data-sound-wave d="M0 40H600" /></svg>
+    <svg viewBox="0 0 80 600" preserveAspectRatio="none"><rect width="80" height="600" /><path data-sound-wave d={'M40 0' + soundThreadAt(0, 0, 80, 600)} /></svg>
   </div>
   <p class="showcase-feedback" data-player-feedback role="status" aria-live="polite"></p>
 </div>
