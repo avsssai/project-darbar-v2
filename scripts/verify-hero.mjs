@@ -10,7 +10,110 @@ const output = new URL('../artifacts/hero/', import.meta.url);
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch();
 try {
-  for (const viewport of [{ width: 1440, height: 900 }, { width: 1280, height: 720 }, { width: 390, height: 844 }, { width: 320, height: 720 }]) {
+
+  // Observe from before the head initializer, including its very first pending state.
+  async function instrument(page) {
+    await mockYoutube(page);
+    await page.addInitScript(() => {
+      window.heroStates = [];
+      window.heroShifts = [];
+      new MutationObserver(() => {
+        const state = document.documentElement?.dataset.heroEntrance;
+        if (state && window.heroStates.at(-1)?.state !== state) window.heroStates.push({ state, time: performance.now() });
+      }).observe(document, { subtree: true, attributes: true, attributeFilter: ['data-hero-entrance'] });
+      new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (document.documentElement.dataset.heroEntrance === 'running' && !entry.hadRecentInput) window.heroShifts.push(entry.value);
+        }
+      }).observe({ type: 'layout-shift', buffered: true });
+    });
+  }
+  async function settled(page) {
+    await page.waitForFunction(() => document.documentElement.dataset.heroEntrance === 'complete');
+    const pose = await page.evaluate(() => {
+      const style = getComputedStyle(document.querySelector('.hero-entrance'));
+      return { opacity: style.opacity, transform: style.transform, overflow: document.documentElement.scrollWidth > innerWidth };
+    });
+    assert.deepEqual(pose, { opacity: '1', transform: 'none', overflow: false });
+  }
+  for (const width of [320, 390, 768, 1280, 1440]) {
+    const page = await browser.newPage({ viewport: { width, height: 900 } });
+    await instrument(page);
+    await page.goto(baseURL, { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => document.documentElement.dataset.heroEntrance === 'running');
+    const timing = await page.evaluate(() => {
+      const selectors = ['.title-top', '.title-name', '.hero-entrance'];
+      return selectors.map((selector) => {
+        const style = getComputedStyle(document.querySelector(selector));
+        return [style.animationDuration, style.animationDelay, style.animationTimingFunction];
+      });
+    });
+    assert.deepEqual(timing.map((t) => t.slice(0, 2)), [['0.6s', '0s'], ['0.72s', '0.08s'], ['0.7s', '0.2s']]);
+    assert(timing.every((t) => t[2] === 'cubic-bezier(0.23, 1, 0.32, 1)'));
+    assert(await page.locator('.hero-bottom a').isVisible());
+    assert(await page.locator('.main-nav').isVisible());
+    await settled(page);
+    const trace = await page.evaluate(() => ({ states: window.heroStates, shifts: window.heroShifts }));
+    assert.deepEqual(trace.states.map((s) => s.state), ['pending', 'running', 'complete']);
+    assert(trace.states[2].time - trace.states[1].time <= 1000, '900ms playback plus scheduling tolerance');
+    assert.equal(trace.shifts.reduce((sum, value) => sum + value, 0), 0, 'Entrance causes no layout shift');
+    await page.screenshot({ path: new URL(`${width}-entrance-complete.png`, output).pathname });
+    await page.close();
+  }
+  for (const scenario of ['slow-image', 'failed-image', 'delayed-font', 'hash', 'scroll', 'focus', 'reduced', 'hidden', 'history', 'fail-open']) {
+    const page = await browser.newPage();
+    await instrument(page);
+    if (scenario === 'slow-image' || scenario === 'failed-image') {
+      await page.route('**/band-cutout-v2.png', async (route) => {
+        if (scenario === 'failed-image') return route.abort();
+        await new Promise((resolve) => setTimeout(resolve, 1100));
+        await route.continue();
+      });
+    }
+    if (scenario === 'delayed-font') await page.route('**/italiana-latin-400.woff2', async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 1100));
+      await route.continue();
+    });
+    if (scenario === 'fail-open') await page.addInitScript(() => {
+      // Simulate setup failure after pending is set but before readiness can run.
+      document.addEventListener('DOMContentLoaded', (event) => event.stopImmediatePropagation(), { capture: true });
+    });
+    await page.goto(baseURL + (scenario === 'hash' ? '/#music' : ''), { waitUntil: 'domcontentloaded' });
+    if (['scroll', 'focus', 'reduced', 'hidden'].includes(scenario)) {
+      await page.waitForFunction(() => document.documentElement.dataset.heroEntrance === 'running');
+      if (scenario === 'scroll') await page.evaluate(() => scrollTo({ top: 100, behavior: 'instant' }));
+      if (scenario === 'focus') await page.locator('.hero-bottom a').focus();
+      if (scenario === 'reduced') await page.emulateMedia({ reducedMotion: 'reduce' });
+      if (scenario === 'hidden') await page.evaluate(() => {
+        Object.defineProperty(document, 'hidden', { configurable: true, value: true });
+        document.dispatchEvent(new Event('visibilitychange'));
+      });
+    }
+    await settled(page);
+    if (scenario === 'history') {
+      await page.evaluate(() => scrollTo({ top: 600, behavior: 'instant' }));
+      await page.waitForTimeout(100);
+      await page.goto('about:blank');
+      await page.goBack({ waitUntil: 'domcontentloaded' });
+      await settled(page);
+      assert(await page.evaluate(() => scrollY > 0), 'History restores scroll');
+    }
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
+    await page.waitForTimeout(1100);
+    await settled(page);
+    const states = await page.evaluate(() => window.heroStates.map((s) => s.state));
+    if (['slow-image', 'failed-image', 'delayed-font', 'hash', 'fail-open'].includes(scenario)) assert(!states.includes('running'), `${scenario}: skips entrance`);
+    assert(states.filter((s) => s === 'running').length <= 1, `${scenario}: no replay`);
+    console.log(`PASS entrance ${scenario}`);
+    await page.close();
+  }
+  const staticPage = await browser.newPage({ javaScriptEnabled: false });
+  await staticPage.goto(baseURL);
+  assert.equal(await staticPage.locator('.hero-entrance').evaluate((element) => getComputedStyle(element).opacity), '1');
+  assert.equal(await staticPage.locator('.title-name').evaluate((element) => getComputedStyle(element).transform), 'none');
+  await staticPage.close();
+  for (const viewport of [{ width: 1440, height: 900 }, { width: 1280, height: 720 }, { width: 768, height: 1024 }, { width: 390, height: 844 }, { width: 320, height: 720 }]) {
     const page = await browser.newPage({ viewport, reducedMotion: 'reduce' });
     const errors = [];
     page.on('pageerror', (error) => errors.push(error.message));
@@ -42,13 +145,27 @@ try {
         route: document.querySelector('[data-rail-route]').getAttribute('d'),
         staticRail: getComputedStyle(document.querySelector('[data-rail-route]')).strokeDashoffset,
         titleTransform: getComputedStyle(document.querySelector('.hero h1')).transform,
-        fieldPattern: getComputedStyle(document.querySelector('.hero-field')).backgroundImage,
+        fieldPattern: getComputedStyle(document.querySelector('.hero-field'), '::before').backgroundImage,
         keyline: getComputedStyle(document.querySelector('.hero-figures-front')).filter,
         originalPhoto: document.querySelector('.hero-figures--original') !== null,
         inkBoundary: Number(document.querySelector('[data-hero-light-start]').getAttribute('offset')) * document.querySelector('main').offsetHeight,
       };
     });
     assert.equal(layout.overflow, false, `${viewport.width}: horizontal overflow`);
+    assert.equal(await page.locator('.music-play-disc svg').count(), 5, 'Play controls use SVG on every platform');
+    assert.equal(await page.locator('.showcase-arrows button svg').count(), 2, 'Navigation arrows use SVG');
+    if (viewport.width <= 760) {
+      assert(await page.locator('.hero-caption').isVisible(), 'Mobile caption has its own space');
+      const targets = await page.locator('.main-nav a, .header-book, .showcase-arrows button').evaluateAll((links) => links.map((link) => link.getBoundingClientRect().height));
+      assert(targets.every((height) => height >= 44), 'Mobile controls have 44px touch targets');
+      const controls = await page.locator('.showcase-navigation').evaluate((element) => {
+        const status = element.querySelector('.showcase-status').getBoundingClientRect();
+        const arrows = element.querySelector('.showcase-arrows').getBoundingClientRect();
+        return arrows.top >= status.bottom;
+      });
+      assert(controls, 'Session status and navigation occupy separate mobile rows');
+    }
+
     assert(layout.title.x >= 0 && layout.title.right <= viewport.width, 'Complete DARBAR title fits');
     assert(layout.band.x >= 0 && layout.band.right <= viewport.width, 'Band fits');
     assert(layout.band.y < layout.field.y && layout.band.bottom > layout.field.y, 'Ensemble bridges cream and maroon');

@@ -1,4 +1,5 @@
 ---
+import Icon from '../components/Icon.astro';
 import HeroGroup from '../components/HeroGroup.astro';
 import MusicShowcase from '../components/MusicShowcase.astro';
 import ArtistCutout from '../components/ArtistCutout.astro';
@@ -16,6 +17,57 @@ const year = new Date().getFullYear();
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        const motion = matchMedia('(prefers-reduced-motion: reduce)');
+        const navigation = performance.getEntriesByType('navigation')[0];
+        root.dataset.heroEntrance = 'complete';
+        if (motion.matches || location.hash || scrollY > 0 || navigation?.type === 'back_forward' || document.hidden) return;
+        root.dataset.heroEntrance = 'pending';
+        const listeners = new AbortController();
+        let preparation;
+        let playback;
+        const finish = () => {
+          root.dataset.heroEntrance = 'complete';
+          clearTimeout(failOpen);
+          clearTimeout(preparation);
+          clearTimeout(playback);
+          listeners.abort();
+        };
+        // Independent of the bundled page script: hidden content always fails open.
+        const failOpen = setTimeout(finish, 1500);
+        const options = { signal: listeners.signal };
+        addEventListener('scroll', finish, { ...options, passive: true });
+        addEventListener('pagehide', finish, options);
+        addEventListener('pageshow', (event) => { if (event.persisted) finish(); }, options);
+        addEventListener('hashchange', finish, options);
+        addEventListener('popstate', finish, options);
+        document.addEventListener('visibilitychange', () => { if (document.hidden) finish(); }, options);
+        document.addEventListener('focusin', (event) => {
+          if (event.target.closest?.('.hero, .site-header, #main')) finish();
+        }, options);
+        motion.addEventListener('change', () => { if (motion.matches) finish(); }, options);
+        document.addEventListener('DOMContentLoaded', async () => {
+          if (root.dataset.heroEntrance !== 'pending') return;
+          preparation = setTimeout(finish, 500);
+          try {
+            const photo = document.querySelector('.band-photo');
+            const fonts = document.fonts.load('16px Italiana');
+            await Promise.all([fonts, photo ? photo.decode() : Promise.resolve()]);
+            if (!document.fonts.check('16px Italiana') || (photo && !photo.naturalWidth)) return finish();
+            // Commit the pending pose before starting, even with cached assets.
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+              if (root.dataset.heroEntrance !== 'pending') return;
+              if (scrollY > 0 || location.hash || motion.matches || document.hidden) return finish();
+              clearTimeout(preparation);
+              root.dataset.heroEntrance = 'running';
+              playback = setTimeout(finish, 900);
+            }));
+          } catch { finish(); }
+        }, { ...options, once: true });
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#faf7f2" />
     <meta name="description" content={site.description} />
@@ -35,7 +87,7 @@ const year = new Date().getFullYear();
         <nav class="main-nav" aria-label="Main navigation">
           <a href="#music">Music</a><a href="#about">The band</a><a href="#artists">Artists</a>
         </nav>
-        <div class="header-actions"><a class="header-book" href="#contact">Bookings <span aria-hidden="true">↗</span></a><SocialLinks placement="header" /></div>
+        <div class="header-actions"><a class="header-book" href="#contact">Bookings <span aria-hidden="true"><Icon name="up-right" /></span></a><SocialLinks placement="header" /></div>
       </header>
 
       <main id="main" tabindex="-1">
@@ -65,15 +117,17 @@ const year = new Date().getFullYear();
             <span class="title-mask"><span class="title-top">THE PROJECT</span></span>
             <span class="title-mask"><span class="title-name">DARBAR</span></span>
           </h1>
-          <p class="hero-caption">Carnatic roots.<br />New frequencies.</p>
+          <p class="hero-caption">Carnatic roots.<br /> New frequencies.</p>
           <div class:list={['hero-figures', { 'hero-figures--original': site.heroImageStyle === 'original-photo' }]} role={site.heroImage ? undefined : 'img'} aria-label={site.heroImage ? undefined : 'Four band silhouettes, awaiting the ensemble photograph'}>
             <div class="hero-figures-front">
+              <div class="hero-entrance">
               {site.heroImage ? <img class="band-photo" src={assetPath(site.heroImage)} alt="The four members of The Project Darbar with their instruments" fetchpriority="high" /> : <HeroGroup />}
+              </div>
             </div>
           </div>
           <div class="hero-bottom">
             <p>INDIAN /<br />CARNATIC FUSION</p>
-            <a class="quiet-link" href="#music">Hear the sound <span aria-hidden="true">↓</span></a>
+            <a class="quiet-link" href="#music">Hear the sound <span aria-hidden="true"><Icon name="down" /></span></a>
           </div>
         </section>
 
@@ -82,7 +136,7 @@ const year = new Date().getFullYear();
             <p class="chapter-index" data-reveal><span>01</span> / THE SOUND</p>
             <div class="music-heading"><h2 id="music-heading" data-reveal>LISTEN <em>CLOSER.</em></h2></div>
             <MusicShowcase />
-            {site.youtube && <a class="quiet-link music-channel" href={site.youtube} target="_blank" rel="noopener noreferrer">More from The Project Darbar on YouTube <span aria-hidden="true">↗</span></a>}
+            {site.youtube && <a class="quiet-link music-channel" href={site.youtube} target="_blank" rel="noopener noreferrer">More from The Project Darbar on YouTube <span aria-hidden="true"><Icon name="up-right" /></span></a>}
           </div>
         </section>
 
@@ -132,9 +186,9 @@ const year = new Date().getFullYear();
             <h2 id="contact-heading" data-reveal>LET'S<br /><em>PLAY.</em></h2>
             <p class="contact-copy" data-reveal>For stages, festivals, private events, and collaborations, bring The Project Darbar into the room.</p>
             <div class="contact-actions" data-reveal>
-              {site.email ? <a class="pill-link pill-light" href={'mailto:' + site.email}>Send a booking enquiry <span aria-hidden="true">↗</span></a> : <span class="pill-link pill-disabled">Booking email coming soon</span>}
-              {site.youtube && <a class="quiet-link" href={site.youtube} target="_blank" rel="noopener noreferrer">YouTube ↗</a>}
-              {site.instagram && <a class="quiet-link" href={site.instagram} target="_blank" rel="noopener noreferrer">Instagram ↗</a>}
+              {site.email ? <a class="pill-link pill-light" href={'mailto:' + site.email}>Send a booking enquiry <span aria-hidden="true"><Icon name="up-right" /></span></a> : <span class="pill-link pill-disabled">Booking email coming soon</span>}
+              {site.youtube && <a class="quiet-link" href={site.youtube} target="_blank" rel="noopener noreferrer">YouTube <Icon name="up-right" /></a>}
+              {site.instagram && <a class="quiet-link" href={site.instagram} target="_blank" rel="noopener noreferrer">Instagram <Icon name="up-right" /></a>}
             </div>
           </div>
         </section>

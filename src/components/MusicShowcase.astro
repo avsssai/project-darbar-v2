@@ -1,4 +1,5 @@
 ---
+import Icon from './Icon.astro';
 import MusicPreview from './MusicPreview.astro';
 import { music } from '../data/site';
 const entries = music.filter((entry) => entry.youtubeId && /^[\w-]{11}$/.test(entry.youtubeId));
@@ -9,7 +10,7 @@ const entries = music.filter((entry) => entry.youtubeId && /^[\w-]{11}$/.test(en
     {entries.map((entry, index) => (
       <div class="showcase-tile" data-slide data-slot={index}>
         <MusicPreview entry={entry} featured={index === 0} />
-        <span class="showcase-tile-label" aria-hidden="true"><span class="showcase-tile-number">{String(index + 1).padStart(2, '0')}</span><span>{entry.title}<small>{entry.subtitle}</small></span><span class="showcase-tile-arrow">↗</span></span>
+        <span class="showcase-tile-label" aria-hidden="true"><span class="showcase-tile-number">{String(index + 1).padStart(2, '0')}</span><span>{entry.title}<small>{entry.subtitle}</small></span><span class="showcase-tile-arrow"><Icon name="up-right" /></span></span>
       </div>
     ))}
   </div>
@@ -19,8 +20,8 @@ const entries = music.filter((entry) => entry.youtubeId && /^[\w-]{11}$/.test(en
       <p class="showcase-status" aria-live="polite" aria-atomic="true"><span data-showcase-count>01 / {String(entries.length).padStart(2, '0')}</span><span data-showcase-state>READY TO PLAY</span></p>
       <p class="showcase-hint">Pick any tile to play.</p>
       <div class="showcase-arrows">
-        <button type="button" data-showcase-prev aria-label="Play previous performance"><span aria-hidden="true">←</span><span>Prev</span></button>
-        <button type="button" data-showcase-next aria-label="Play next performance"><span>Next</span><span aria-hidden="true">→</span></button>
+        <button type="button" data-showcase-prev aria-label="Play previous performance"><span aria-hidden="true"><Icon name="left" /></span><span>Prev</span></button>
+        <button type="button" data-showcase-next aria-label="Play next performance"><span>Next</span><span aria-hidden="true"><Icon name="right" /></span></button>
       </div>
     </div>
   </div>
