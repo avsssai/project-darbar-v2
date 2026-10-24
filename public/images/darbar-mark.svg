@@ -4,6 +4,6 @@
   <path d="M87 160C184 157 284 160 379 160L233 397ZM112 177L233 391L352 175C270 178 190 176 112 177Z" fill="#c81d11" fill-rule="evenodd"/>
   <path d="M233 397L377 628C281 626 190 629 93 626ZM233 403L111 615C191 617 273 612 354 615Z" fill="#1951A8" fill-rule="evenodd"/>
   <circle cx="230" cy="263" r="11" fill="#c81d11"/>
-  <circle cx="332" cy="116" r="9" fill="#f5f8fc" stroke="#1951A8" stroke-width="5"/>
-  <circle cx="154" cy="674" r="9" fill="#f5f8fc" stroke="#1951A8" stroke-width="5"/>
+  <circle cx="332" cy="116" r="9" fill="#f7f5f1" stroke="#1951A8" stroke-width="5"/>
+  <circle cx="154" cy="674" r="9" fill="#f7f5f1" stroke="#1951A8" stroke-width="5"/>
 </svg>

@@ -168,10 +168,10 @@ try {
 
     assert(layout.title.x >= 0 && layout.title.right <= viewport.width, 'Complete DARBAR title fits');
     assert(layout.band.x >= 0 && layout.band.right <= viewport.width, 'Band fits');
-    assert(layout.band.y < layout.field.y && layout.band.bottom > layout.field.y, 'Ensemble bridges cream and maroon');
-    assert(layout.field.height / layout.hero.height >= .44, 'Maroon field occupies the lower composition');
+    assert(layout.band.y < layout.field.y && layout.band.bottom > layout.field.y, 'Ensemble bridges the paper and soft neutral field');
+    assert(layout.field.height / layout.hero.height >= .44, 'Soft neutral field occupies the lower composition');
     assert(layout.fieldPattern.includes('paisley-ink.svg'), 'Local textile pattern is present');
-    if (!layout.originalPhoto) assert(layout.keyline.includes('ensemble-edge'), 'Cutout ensemble has an ochre edge');
+    assert.equal(layout.keyline, 'none', 'Ensemble retains its natural colors without an edge filter');
     assert(Math.abs(layout.inkBoundary - (layout.field.y - layout.header.height)) <= 1, 'Thread changes ink at the background divide');
     assert(layout.bandPhotoLoaded || layout.figureCount === 4, 'Approved ensemble photo or four silhouette fallback loads');
     assert.equal(await page.locator('.social-links--header a').count(), 2, 'Both header social links are visible');
