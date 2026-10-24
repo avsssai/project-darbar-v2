@@ -69,7 +69,7 @@ const year = new Date().getFullYear();
       })();
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f7f5f1" />
+    <meta name="theme-color" content="#f5f0e7" />
     <meta name="description" content={site.description} />
     <meta property="og:title" content={site.name} />
     <meta property="og:description" content={site.description} />
@@ -94,19 +94,19 @@ const year = new Date().getFullYear();
         <svg class="journey-rail" viewBox="0 0 1000 1000" preserveAspectRatio="none" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <linearGradient id="rail-ink" x1="0" y1="0" x2="0" y2="1000" gradientUnits="userSpaceOnUse">
-              <stop offset="0" stop-color="#1951A8" />
-              <stop data-hero-dark-end offset=".1" stop-color="#1951A8" />
-              <stop data-hero-light-start offset=".101" stop-color="#1951A8" />
-              <stop data-hero-light-end offset=".18" stop-color="#1951A8" />
-              <stop data-hero-dark-start offset=".181" stop-color="#1951A8" />
-              <stop data-rail-dark-end offset=".8" stop-color="#1951A8" />
-              <stop data-rail-light-start offset=".801" stop-color="#1951A8" />
-              <stop offset="1" stop-color="#1951A8" />
+              <stop offset="0" stop-color="#344b70" />
+              <stop data-hero-dark-end offset=".1" stop-color="#344b70" />
+              <stop data-hero-light-start offset=".101" stop-color="#d8bc91" />
+              <stop data-hero-light-end offset=".18" stop-color="#d8bc91" />
+              <stop data-hero-dark-start offset=".181" stop-color="#344b70" />
+              <stop data-rail-dark-end offset=".8" stop-color="#344b70" />
+              <stop data-rail-light-start offset=".801" stop-color="#f5f0e7" />
+              <stop offset="1" stop-color="#f5f0e7" />
             </linearGradient>
           </defs>
           <path data-rail-route d="M946 0V60C946 95 735 70 735 115S955 150 955 190V900" stroke="url(#rail-ink)" />
           <path data-rail-chakra d={brandLineAt(955, 900, .13)} visibility="hidden" />
-          <g stroke="#1951A8" data-rail-symbol>
+          <g stroke="#f5f0e7" data-rail-symbol>
             {brandLinePartsAt(955, 900, .13).map((d) => <path data-rail-symbol-part d={d} />)}
           </g>
         </svg>
@@ -191,6 +191,25 @@ const year = new Date().getFullYear();
       </main>
       <footer class="site-footer"><a class="footer-brand" href="#top"><BrandMark width={28} height={52} /><span>THE PROJECT DARBAR</span></a><SocialLinks placement="footer" /><span class="footer-copyright">© {year} THE PROJECT DARBAR</span></footer>
     </div>
+
+    <svg class="print-filters" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <filter id="ensemble-edge" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+          <feMorphology in="SourceAlpha" operator="dilate" radius="3" result="expanded" />
+          <feFlood flood-color="#d8bc91" result="brand-edge" />
+          <feComposite in="brand-edge" in2="expanded" operator="in" result="edge" />
+          <feMerge><feMergeNode in="edge" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+        <filter id="ensemble-duotone" color-interpolation-filters="sRGB">
+          <feColorMatrix type="saturate" values="0" />
+          <feComponentTransfer>
+            <feFuncR type="table" tableValues=".231 .961" />
+            <feFuncG type="table" tableValues=".200 .894" />
+            <feFuncB type="table" tableValues=".251 .773" />
+          </feComponentTransfer>
+        </filter>
+      </defs>
+    </svg>
 
     <script>
       import { ensembleThreadAt } from '../data/ensemble-thread';
