@@ -7,7 +7,8 @@ import BrandMark from '../components/BrandMark.astro';
 import SocialLinks from '../components/SocialLinks.astro';
 import { brandLineAt, brandLinePartsAt } from '../data/brand';
 import { instrumentThreadAt } from '../data/instrument-thread';
-import { artists, site } from '../data/site';
+import { artists, site, copy } from '../data/site';
+import { artistInstrumentAt } from '../data/ensemble-thread';
 import '../styles/global.css';
 import { assetPath } from '../lib/asset-path';
 
@@ -77,7 +78,7 @@ const year = new Date().getFullYear();
     <link rel="icon" type="image/svg+xml" href={assetPath('/favicon.svg')} />
     <link rel="preload" href={assetPath('/fonts/italiana-latin-400.woff2')} as="font" type="font/woff2" crossorigin />
     {site.heroImage && <link rel="preload" href={assetPath(site.heroImage)} as="image" fetchpriority="high" />}
-    <title>{site.name} — Carnatic fusion</title>
+    <title>{site.title}</title>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -117,7 +118,7 @@ const year = new Date().getFullYear();
             <span class="title-mask"><span class="title-top">THE PROJECT</span></span>
             <span class="title-mask"><span class="title-name">DARB<span class="title-letter-mark"><span class="title-letter-placeholder">A</span><BrandMark class="title-brand-mark" width={335} height={680} /></span>R</span></span>
           </h1>
-          <p class="hero-caption">Carnatic roots.<br /> New frequencies.</p>
+          <p class="hero-caption"><span>{copy.hero.taglineLines[0]}<br /> {copy.hero.taglineLines[1]}</span><span class="hero-introduction">{copy.hero.introduction}</span></p>
           <div class:list={['hero-figures', { 'hero-figures--original': site.heroImageStyle === 'original-photo' }]} role={site.heroImage ? undefined : 'img'} aria-label={site.heroImage ? undefined : 'Four band silhouettes, awaiting the ensemble photograph'}>
             <div class="hero-figures-front">
               <div class="hero-entrance">
@@ -127,7 +128,7 @@ const year = new Date().getFullYear();
           </div>
           <div class="hero-bottom">
             <p>INDIAN /<br />CARNATIC FUSION</p>
-            <a class="quiet-link" href="#music">Hear the sound <span aria-hidden="true"><Icon name="down" /></span></a>
+            <a class="quiet-link" href="#music">{copy.hero.listen} <span aria-hidden="true"><Icon name="down" /></span></a>
           </div>
         </section>
 
@@ -140,16 +141,23 @@ const year = new Date().getFullYear();
             <p class="chapter-index" data-reveal><span>02</span> / THE BAND</p>
             <div class="about-layout">
               <div class="about-copy">
-                <h2 id="about-heading" data-reveal>OLD ROOTS.<br /><em>NEW FIRE.</em></h2>
-                <p class="chapter-prose" data-reveal>The Project Darbar brings Carnatic influence into a contemporary band setting, following melody and rhythm wherever they lead.</p>
+                <h2 id="about-heading" data-reveal>{copy.about.heading[0]}<br /><em>{copy.about.heading[1]}</em></h2>
+                <p class="chapter-prose" data-reveal>{copy.about.description}</p>
               </div>
               <figure class="instrument-figure">
-                <div class="instrument-stage" data-instrument-stage role="img" aria-label="One continuous thread forming a keyboard, percussion, violin and bass together">
+                <div class="instrument-stage" data-instrument-stage role="img" aria-label="One continuous thread forming keys, drums, violin, and guitar together">
                   <svg class="instrument-static" viewBox="0 0 600 480" aria-hidden="true"><path d={'M600 0' + instrumentThreadAt(0, 0, 600, 480)} /></svg>
                 </div>
-                <figcaption>KEYS / PERCUSSION / VIOLIN / BASS</figcaption>
+                <figcaption>{copy.about.instruments}</figcaption>
               </figure>
             </div>
+          </div>
+        </section>
+
+        <section class="sound-notes" id="our-sound" aria-labelledby="sound-heading">
+          <div class="chapter-inner">
+            <h2 id="sound-heading"><span>{copy.sound.heading[0]} <em>{copy.sound.heading[1]}</em></span><span>{copy.sound.heading[2]}</span></h2>
+            <p class="sound-refrain">{copy.sound.description}</p>
           </div>
         </section>
 
@@ -159,16 +167,21 @@ const year = new Date().getFullYear();
             <h2 id="artists-heading" data-reveal>THE<br /><em>ENSEMBLE.</em></h2>
             <div class="artist-list">
               {artists.map((artist, index) => (
-                <article class="artist-row" data-reveal style={'--stagger:' + index * 75 + 'ms'}>
+                <article class="artist-row" data-reveal data-artist-instrument={artist.instrument} style={'--stagger:' + index * 75 + 'ms'}>
                   <span class="artist-number">0{index + 1}</span>
                   <div class="artist-details">
-                    <h3>{artist.name || artist.role}</h3>
-                    <p class="artist-instrument">{artist.name ? artist.role : artist.bio}</p>
-                    {artist.name && <p class="artist-description">{artist.bio}</p>}
+                    <h3>{artist.name.indexOf(artist.highlight) > 0 && <span class="artist-name-secondary">{artist.name.slice(0, artist.name.indexOf(artist.highlight))}</span>}<strong>{artist.highlight}</strong><span class="artist-name-secondary">{artist.name.slice(artist.name.indexOf(artist.highlight) + artist.highlight.length)}</span></h3>
+                    <p class="artist-instrument">{artist.role}</p>
+                    <p class="artist-description">{artist.bio}</p>
                   </div>
+                  <div class="artist-media">
                   {artist.image && artist.cutout ? (
-                    <ArtistCutout source={artist.image} viewBox={artist.cutout.viewBox} outline={artist.cutout.outline} label={`${artist.role} player from The Project Darbar`} clipId={`artist-cutout-${index + 1}`} />
-                  ) : artist.image && <span class="artist-portrait"><img class="artist-cutout" src={assetPath(artist.image)} alt={artist.name || `${artist.role} player`} loading="lazy" /></span>}
+                    <ArtistCutout source={artist.image} viewBox={artist.cutout.viewBox} outline={artist.cutout.outline} label={`${artist.name}, ${artist.role}, The Project Darbar`} clipId={`artist-cutout-${index + 1}`} />
+                  ) : artist.image && <span class="artist-portrait"><img class="artist-cutout" src={assetPath(artist.image)} alt={`${artist.name}, ${artist.role}`} loading="lazy" /></span>}
+                  <div class="artist-instrument-stage" data-artist-stage aria-hidden="true">
+                    <svg class="artist-instrument-static" viewBox="0 0 120 160"><path d={'M120 0' + artistInstrumentAt(artist.instrument, { x: 0, y: 0, width: 120, height: 160 })} /></svg>
+                  </div>
+                  </div>
                 </article>
               ))}
             </div>
@@ -178,10 +191,11 @@ const year = new Date().getFullYear();
         <section class="chapter chapter-contact" id="contact" aria-labelledby="contact-heading">
           <div class="chapter-inner">
             <p class="chapter-index" data-reveal><span>04</span> / THE INVITATION</p>
-            <h2 id="contact-heading" data-reveal>LET'S<br /><em>PLAY.</em></h2>
-            <p class="contact-copy" data-reveal>For stages, festivals, private events, and collaborations, bring The Project Darbar into the room.</p>
+            <h2 id="contact-heading" data-reveal>{copy.contact.heading[0]}<br /><em>{copy.contact.heading[1]}</em></h2>
+            <p class="contact-copy" data-reveal>{copy.contact.invitation}</p>
             <div class="contact-actions" data-reveal>
-              {site.email ? <a class="pill-link pill-light" href={'mailto:' + site.email}>Send a booking enquiry <span aria-hidden="true"><Icon name="up-right" /></span></a> : <span class="pill-link pill-disabled">Booking email coming soon</span>}
+              {site.email ? <a class="pill-link pill-light" href={'mailto:' + site.email}>{copy.contact.action} <span aria-hidden="true"><Icon name="up-right" /></span></a> : <span class="pill-link pill-disabled">Booking email coming soon</span>}
+              <a class="quiet-link contact-phone" href={'tel:' + site.phone}>{site.phoneLabel}</a>
               {site.youtube && <a class="quiet-link" href={site.youtube} target="_blank" rel="noopener noreferrer">YouTube <Icon name="up-right" /></a>}
               {site.instagram && <a class="quiet-link" href={site.instagram} target="_blank" rel="noopener noreferrer">Instagram <Icon name="up-right" /></a>}
             </div>
@@ -212,7 +226,7 @@ const year = new Date().getFullYear();
     </svg>
 
     <script>
-      import { ensembleThreadAt } from '../data/ensemble-thread';
+      import { ensembleThreadAt, sequenceInstrumentSpans, type ArtistInstrument } from '../data/ensemble-thread';
       import { soundThreadAt } from '../data/sound-thread';
       import { railOffsets, scrollStrokeDistance, strokePartOffsets, type StrokeAnchor } from '../lib/rail-progress';
       import { brandLineAt, brandLinePartsAt } from '../data/brand';
@@ -251,7 +265,7 @@ const year = new Date().getFullYear();
         let instrumentStartLength = 0;
         let instrumentEndLength = 0;
         const sectionCheckpoints: StrokeAnchor[] = [];
-        const ensembleSpans: { start: number; end: number; scrollStart: number; scrollEnd: number }[] = [];
+        let ensembleSpans: { start: number; end: number; scrollStart: number; scrollEnd: number }[] = [];
         // Layout bounds exclude the portrait's entrance transform.
         const layoutBox = (element: HTMLElement) => {
           let x = 0;
@@ -317,21 +331,25 @@ const year = new Date().getFullYear();
           }
           if (index === 2 && artistRows.length) {
             for (const row of artistRows) {
-              const portrait = row.querySelector<HTMLElement>('.artist-portrait');
-              if (!portrait) continue;
+              const instrumentStage = row.querySelector<HTMLElement>('[data-artist-stage]');
+              if (!instrumentStage) continue;
               const bounds = layoutBox(row);
-              const cutout = layoutBox(portrait);
+              const stageBounds = layoutBox(instrumentStage);
+              const instrument = row.dataset.artistInstrument as ArtistInstrument;
               const rowBottom = bounds.y + bounds.height;
               d += ` L${x} ${bounds.y}`;
               route.setAttribute('d', d);
               const start = route.getTotalLength();
-              d += ensembleThreadAt(x, cutout, bounds.y, rowBottom);
+              d += ensembleThreadAt(instrument, x, stageBounds, bounds.y, rowBottom);
               route.setAttribute('d', d);
               const end = route.getTotalLength();
-              const scrollStart = mainTop + bounds.y - window.innerHeight * .62;
-              const scrollEnd = mainTop + rowBottom - window.innerHeight * .62;
-              sectionCheckpoints.push({ scroll: scrollStart, length: start }, { scroll: scrollEnd, length: end });
+              const scrollStart = mainTop + stageBounds.y - window.innerHeight * .72;
+              const scrollEnd = mainTop + stageBounds.y + stageBounds.height - window.innerHeight * .4;
               ensembleSpans.push({ start, end, scrollStart, scrollEnd });
+            }
+            ensembleSpans = sequenceInstrumentSpans(ensembleSpans);
+            for (const span of ensembleSpans) {
+              sectionCheckpoints.push({ scroll: span.scrollStart, length: span.start }, { scroll: span.scrollEnd, length: span.end });
             }
             continue;
           }
