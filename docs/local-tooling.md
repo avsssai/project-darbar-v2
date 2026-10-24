@@ -23,7 +23,9 @@ Reference: [GitHub CLI authentication](https://cli.github.com/manual/gh_auth_log
 
 ## Packages and browser
 
-The installed Rolldown native binary was an iCloud placeholder, and Playwright was absent. Choose **Download Now** for the project in Finder, or **Keep Downloaded** if that option is available, then run:
+Rolldown, Satteri, the Astro compiler, and Lightning CSS had native binaries replaced by iCloud placeholders. Their exact versions were restored from the local pnpm cache with SHA-512 integrity checks, and `pnpm build` passed. Keep this project downloaded in Finder to prevent the binaries from being evicted again. Keep `pnpm-lock.yaml`; this project uses pnpm.
+
+If the problem returns, choose **Download Now** for the project in Finder, or **Keep Downloaded** if that option is available, then run:
 
 ```sh
 cd /Users/avsivaseshasai/Desktop/code2/project-darbar-astro

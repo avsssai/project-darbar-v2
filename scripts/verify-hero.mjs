@@ -49,8 +49,11 @@ try {
         return [style.animationDuration, style.animationDelay, style.animationTimingFunction];
       });
     });
-    assert.deepEqual(timing.map((t) => t.slice(0, 2)), [['0.6s', '0s'], ['0.72s', '0.08s'], ['0.7s', '0.2s']]);
+    assert.deepEqual(timing.map((t) => t.slice(0, 2)), [['0.7s', '0s'], ['0.8s', '0.07s'], ['0.7s', '0.2s']]);
     assert(timing.every((t) => t[2] === 'cubic-bezier(0.23, 1, 0.32, 1)'));
+    for (const selector of ['.title-top', '.title-name']) {
+      assert.deepEqual(await page.locator(selector).evaluate((title) => title.getAnimations()[0].effect.getKeyframes().map((frame) => frame.opacity)), ['0', '1'], 'Both title lines fade in while rising');
+    }
     const logoTiming = await page.evaluate(() => {
       const timingFor = (selector) => getComputedStyle(document.querySelector(selector)).animationDelay;
       return ['.hero-logo-triangle-trace', '.hero-logo-dot', '.hero-logo-string', '.hero-brand-motion'].map(timingFor);
@@ -115,7 +118,8 @@ try {
     await page.waitForTimeout(1100);
     await settled(page);
     const states = await page.evaluate(() => window.heroStates.map((s) => s.state));
-    if (['slow-image', 'failed-image', 'delayed-font', 'hash', 'fail-open'].includes(scenario)) assert(!states.includes('running'), `${scenario}: skips entrance`);
+    if (['hash', 'fail-open'].includes(scenario)) assert(!states.includes('running'), `${scenario}: skips entrance`);
+    if (['slow-image', 'failed-image', 'delayed-font'].includes(scenario)) assert(states.includes('running'), `${scenario}: title still rises and fades independently of asset loading`);
     assert(states.filter((s) => s === 'running').length <= 1, `${scenario}: no replay`);
     console.log(`PASS entrance ${scenario}`);
     await page.close();
@@ -172,6 +176,8 @@ try {
       };
     });
     assert.equal(layout.overflow, false, `${viewport.width}: horizontal overflow`);
+    assert.equal(await page.locator('.hero h1').evaluate((title) => getComputedStyle(title).userSelect), 'text', 'The band name remains selectable');
+    assert((await page.locator('.title-name').innerText()).replace(/\s/g, '').includes('DARBAR'), 'The logo placeholder retains the A when copying the title');
     assert.equal(await page.locator('.hero-brand-motion').evaluate((mark) => getComputedStyle(mark).animationName), 'none', 'Reduced motion skips the logo twist');
     assert((await page.locator('.hero-source-photo:visible image').getAttribute('href')).endsWith('/images/band-cutout-clear.webp'), 'Hero uses the supplied transparent four-person cutout');
     assert((await page.locator('.hero-source-photo:visible image').evaluate((photo) => getComputedStyle(photo).filter)).includes('ensemble-duotone'), 'Hero retains the styled duotone treatment on the clear photograph');
@@ -272,8 +278,8 @@ try {
     await page.evaluate(() => window.scrollTo(0, document.querySelector('.hero').offsetHeight / 2));
     await page.waitForTimeout(100);
     const shifts = await page.evaluate(() => ({
-      title: parseFloat(document.querySelector('.hero').style.getPropertyValue('--title-shift')),
-      band: parseFloat(document.querySelector('.hero-figures').style.getPropertyValue('--front-shift')),
+      title: new DOMMatrixReadOnly(getComputedStyle(document.querySelector('.hero h1')).transform).m42,
+      band: new DOMMatrixReadOnly(getComputedStyle(document.querySelector('.hero-figures-front')).transform).m42,
     }));
     assert(shifts.title >= -20 && shifts.title <= 0 && shifts.band >= -60 && shifts.band <= 0, 'Parallax stays within limits');
 

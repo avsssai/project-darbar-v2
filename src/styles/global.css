@@ -109,13 +109,14 @@ main { position: relative; }
 .hero h1 {
   position: absolute; z-index: 1; inset: 1.5% 0 auto; text-align: center;
   font-family: 'Italiana', 'Times New Roman', serif; font-weight: 400; line-height: 1;
-  transform: translateY(var(--title-shift, 0px));
+  transform: none;
+  user-select: text; -webkit-user-select: text;
 }
 .title-mask { display: block; overflow: hidden; padding-bottom: .035em; }
 .title-top { display: block; font-size: min(5.25vw, 8svh); letter-spacing: .12em; }
 .title-name { display: block; font-size: min(26vw, 42svh); letter-spacing: -.035em; margin-top: .01em; }
 .title-letter-mark { display: inline-block; position: relative; }
-.title-letter-placeholder { visibility: hidden; }
+.title-letter-placeholder { opacity: 0; }
 .title-letter-mark .title-brand-mark {
   position: absolute; left: 0; top: 50%; transform: translateY(-50%);
   width: 100%; height: .8em; object-fit: contain;
@@ -129,7 +130,7 @@ main { position: relative; }
   height: 65%; transform: translateX(-50%); pointer-events: none;
 }
 .hero-figures-front {
-  width: 100%; height: 100%; transform: translateY(var(--front-shift, 0px));
+  width: 100%; height: 100%; transform: none;
   filter: url('#ensemble-edge');
 }
 .hero-figures svg, .hero-figures img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
@@ -168,21 +169,22 @@ main { position: relative; }
 .pill-link { min-height: 53px; display: inline-flex; align-items: center; justify-content: space-between; gap: 27px; border-radius: 100px; padding: 0 24px; background: var(--poster-blue); color: #fff; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: .13em; white-space: nowrap; transition: transform .25s, background .25s; }
 @media (hover: hover) and (pointer: fine) { .pill-link:hover { background: var(--poster-blue-deep); transform: translateY(-3px); } }
 .pill-link span { font-size: 17px; }
-/* Entrance transforms are isolated from the heading and ensemble parallax. */
-.hero { --title-enter: 120%; --band-enter: 28.8px; }
-[data-hero-entrance="pending"] :is(.title-top, .title-name) { transform: translateY(var(--title-enter)); }
+/* The title shares the logo's visible-hero trigger; parallax stays on the parent. */
+.hero { --title-enter: .2em; --band-enter: 28.8px; }
+[data-hero-logo="pending"] :is(.title-top, .title-name) { transform: translateY(var(--title-enter)); opacity: 0; }
 [data-hero-entrance="pending"] .hero-entrance { transform: translateY(var(--band-enter)); opacity: 0; }
 [data-hero-entrance="pending"] .hero-field::before { opacity: 0; }
-[data-hero-entrance="running"] .title-top { animation: masthead-enter 600ms var(--ease-out) both; }
-[data-hero-entrance="running"] .title-name { animation: masthead-enter 720ms var(--ease-out) 80ms both; }
+[data-hero-logo="running"] .title-top { animation: masthead-enter 700ms var(--ease-out) both; }
+[data-hero-logo="running"] .title-name { animation: masthead-enter 800ms var(--ease-out) 70ms both; }
 [data-hero-entrance="running"] .hero-field::before { animation: textile-enter 600ms var(--ease-out) both; }
 [data-hero-entrance="running"] .hero-entrance { animation: band-enter 700ms var(--ease-out) 200ms both; }
-@keyframes masthead-enter { from { transform: translateY(var(--title-enter)); } to { transform: translateY(0); } }
+@keyframes masthead-enter { from { transform: translateY(var(--title-enter)); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 @keyframes textile-enter { from { opacity: 0; } to { opacity: .5; } }
 @keyframes band-enter { from { transform: translateY(var(--band-enter)); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-@media (max-width: 760px) { .hero { --title-enter: 48%; --band-enter: 14.4px; } }
+@media (max-width: 760px) { .hero { --title-enter: .16em; --band-enter: 14.4px; } }
 @media (prefers-reduced-motion: reduce) {
   [data-hero-entrance] :is(.title-top, .title-name, .hero-entrance) { animation: none; transform: none; opacity: 1; }
+  [data-hero-logo] :is(.title-top, .title-name) { animation: none; transform: none; opacity: 1; }
   [data-hero-entrance] .hero-field::before { animation: none; opacity: .5; }
 }
 

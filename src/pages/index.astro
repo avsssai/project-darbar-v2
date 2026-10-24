@@ -32,7 +32,6 @@ const initialLogoMask = brandStringMaskAt(955, 900, .13);
         root.dataset.heroEntrance = 'pending';
         root.dataset.heroCallouts = 'pending';
         const listeners = new AbortController();
-        let preparation;
         let playback;
         let callouts;
         const finish = (animateCallouts = false) => {
@@ -46,7 +45,6 @@ const initialLogoMask = brandStringMaskAt(955, 900, .13);
             listeners.abort();
           }
           clearTimeout(failOpen);
-          clearTimeout(preparation);
           clearTimeout(playback);
         };
         // Independent of the bundled page script: hidden content always fails open.
@@ -62,25 +60,16 @@ const initialLogoMask = brandStringMaskAt(955, 900, .13);
           if (event.target.closest?.('.hero, .site-header, #main')) finish();
         }, options);
         motion.addEventListener('change', () => { if (motion.matches) finish(); }, options);
-        document.addEventListener('DOMContentLoaded', async () => {
+        document.addEventListener('DOMContentLoaded', () => {
           if (root.dataset.heroEntrance !== 'pending') return;
-          preparation = setTimeout(finish, 500);
-          try {
-            const photo = document.querySelector('.band-photo');
-            const photoProbe = photo instanceof HTMLImageElement ? photo : new Image();
-            if (photo && photoProbe !== photo) photoProbe.src = photo.getAttribute('href');
-            const fonts = document.fonts.load('16px Italiana');
-            await Promise.all([fonts, photo ? photoProbe.decode() : Promise.resolve()]);
-            if (!document.fonts.check('16px Italiana') || (photo && !photoProbe.naturalWidth)) return finish();
-            // Commit the pending pose before starting, even with cached assets.
-            requestAnimationFrame(() => requestAnimationFrame(() => {
-              if (root.dataset.heroEntrance !== 'pending') return;
-              if (scrollY > 0 || location.hash || motion.matches || document.hidden) return finish();
-              clearTimeout(preparation);
-              root.dataset.heroEntrance = 'running';
-              playback = setTimeout(() => finish(true), 900);
-            }));
-          } catch { finish(); }
+          // Start the title even when an image or font is slow or unavailable.
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            if (root.dataset.heroEntrance !== 'pending') return;
+            if (scrollY > 0 || location.hash || motion.matches || document.hidden) return finish();
+            clearTimeout(failOpen);
+            root.dataset.heroEntrance = 'running';
+            playback = setTimeout(() => finish(true), 900);
+          }));
         }, { ...options, once: true });
       })();
     </script>
@@ -265,7 +254,9 @@ const initialLogoMask = brandStringMaskAt(955, 900, .13);
       const heroField = document.querySelector<HTMLElement>('.hero-field');
       const sections = ['music', 'about', 'artists', 'contact'].map((id) => document.getElementById(id));
       const hero = document.querySelector<HTMLElement>('.hero');
+      const heroHeading = document.querySelector<HTMLElement>('.hero h1');
       const figures = document.querySelector<HTMLElement>('.hero-figures');
+      const figuresFront = document.querySelector<HTMLElement>('.hero-figures-front');
       const instrumentStage = document.querySelector<HTMLElement>('[data-instrument-stage]');
       const soundStage = document.querySelector<HTMLElement>('[data-sound-stage]');
       const logoStage = document.querySelector<HTMLElement>('[data-logo-stage]');
@@ -449,8 +440,8 @@ const initialLogoMask = brandStringMaskAt(955, 900, .13);
         symbolParts.forEach((part, index) => { part.style.strokeDashoffset = String(symbolOffsets[index]); });
         const heroProgress = Math.max(0, Math.min(1, -hero.getBoundingClientRect().top / Math.max(1, hero.offsetHeight)));
         const travel = window.innerWidth <= 760 ? 0.45 : 1;
-        hero.style.setProperty('--title-shift', heroProgress * -20 * travel + 'px');
-        figures.style.setProperty('--front-shift', heroProgress * -60 * travel + 'px');
+        if (heroHeading) heroHeading.style.transform = `translateY(${heroProgress * -20 * travel}px)`;
+        if (figuresFront) figuresFront.style.transform = `translateY(${heroProgress * -60 * travel}px)`;
 
         ticking = false;
       }
@@ -476,8 +467,8 @@ const initialLogoMask = brandStringMaskAt(955, 900, .13);
           document.documentElement.classList.remove('motion-ready');
           observer?.disconnect();
           window.removeEventListener('scroll', schedule);
-          hero?.style.removeProperty('--title-shift');
-          figures?.style.removeProperty('--front-shift');
+          heroHeading?.style.removeProperty('transform');
+          figuresFront?.style.removeProperty('transform');
           measureRail();
         } else {
           document.querySelectorAll<HTMLElement>('[data-reveal]').forEach((element) => element.classList.add('is-visible'));
