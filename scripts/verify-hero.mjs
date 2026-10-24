@@ -160,6 +160,7 @@ try {
     });
     assert.equal(layout.overflow, false, `${viewport.width}: horizontal overflow`);
     assert.equal(await page.locator('.hero-source-photo image').getAttribute('href'), await page.locator('.artist-cutout image').first().getAttribute('href'), 'Hero and portraits share the clear original photograph');
+    assert((await page.locator('.hero-source-photo image').evaluate((photo) => getComputedStyle(photo).filter)).includes('ensemble-duotone'), 'Hero retains the styled duotone treatment on the clear photograph');
     assert.equal(await page.locator('.music-play-disc svg').count(), 5, 'Play controls use SVG on every platform');
     assert.equal(await page.locator('.showcase-arrows button svg').count(), 2, 'Navigation arrows use SVG');
     if (viewport.width <= 760) {

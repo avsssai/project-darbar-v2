@@ -137,6 +137,7 @@ main { position: relative; }
   width: 124%; max-width: none; margin-inline: -12%;
   filter: url('#ensemble-duotone');
 }
+.hero-source-photo image { filter: url('#ensemble-duotone'); }
 .hero-figures--original { width: min(56%, 580px); height: 60%; }
 .hero-figures--original .hero-figures-front { filter: none; }
 .hero-figures--original img {

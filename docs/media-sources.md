@@ -4,7 +4,7 @@
 
 The hero and all four ensemble portraits use `public/images/band-source-clear.webp`, the high-quality export of the user's clear temple photograph described below. `site.heroImageStyle` is `source-cutout`.
 
-`HeroPhoto.astro` displays the actual photograph inside a native SVG mask. It reuses the source-aligned portrait contours, extends the clothing to the waist, and includes the photographed guitar neck. No generative face correction, replacement, warping, or reconstruction is applied. The source image keeps its exact aspect ratio and the hero SVG uses `preserveAspectRatio="xMidYMin meet"`, keeping all four faces in frame. The hero uses the photograph's original colors with the existing parchment edge; it does not apply the duotone filter to the faces.
+`HeroPhoto.astro` displays the actual photograph inside a native SVG mask. It reuses the source-aligned portrait contours, extends the clothing to the waist, and includes the photographed guitar neck. No generative face correction, replacement, warping, or reconstruction is applied. The source image keeps its exact aspect ratio and the hero SVG uses `preserveAspectRatio="xMidYMin meet"`, keeping all four faces in frame. The hero applies the established warm duotone and parchment edge to the photograph. This is a display-only color treatment; the clear source faces and proportions are preserved without regeneration.
 
 The prior generated `band-cutout-v1.png` and `band-cutout-v2.png` remain as historical assets, but neither is used by the current hero or portraits. Their generation prompts below document their provenance rather than current usage.
 
