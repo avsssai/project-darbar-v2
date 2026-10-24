@@ -2,16 +2,18 @@
 import { assetPath } from '../lib/asset-path';
 interface Props {
   source: string;
+  sourceWidth: number;
+  sourceHeight: number;
   viewBox: string;
   outline: string;
   label: string;
   clipId: string;
 }
-const { source, viewBox, outline, label, clipId } = Astro.props;
+const { source, sourceWidth, sourceHeight, viewBox, outline, label, clipId } = Astro.props;
 ---
 <span class="artist-portrait">
   <svg class="artist-cutout" viewBox={viewBox} preserveAspectRatio="xMidYMax meet" role="img" aria-label={label} xmlns="http://www.w3.org/2000/svg">
     <defs><clipPath id={clipId} clipPathUnits="userSpaceOnUse"><polygon points={outline} /></clipPath></defs>
-    <image href={assetPath(source)} width="1454" height="1082" clip-path={`url(#${clipId})`} aria-hidden="true" />
+    <image href={assetPath(source)} width={sourceWidth} height={sourceHeight} clip-path={`url(#${clipId})`} aria-hidden="true" />
   </svg>
 </span>

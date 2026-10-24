@@ -118,7 +118,7 @@ const year = new Date().getFullYear();
             <span class="title-mask"><span class="title-top">THE PROJECT</span></span>
             <span class="title-mask"><span class="title-name">DARB<span class="title-letter-mark"><span class="title-letter-placeholder">A</span><BrandMark class="title-brand-mark" width={335} height={680} /></span>R</span></span>
           </h1>
-          <p class="hero-caption"><span>{copy.hero.taglineLines[0]}<br /> {copy.hero.taglineLines[1]}</span><span class="hero-introduction">{copy.hero.introduction}</span></p>
+          <p class="hero-caption"><span>{copy.hero.taglineLines[0]}<br /> {copy.hero.taglineLines[1]}</span></p>
           <div class:list={['hero-figures', { 'hero-figures--original': site.heroImageStyle === 'original-photo' }]} role={site.heroImage ? undefined : 'img'} aria-label={site.heroImage ? undefined : 'Four band silhouettes, awaiting the ensemble photograph'}>
             <div class="hero-figures-front">
               <div class="hero-entrance">
@@ -176,7 +176,7 @@ const year = new Date().getFullYear();
                   </div>
                   <div class="artist-media">
                   {artist.image && artist.cutout ? (
-                    <ArtistCutout source={artist.image} viewBox={artist.cutout.viewBox} outline={artist.cutout.outline} label={`${artist.name}, ${artist.role}, The Project Darbar`} clipId={`artist-cutout-${index + 1}`} />
+                    <ArtistCutout source={artist.image} sourceWidth={artist.cutout.sourceWidth} sourceHeight={artist.cutout.sourceHeight} viewBox={artist.cutout.viewBox} outline={artist.cutout.outline} label={`${artist.name}, ${artist.role}, The Project Darbar`} clipId={`artist-cutout-${index + 1}`} />
                   ) : artist.image && <span class="artist-portrait"><img class="artist-cutout" src={assetPath(artist.image)} alt={`${artist.name}, ${artist.role}`} loading="lazy" /></span>}
                   <div class="artist-instrument-stage" data-artist-stage aria-hidden="true">
                     <svg class="artist-instrument-static" viewBox="0 0 120 160"><path d={'M120 0' + artistInstrumentAt(artist.instrument, { x: 0, y: 0, width: 120, height: 160 })} /></svg>

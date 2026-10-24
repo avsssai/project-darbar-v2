@@ -19,7 +19,6 @@ export const site = {
 export const copy = {
   hero: {
     taglineLines: ['Carnatic roots.', 'New frequencies.'],
-    introduction: 'Indian classical melodies, contemporary grooves, and room to explore.',
     listen: 'Hear the sound',
   },
   about: {
@@ -103,7 +102,7 @@ export type Artist = {
   role: string;
   bio: string;
   image?: string;
-  cutout?: { viewBox: string; outline: string };
+  cutout?: { viewBox: string; outline: string; sourceWidth: number; sourceHeight: number };
 };
 
 export const artists: Artist[] = [
@@ -113,10 +112,12 @@ export const artists: Artist[] = [
     instrument: 'violin',
     role: 'Violin',
     bio: 'Koundinya carries the melody through expressive violin playing rooted in Carnatic tradition.',
-    image: '/images/band-cutout-v2.png',
+    image: '/images/band-source-clear.webp',
     cutout: {
-      viewBox: '715 40 285 855',
-      outline: '735,40 940,40 940,270 958,350 940,520 937,710 935,900 950,1060 710,1060 735,900 750,760 758,620 760,500 750,330',
+      sourceWidth: 2016,
+      sourceHeight: 3944 * 2016 / 6456,
+      viewBox: '995 340 205 300',
+      outline: '1001,640 1001,573 1006,523 1029,501 1038,489 1036,477 1023,461 1019,439 1010,419 1012,394 1024,373 1047,355 1077,348 1107,354 1130,370 1142,395 1141,420 1133,441 1127,461 1114,478 1113,488 1155,501 1179,525 1190,567 1195,640',
     },
   },
   {
@@ -125,10 +126,12 @@ export const artists: Artist[] = [
     instrument: 'keys',
     role: 'Keys',
     bio: 'Manas brings piano, synths, and a love of cinematic sound to the ensemble.',
-    image: '/images/band-cutout-v2.png',
+    image: '/images/band-source-clear.webp',
     cutout: {
-      viewBox: '185 105 340 790',
-      outline: '185,105 485,105 485,400 500,500 508,620 498,658 479,720 473,1060 185,1060',
+      sourceWidth: 2016,
+      sourceHeight: 3944 * 2016 / 6456,
+      viewBox: '558 375 250 265',
+      outline: '565,640 567,603 578,561 598,532 631,512 674,498 682,488 670,467 668,439 673,417 678,400 694,386 720,382 744,389 761,402 766,421 772,440 770,463 764,481 754,492 756,504 783,521 798,547 804,590 805,640',
     },
   },
   {
@@ -137,10 +140,12 @@ export const artists: Artist[] = [
     instrument: 'guitar',
     role: 'Guitar',
     bio: 'Mouli brings acoustic warmth, electric energy, and a love of exploring genres.',
-    image: '/images/band-cutout-v2.png',
+    image: '/images/band-source-clear.webp',
     cutout: {
-      viewBox: '935 105 355 790',
-      outline: '960,105 1290,105 1290,1060 980,1060 980,760 995,650 985,550 980,450 980,330 960,270',
+      sourceWidth: 2016,
+      sourceHeight: 3944 * 2016 / 6456,
+      viewBox: '1175 385 195 265',
+      outline: '1180,650 1180,592 1186,551 1196,523 1209,509 1216,499 1203,488 1191,472 1186,452 1190,431 1203,413 1224,401 1249,395 1274,401 1291,417 1299,439 1299,462 1294,483 1286,498 1284,507 1321,519 1350,544 1364,583 1363,650',
     },
   },
   {
@@ -149,10 +154,12 @@ export const artists: Artist[] = [
     instrument: 'drums',
     role: 'Drums & percussion',
     bio: 'Meher brings classical rhythms and contemporary grooves into a shared musical conversation.',
-    image: '/images/band-cutout-v2.png',
+    image: '/images/band-source-clear.webp',
     cutout: {
-      viewBox: '480 105 280 790',
-      outline: '495,105 730,105 730,300 732,440 738,610 732,790 716,895 716,1060 480,1060 480,900 489,730 515,620 500,480 490,340',
+      sourceWidth: 2016,
+      sourceHeight: 3944 * 2016 / 6456,
+      viewBox: '793 385 215 265',
+      outline: '801,650 797,600 799,552 809,529 846,505 855,494 847,474 845,451 850,425 864,407 889,394 914,396 937,406 954,426 959,450 957,473 949,492 944,502 973,517 991,547 998,593 1002,650',
     },
   },
 ];

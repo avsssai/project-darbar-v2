@@ -35,9 +35,13 @@ The three track names were read from the thumbnail artwork. Neutral labels are u
 
 All five AVIF thumbnails were recovered from cached responses matching the supplied video IDs, without altering the image pixels. The first three are 360×202; the last two are 720×404. No browser cache paths or request signatures are needed by the site.
 
-## Ensemble portraits
+## Ensemble portraits — clear source photograph
 
-The four individual views reuse `band-cutout-v2.png`. `ArtistCutout.astro` uses native SVG viewBoxes and polygon clipping to isolate the members, preserving the shared image pixels and facial treatment. No additional generative portrait edits were made. The rows display Keys, Percussion, Violin, and Bass with instrument details. Empty `name` fields can be populated later. CSS applies the same duotone and ochre edge as the hero, at a smaller size with a short one-time entrance. These are temporary cropped views of an overlapping group photo; occluded body details are not reconstructed.
+The user supplied a clearer 6456×3944 temple photograph on October 24, 2026. `public/images/band-source-clear.webp` is its high-quality WebP delivery export at 3228×1972, preserving the original framing and aspect ratio. The export uses WebP quality 94; no generative face edits or reconstruction were performed.
+
+The four chest-up portraits use this single shared photograph through `ArtistCutout.astro`. Per-member SVG viewBoxes and polygon masks in `src/data/site.ts` isolate the hair, face, shoulders, and upper chest without changing facial geometry. Source dimensions are explicit, so the component no longer assumes the old generated PNG's proportions. Desktop portrait width is 120px, with 104px portraits beside the instrument stages on mobile. The established warm duotone, parchment keyline, names, ordering, and scroll-driven instrument drawings remain.
+
+The hero still uses the temporary v2 group cutout described above; the clearer photograph currently replaces the individual ensemble portraits only.
 
 ## Supplied logo
 

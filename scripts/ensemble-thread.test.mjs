@@ -52,10 +52,10 @@ test('instrument connectors stay inside the stage and right gutter at desktop an
 
 test('the musician order retains the correct portrait, instrument, and name emphasis', () => {
   assert.deepEqual(artists.map(({ instrument, highlight, cutout }) => [instrument, highlight, cutout.viewBox]), [
-    ['violin', 'Koundinya', '715 40 285 855'],
-    ['keys', 'Manas', '185 105 340 790'],
-    ['guitar', 'Mouli', '935 105 355 790'],
-    ['drums', 'Meher', '480 105 280 790'],
+    ['violin', 'Koundinya', '995 340 205 300'],
+    ['keys', 'Manas', '558 375 250 265'],
+    ['guitar', 'Mouli', '1175 385 195 265'],
+    ['drums', 'Meher', '793 385 215 265'],
   ]);
   for (const artist of artists) assert(artist.name.includes(artist.highlight));
 });
