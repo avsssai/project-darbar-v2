@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="12" fill="#faf7f2"/>
+  <rect width="64" height="64" rx="12" fill="#f5f8fc"/>
   <g transform="translate(1 -1) scale(.13 .085)">
-    <path d="M332 116C346 94 363 58 335 73C269 99 95 247 93 324C89 376 173 397 233 397C292 395 380 330 388 384C406 484 233 660 152 706C122 724 141 694 154 674" fill="none" stroke="#dca83c" stroke-width="14" stroke-linecap="round"/>
-    <path d="M87 160H379L233 397ZM120 182 233 382 346 182Z" fill="#782b3a" fill-rule="evenodd"/>
-    <path d="M233 397 377 628H93ZM233 414 120 610H347Z" fill="#dca83c" fill-rule="evenodd"/>
-    <circle cx="230" cy="263" r="17" fill="#782b3a"/>
-    <circle cx="332" cy="116" r="12" fill="#dca83c"/>
-    <circle cx="154" cy="674" r="12" fill="#dca83c"/>
+    <path d="M332 116C346 94 363 58 335 73C269 99 95 247 93 324C89 376 173 397 233 397C292 395 380 330 388 384C406 484 233 660 152 706C122 724 141 694 154 674" fill="none" stroke="#1951A8" stroke-width="14" stroke-linecap="round"/>
+    <path d="M87 160H379L233 397ZM120 182 233 382 346 182Z" fill="#c81d11" fill-rule="evenodd"/>
+    <path d="M233 397 377 628H93ZM233 414 120 610H347Z" fill="#1951A8" fill-rule="evenodd"/>
+    <circle cx="230" cy="263" r="17" fill="#c81d11"/>
+    <circle cx="332" cy="116" r="12" fill="#1951A8"/>
+    <circle cx="154" cy="674" r="12" fill="#1951A8"/>
   </g>
 </svg>
