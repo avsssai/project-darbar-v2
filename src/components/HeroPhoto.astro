@@ -4,20 +4,30 @@ import { artists } from '../data/site';
 import { heroCallouts } from '../data/hero-callouts';
 interface Props { source: string }
 const { source } = Astro.props;
+const scenes = (['desktop', 'mobile'] as const).map((layout) => ({
+  layout,
+  callouts: heroCallouts.map((callout) => ({
+    ...(layout === 'mobile' ? callout.mobile : callout),
+    instrument: callout.instrument,
+    name: artists.find((artist) => artist.instrument === callout.instrument)!.highlight,
+  })),
+}));
 ---
-<svg class="hero-source-photo" viewBox="0 0 1454 1082" preserveAspectRatio="xMidYMin slice" role="img" aria-label="The Project Darbar: Manas on keys, Meher on drums, Koundinya on violin, and Mouli on guitar">
-  <g class="hero-photo-layer">
-    <image class="band-photo" href={assetPath(source)} width="1454" height="1082" preserveAspectRatio="xMidYMin meet" />
-  </g>
-  <g class="hero-callouts" aria-hidden="true">
-    {heroCallouts.map((callout, index) => (
-      <g class:list={['hero-callout', `hero-callout--${callout.instrument}`]} style={`--callout-delay:${index * 120}ms`}>
-        <path class="hero-callout-arrow hero-callout-arrow--underlay" d={callout.path} pathLength="1" />
-        <path class="hero-callout-arrow" d={callout.path} pathLength="1" />
-        <path class="hero-callout-tip hero-callout-tip--underlay" d={callout.tip} />
-        <path class="hero-callout-tip" d={callout.tip} />
-        <text class="hero-callout-name" x={callout.x} y={callout.y} text-anchor={callout.anchor} transform={`rotate(${callout.rotation} ${callout.x} ${callout.y})`}>{artists.find((artist) => artist.instrument === callout.instrument)!.highlight}</text>
-      </g>
-    ))}
-  </g>
-</svg>
+{scenes.map((scene) => (
+  <svg class:list={['hero-source-photo', `hero-source-photo--${scene.layout}`]} viewBox="0 0 1454 1082" preserveAspectRatio={scene.layout === 'mobile' ? 'xMidYMax meet' : 'xMidYMin slice'} role="img" aria-label="The Project Darbar: Manas on keys, Meher on drums, Koundinya on violin, and Mouli on guitar">
+    <g class="hero-photo-layer">
+      <image class="band-photo" href={assetPath(source)} width="1454" height="1082" preserveAspectRatio="xMidYMin meet" />
+    </g>
+    <g class="hero-callouts" aria-hidden="true">
+      {scene.callouts.map((callout, index) => (
+        <g class:list={['hero-callout', `hero-callout--${callout.instrument}`]} style={`--callout-delay:${index * 120}ms`}>
+          <path class="hero-callout-arrow hero-callout-arrow--underlay" d={callout.path} pathLength="1" />
+          <path class="hero-callout-arrow" d={callout.path} pathLength="1" />
+          <path class="hero-callout-tip hero-callout-tip--underlay" d={callout.tip} />
+          <path class="hero-callout-tip" d={callout.tip} />
+          <text class="hero-callout-name" x={callout.x} y={callout.y} text-anchor={callout.anchor} transform={`rotate(${callout.rotation} ${callout.x} ${callout.y})`}>{callout.name}</text>
+        </g>
+      ))}
+    </g>
+  </svg>
+))}

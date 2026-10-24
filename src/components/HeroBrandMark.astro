@@ -1,0 +1,80 @@
+---
+interface Props { class?: string; width?: number; height?: number }
+const { class: className = '', width = 335, height = 680 } = Astro.props;
+---
+<span class:list={['brand-mark', 'hero-brand-mark', className]} aria-hidden="true">
+  <span class="hero-brand-motion">
+    <svg class="hero-brand-svg" viewBox="75 55 335 680" width={width} height={height} fill="none">
+      <defs>
+        <mask id="hero-logo-string-mask" maskUnits="userSpaceOnUse" x="60" y="40" width="380" height="710" style="mask-type:luminance">
+          <rect x="60" y="40" width="380" height="710" fill="#fff" />
+          <path d="M87 160C184 157 284 160 379 160L233 397Z" fill="#000" />
+        </mask>
+      </defs>
+      <path class="hero-logo-string" d="M332 116C346 94 363 58 335 73C269 99 95 247 93 324C89 376 173 397 233 397C292 395 380 330 388 384C406 484 233 660 152 706C122 724 141 694 154 674" stroke="#1951A8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" mask="url(#hero-logo-string-mask)" pathLength="1" />
+      <path class="hero-logo-triangle-fill" d="M87 160C184 157 284 160 379 160L233 397ZM112 177L233 391L352 175C270 178 190 176 112 177Z" fill="#c81d11" fill-rule="evenodd" />
+      <path class="hero-logo-triangle-fill" d="M233 397L377 628C281 626 190 629 93 626ZM233 403L111 615C191 617 273 612 354 615Z" fill="#1951A8" fill-rule="evenodd" />
+      <path class="hero-logo-triangle-trace" d="M233 397L95 168H365Z" stroke="#c81d11" stroke-width="9" stroke-linejoin="round" pathLength="1" />
+      <path class="hero-logo-triangle-trace" d="M233 397L365 621H103Z" stroke="#1951A8" stroke-width="9" stroke-linejoin="round" pathLength="1" />
+      <circle class="hero-logo-dot" cx="230" cy="263" r="11" fill="#c81d11" />
+      <circle class="hero-logo-terminal hero-logo-terminal--top" cx="332" cy="116" r="9" fill="#f5f0e7" stroke="#1951A8" stroke-width="5" />
+      <circle class="hero-logo-terminal hero-logo-terminal--bottom" cx="154" cy="674" r="9" fill="#f5f0e7" stroke="#1951A8" stroke-width="5" />
+    </svg>
+  </span>
+</span>
+<script is:inline>
+  (() => {
+    const root = document.documentElement;
+    const motion = matchMedia('(prefers-reduced-motion: reduce)');
+    root.dataset.heroLogo = 'complete';
+    if (motion.matches) return;
+    root.dataset.heroLogo = 'pending';
+
+    const listeners = new AbortController();
+    const options = { signal: listeners.signal };
+    let startTimer;
+    let endTimer;
+    let ready = document.readyState !== 'loading';
+    const finish = () => {
+      clearTimeout(startTimer);
+      clearTimeout(endTimer);
+      root.dataset.heroLogo = 'complete';
+      listeners.abort();
+    };
+    const heroVisible = () => {
+      const hero = document.querySelector('.hero');
+      return hero && hero.getBoundingClientRect().top >= -hero.offsetHeight * .35;
+    };
+    const start = () => {
+      startTimer = undefined;
+      if (motion.matches) return finish();
+      if (document.hidden || !heroVisible()) return;
+      root.dataset.heroLogo = 'running';
+      endTimer = setTimeout(finish, 2150);
+    };
+    const prepare = () => {
+      if (!ready || document.hidden || !heroVisible() || startTimer !== undefined || root.dataset.heroLogo !== 'pending') return;
+      // Let the title land, without waiting for fonts or the photograph to decode.
+      startTimer = setTimeout(start, 850);
+    };
+    const waitForView = () => {
+      clearTimeout(startTimer);
+      clearTimeout(endTimer);
+      startTimer = undefined;
+      root.dataset.heroLogo = 'pending';
+    };
+    addEventListener('scroll', () => {
+      if (!heroVisible()) waitForView();
+      else prepare();
+    }, { ...options, passive: true });
+    addEventListener('pagehide', finish, options);
+    motion.addEventListener('change', () => { if (motion.matches) finish(); }, options);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) waitForView();
+      else prepare();
+    }, options);
+    if (!ready) {
+      document.addEventListener('DOMContentLoaded', () => { ready = true; prepare(); }, { ...options, once: true });
+    } else prepare();
+  })();
+</script>

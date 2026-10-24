@@ -5,8 +5,9 @@ import HeroPhoto from '../components/HeroPhoto.astro';
 import MusicShowcase from '../components/MusicShowcase.astro';
 import ArtistCutout from '../components/ArtistCutout.astro';
 import BrandMark from '../components/BrandMark.astro';
+import HeroBrandMark from '../components/HeroBrandMark.astro';
 import SocialLinks from '../components/SocialLinks.astro';
-import { brandLineAt, brandLinePartsAt } from '../data/brand';
+import { brandLineAt, brandLinePartsAt, brandStringMaskAt } from '../data/brand';
 import { instrumentThreadAt } from '../data/instrument-thread';
 import { artists, site, copy } from '../data/site';
 import { artistInstrumentAt } from '../data/ensemble-thread';
@@ -14,6 +15,7 @@ import '../styles/global.css';
 import { assetPath } from '../lib/asset-path';
 
 const year = new Date().getFullYear();
+const initialLogoMask = brandStringMaskAt(955, 900, .13);
 ---
 <!doctype html>
 <html lang="en">
@@ -38,11 +40,14 @@ const year = new Date().getFullYear();
           clearTimeout(callouts);
           const drawNames = animateCallouts === true && !motion.matches && !document.hidden && scrollY === 0;
           root.dataset.heroCallouts = drawNames ? 'running' : 'complete';
-          if (drawNames) callouts = setTimeout(() => { root.dataset.heroCallouts = 'complete'; }, 1400);
+          if (drawNames) {
+            callouts = setTimeout(() => { root.dataset.heroCallouts = 'complete'; listeners.abort(); }, 1400);
+          } else {
+            listeners.abort();
+          }
           clearTimeout(failOpen);
           clearTimeout(preparation);
           clearTimeout(playback);
-          listeners.abort();
         };
         // Independent of the bundled page script: hidden content always fails open.
         const failOpen = setTimeout(finish, 1500);
@@ -114,11 +119,15 @@ const year = new Date().getFullYear();
               <stop data-rail-light-start offset=".801" stop-color="#f5f0e7" />
               <stop offset="1" stop-color="#f5f0e7" />
             </linearGradient>
+            <mask id="rail-logo-string-mask" maskUnits="userSpaceOnUse" x={initialLogoMask.x} y={initialLogoMask.y} width={initialLogoMask.width} height={initialLogoMask.height} style="mask-type:luminance">
+              <rect data-logo-mask-field x={initialLogoMask.x} y={initialLogoMask.y} width={initialLogoMask.width} height={initialLogoMask.height} fill="#fff" />
+              <path data-logo-triangle-mask d={initialLogoMask.triangle} fill="#000" />
+            </mask>
           </defs>
           <path data-rail-route d="M946 0V60C946 95 735 70 735 115S955 150 955 190V900" stroke="url(#rail-ink)" />
           <path data-rail-chakra d={brandLineAt(955, 900, .13)} visibility="hidden" />
           <g stroke="#f5f0e7" data-rail-symbol>
-            {brandLinePartsAt(955, 900, .13).map((d) => <path data-rail-symbol-part d={d} />)}
+            {brandLinePartsAt(955, 900, .13).map((d, index) => <path data-rail-symbol-part d={d} mask={index === 0 ? 'url(#rail-logo-string-mask)' : undefined} />)}
           </g>
         </svg>
 
@@ -126,10 +135,10 @@ const year = new Date().getFullYear();
           <div class="hero-field" aria-hidden="true"></div>
           <h1 id="hero-heading" aria-label={site.name}>
             <span class="title-mask"><span class="title-top">THE PROJECT</span></span>
-            <span class="title-mask"><span class="title-name">DARB<span class="title-letter-mark"><span class="title-letter-placeholder">A</span><BrandMark class="title-brand-mark" width={335} height={680} /></span>R</span></span>
+            <span class="title-mask"><span class="title-name">DARB<span class="title-letter-mark"><span class="title-letter-placeholder">A</span><HeroBrandMark class="title-brand-mark" width={335} height={680} /></span>R</span></span>
           </h1>
           <p class="hero-caption"><span>{copy.hero.taglineLines[0]}<br /> {copy.hero.taglineLines[1]}</span></p>
-          <div class:list={['hero-figures', { 'hero-figures--original': site.heroImageStyle === 'original-photo' }]} role={site.heroImage ? undefined : 'img'} aria-label={site.heroImage ? undefined : 'Four band silhouettes, awaiting the ensemble photograph'}>
+          <div class:list={['hero-figures', { 'hero-figures--original': site.heroImageStyle === 'original-photo', 'hero-figures--source': site.heroImageStyle === 'source-cutout' }]} role={site.heroImage ? undefined : 'img'} aria-label={site.heroImage ? undefined : 'Four band silhouettes, awaiting the ensemble photograph'}>
             <div class:list={['hero-figures-front', { 'hero-figures-front--source': site.heroImageStyle === 'source-cutout' }]}>
               <div class="hero-entrance">
               {site.heroImage ? site.heroImageStyle === 'source-cutout' ? <HeroPhoto source={site.heroImage} /> : <img class="band-photo" src={assetPath(site.heroImage)} alt="The four members of The Project Darbar with their instruments" fetchpriority="high" /> : <HeroGroup />}
@@ -238,7 +247,7 @@ const year = new Date().getFullYear();
       import { ensembleThreadAt, sequenceInstrumentSpans, type ArtistInstrument } from '../data/ensemble-thread';
       import { soundThreadAt } from '../data/sound-thread';
       import { railOffsets, scrollStrokeDistance, strokePartOffsets, type StrokeAnchor } from '../lib/rail-progress';
-      import { brandLineAt, brandLinePartsAt } from '../data/brand';
+      import { brandLineAt, brandLinePartsAt, brandStringMaskAt } from '../data/brand';
       import { instrumentThreadAt } from '../data/instrument-thread';
 
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -250,6 +259,9 @@ const year = new Date().getFullYear();
       const darkEnd = rail?.querySelector<SVGStopElement>('[data-rail-dark-end]');
       const lightStart = rail?.querySelector<SVGStopElement>('[data-rail-light-start]');
       const railInk = rail?.querySelector<SVGLinearGradientElement>('#rail-ink');
+      const logoStringMask = rail?.querySelector<SVGMaskElement>('#rail-logo-string-mask');
+      const logoMaskField = rail?.querySelector<SVGRectElement>('[data-logo-mask-field]');
+      const logoTriangleMask = rail?.querySelector<SVGPathElement>('[data-logo-triangle-mask]');
       const heroField = document.querySelector<HTMLElement>('.hero-field');
       const sections = ['music', 'about', 'artists', 'contact'].map((id) => document.getElementById(id));
       const hero = document.querySelector<HTMLElement>('.hero');
@@ -375,6 +387,12 @@ const year = new Date().getFullYear();
         route.setAttribute('d', d);
         // Join the thread to the upper terminal of the supplied logo.
         chakra.setAttribute('d', brandLineAt(logoX, logoJoinY, logoScale));
+        const mask = brandStringMaskAt(logoX, logoJoinY, logoScale);
+        for (const key of ['x', 'y', 'width', 'height'] as const) {
+          logoStringMask?.setAttribute(key, String(mask[key]));
+          logoMaskField?.setAttribute(key, String(mask[key]));
+        }
+        logoTriangleMask?.setAttribute('d', mask.triangle);
         const symbolPaths = brandLinePartsAt(logoX, logoJoinY, logoScale);
         symbolParts.forEach((part, index) => part.setAttribute('d', symbolPaths[index]));
         const contact = sections[3];

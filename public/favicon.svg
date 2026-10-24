@@ -1,7 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <mask id="upper-triangle-string-mask" maskUnits="userSpaceOnUse" x="60" y="40" width="380" height="710" style="mask-type:luminance">
+      <rect x="60" y="40" width="380" height="710" fill="#fff" />
+      <path d="M87 160H379L233 397Z" fill="#000" />
+    </mask>
+  </defs>
   <rect width="64" height="64" rx="12" fill="#f5f0e7"/>
   <g transform="translate(1 -1) scale(.13 .085)">
-    <path d="M332 116C346 94 363 58 335 73C269 99 95 247 93 324C89 376 173 397 233 397C292 395 380 330 388 384C406 484 233 660 152 706C122 724 141 694 154 674" fill="none" stroke="#1951A8" stroke-width="14" stroke-linecap="round"/>
+    <path mask="url(#upper-triangle-string-mask)" d="M332 116C346 94 363 58 335 73C269 99 95 247 93 324C89 376 173 397 233 397C292 395 380 330 388 384C406 484 233 660 152 706C122 724 141 694 154 674" fill="none" stroke="#1951A8" stroke-width="14" stroke-linecap="round"/>
     <path d="M87 160H379L233 397ZM120 182 233 382 346 182Z" fill="#c81d11" fill-rule="evenodd"/>
     <path d="M233 397 377 628H93ZM233 414 120 610H347Z" fill="#1951A8" fill-rule="evenodd"/>
     <circle cx="230" cy="263" r="17" fill="#c81d11"/>

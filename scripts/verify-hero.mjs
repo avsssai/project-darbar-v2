@@ -41,6 +41,7 @@ try {
     await instrument(page);
     await page.goto(baseURL, { waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => document.documentElement.dataset.heroEntrance === 'running');
+    await page.waitForFunction(() => document.documentElement.dataset.heroLogo === 'running');
     const timing = await page.evaluate(() => {
       const selectors = ['.title-top', '.title-name', '.hero-entrance'];
       return selectors.map((selector) => {
@@ -50,12 +51,20 @@ try {
     });
     assert.deepEqual(timing.map((t) => t.slice(0, 2)), [['0.6s', '0s'], ['0.72s', '0.08s'], ['0.7s', '0.2s']]);
     assert(timing.every((t) => t[2] === 'cubic-bezier(0.23, 1, 0.32, 1)'));
+    const logoTiming = await page.evaluate(() => {
+      const timingFor = (selector) => getComputedStyle(document.querySelector(selector)).animationDelay;
+      return ['.hero-logo-triangle-trace', '.hero-logo-dot', '.hero-logo-string', '.hero-brand-motion'].map(timingFor);
+    });
+    assert.deepEqual(logoTiming, ['0.32s, 0.77s', '0.32s', '0.8s', '1.4s'], 'Triangles and dot begin together, followed by strings and the damaru twist');
     assert.equal(await page.locator('.hero-bottom a').count(), 0, 'Hero has no redundant listening link');
     assert(await page.locator('.main-nav').isVisible());
     await settled(page);
     await page.waitForFunction(() => document.documentElement.dataset.heroCallouts === 'running');
-    assert(await page.locator('.hero-callout-arrow:not(.hero-callout-arrow--underlay)').evaluateAll((arrows) => arrows.every((arrow) => getComputedStyle(arrow).animationName === 'callout-draw')), 'Arrow strokes draw after the photo settles');
+    assert(await page.locator('.hero-source-photo:visible .hero-callout-arrow:not(.hero-callout-arrow--underlay)').evaluateAll((arrows) => arrows.every((arrow) => getComputedStyle(arrow).animationName === 'callout-draw')), 'Arrow strokes draw after the photo settles');
     await page.waitForFunction(() => document.documentElement.dataset.heroCallouts === 'complete');
+    await page.waitForFunction(() => document.documentElement.dataset.heroLogo === 'complete');
+    assert.equal(await page.evaluate(() => document.documentElement.dataset.heroLogo), 'complete');
+    assert.equal(await page.locator('.hero-brand-motion').evaluate((mark) => getComputedStyle(mark).transform), 'none', 'Logo settles without a residual transform');
     const trace = await page.evaluate(() => ({ states: window.heroStates, shifts: window.heroShifts }));
     assert.deepEqual(trace.states.map((s) => s.state), ['pending', 'running', 'complete']);
     assert(trace.states[2].time - trace.states[1].time <= 1000, '900ms playback plus scheduling tolerance');
@@ -85,7 +94,7 @@ try {
     if (['scroll', 'focus', 'reduced', 'hidden'].includes(scenario)) {
       await page.waitForFunction(() => document.documentElement.dataset.heroEntrance === 'running');
       if (scenario === 'scroll') await page.evaluate(() => scrollTo({ top: 100, behavior: 'instant' }));
-      if (scenario === 'focus') await page.locator('.hero-bottom a').focus();
+      if (scenario === 'focus') await page.locator('.main-nav a').first().focus();
       if (scenario === 'reduced') await page.emulateMedia({ reducedMotion: 'reduce' });
       if (scenario === 'hidden') await page.evaluate(() => {
         Object.defineProperty(document, 'hidden', { configurable: true, value: true });
@@ -115,6 +124,7 @@ try {
   await staticPage.goto(baseURL);
   assert.equal(await staticPage.locator('.hero-entrance').evaluate((element) => getComputedStyle(element).opacity), '1');
   assert.equal(await staticPage.locator('.title-name').evaluate((element) => getComputedStyle(element).transform), 'none');
+  assert.equal(await staticPage.locator('.hero-logo-dot').evaluate((element) => getComputedStyle(element).opacity), '1', 'Logo remains complete without JavaScript');
   assert.equal(await staticPage.locator('[data-artist-stage]').count(), 4);
   assert(await staticPage.locator('.artist-instrument-static').evaluateAll((icons) => icons.every((icon) => getComputedStyle(icon).visibility === 'visible')), 'All instruments remain visible without JavaScript');
   await staticPage.close();
@@ -162,18 +172,25 @@ try {
       };
     });
     assert.equal(layout.overflow, false, `${viewport.width}: horizontal overflow`);
-    assert((await page.locator('.hero-source-photo image').getAttribute('href')).endsWith('/images/band-cutout-clear.webp'), 'Hero uses the supplied transparent four-person cutout');
-    assert((await page.locator('.hero-source-photo image').evaluate((photo) => getComputedStyle(photo).filter)).includes('ensemble-duotone'), 'Hero retains the styled duotone treatment on the clear photograph');
-    assert(await page.locator('.hero-callout-arrow:not(.hero-callout-arrow--underlay)').evaluateAll((arrows) => arrows.every((arrow) => parseFloat(getComputedStyle(arrow).strokeWidth) >= 1.75)), 'Arrow strokes remain legible on phones');
-    assert.deepEqual(await page.locator('.hero-callout-name').allTextContents(), ['Manas', 'Meher', 'Koundinya', 'Mouli']);
-    assert(await page.locator('.hero-callout-name').evaluateAll((names) => names.every((name) => {
+    assert.equal(await page.locator('.hero-brand-motion').evaluate((mark) => getComputedStyle(mark).animationName), 'none', 'Reduced motion skips the logo twist');
+    assert((await page.locator('.hero-source-photo:visible image').getAttribute('href')).endsWith('/images/band-cutout-clear.webp'), 'Hero uses the supplied transparent four-person cutout');
+    assert((await page.locator('.hero-source-photo:visible image').evaluate((photo) => getComputedStyle(photo).filter)).includes('ensemble-duotone'), 'Hero retains the styled duotone treatment on the clear photograph');
+    assert(await page.locator('.hero-source-photo:visible .hero-callout-arrow:not(.hero-callout-arrow--underlay)').evaluateAll((arrows) => arrows.every((arrow) => parseFloat(getComputedStyle(arrow).strokeWidth) >= 1.75)), 'Arrow strokes remain legible on phones');
+    assert.deepEqual(await page.locator('.hero-source-photo:visible .hero-callout-name').allTextContents(), ['Manas', 'Meher', 'Koundinya', 'Mouli']);
+    assert(await page.locator('.hero-source-photo:visible .hero-callout-name').evaluateAll((names) => names.every((name) => {
       const box = name.getBoundingClientRect();
       return box.left >= 0 && box.right <= innerWidth && box.height >= 12 && getComputedStyle(name).opacity === '1';
     })), 'Handwritten names remain readable, visible, and inside the viewport');
     assert.equal(await page.locator('.music-play-disc svg').count(), 5, 'Play controls use SVG on every platform');
     assert.equal(await page.locator('.showcase-arrows button svg').count(), 2, 'Navigation arrows use SVG');
     if (viewport.width <= 760) {
-      assert(await page.locator('.hero-caption').isVisible(), 'Mobile caption has its own space');
+      assert.equal(await page.locator('.hero-caption').isVisible(), false, 'Mobile hero omits the Carnatic roots tagline');
+      assert(Math.abs(layout.hero.height - viewport.height) <= 1, 'Mobile hero fills 100dvh');
+      assert.equal(await page.locator('.hero-source-photo--desktop').isVisible(), false);
+      assert(await page.locator('.hero-source-photo--mobile').isVisible());
+      assert(await page.locator('.hero-figures--source').evaluate((frame) => Math.abs(frame.getBoundingClientRect().height - innerHeight) <= 1), 'Image layer is genuinely 100dvh');
+      assert.equal(await page.locator('.hero-source-photo--mobile .hero-callout--keys .hero-callout-name').evaluate((name) => getComputedStyle(name).fill), 'rgb(245, 240, 231)', 'Manas stays white on mobile');
+      assert(await page.locator('.hero-source-photo--mobile .hero-callout:not(.hero-callout--keys) .hero-callout-name').evaluateAll((names) => names.every((name) => getComputedStyle(name).fill === 'rgb(35, 53, 79)')), 'Other mobile names use blue');
       const targets = await page.locator('.main-nav a, .header-book, .showcase-arrows button').evaluateAll((links) => links.map((link) => link.getBoundingClientRect().height));
       assert(targets.every((height) => height >= 44), 'Mobile controls have 44px touch targets');
       const controls = await page.locator('.showcase-navigation').evaluate((element) => {
