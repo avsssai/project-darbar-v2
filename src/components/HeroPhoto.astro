@@ -6,19 +6,22 @@ const { source } = Astro.props;
 // Continue the existing, source-aligned head/shoulder masks down to the waist.
 // The photograph itself is never repainted, warped, or reconstructed.
 const bodies = {
-  violin: '1200,690 1187,750 1169,780 1163,840 1000,840 997,710',
-  keys: '810,710 807,800 800,840 570,840 565,720',
-  guitar: '1370,720 1357,795 1350,840 1180,840 1178,710',
-  drums: '1012,740 1006,840 791,840 796,740',
+  violin: 'C1200 672 1196 707 1183 736 C1175 755 1163 771 1159 790 L1156 840 L1000 840 C999 790 996 705 1000 640 Z',
+  keys: 'C807 683 807 724 803 761 L798 840 L578 840 L577 790 C583 763 591 725 594 701 L598 675 C588 669 580 660 576 650 L576 640 Z',
+  guitar: 'C1363 696 1358 747 1347 784 L1343 840 L1200 840 C1206 781 1208 719 1199 650 Z',
+  drums: 'C1003 691 1008 737 1002 780 L998 840 L793 840 C791 782 791 704 797 650 Z',
 };
 ---
-<svg class="hero-source-photo" viewBox="550 330 900 510" preserveAspectRatio="xMidYMin meet" role="img" aria-label="The four members of The Project Darbar with their instruments">
+<svg class="hero-source-photo" viewBox="0 0 1454 1082" preserveAspectRatio="xMidYMin slice" role="img" aria-label="The four members of The Project Darbar with their instruments">
   <defs>
     <clipPath id="hero-photo-clip" clipPathUnits="userSpaceOnUse">
-      {artists.map((artist) => <polygon points={artist.cutout!.outline + ' ' + bodies[artist.instrument]} />)}
+      {artists.map((artist) => <path d={artist.cutout!.outline.replace(/Z$/, '') + ' ' + bodies[artist.instrument]} />)}
       <!-- Keep the photographed guitar neck and headstock with its player. -->
-      <polygon points="1240,820 1284,692 1381,513 1402,501 1428,506 1433,527 1417,550 1317,736 1294,840" />
+      <path d="M1170 840 L1373 550 L1376 542 L1375 537 L1370 537 C1367 537 1367 534 1370 531 L1374 530 L1380 535 L1385 529 L1386 524 C1380 526 1381 522 1384 518 L1390 512 C1393 511 1395 516 1394 520 L1399 514 L1402 510 L1402 504 C1405 501 1408 505 1407 509 L1412 507 C1417 507 1422 511 1424 515 C1420 518 1418 522 1423 526 L1410 542 L1416 547 L1422 542 C1426 540 1429 543 1426 548 L1422 552 L1414 548 L1403 552 L1401 555 L1408 562 L1415 559 C1419 558 1420 562 1416 565 L1411 569 L1405 565 L1400 560 L1397 563 C1390 566 1386 570 1382 572 L1193 840 Z" />
     </clipPath>
   </defs>
+  <!-- Uniform alignment to main’s 1454 × 1082 poster canvas; no facial stretching. -->
+  <g transform="matrix(1.2115384615 0 0 1.2115384615 -477.3076923 -342.5)">
   <image class="band-photo" href={assetPath(source)} width="2016" height={3944 * 2016 / 6456} clip-path="url(#hero-photo-clip)" />
+  </g>
 </svg>

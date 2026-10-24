@@ -111,7 +111,7 @@ main { position: relative; }
   transform: translateY(var(--title-shift, 0px));
 }
 .title-mask { display: block; overflow: hidden; padding-bottom: .035em; }
-.title-top { display: block; font-size: min(3.3vw, 5svh); line-height: 1.3; letter-spacing: .2em; }
+.title-top { display: block; font-size: min(5.25vw, 8svh); letter-spacing: .12em; }
 .title-name { display: block; font-size: min(26vw, 42svh); letter-spacing: -.035em; margin-top: .01em; }
 .title-letter-mark { display: inline-block; position: relative; }
 .title-letter-placeholder { visibility: hidden; }
@@ -137,6 +137,7 @@ main { position: relative; }
   width: 124%; max-width: none; margin-inline: -12%;
   filter: url('#ensemble-duotone');
 }
+.hero-figures svg.hero-source-photo { width: 124%; max-width: none; margin-inline: -12%; }
 .hero-source-photo image { filter: url('#ensemble-duotone'); }
 .hero-figures--original { width: min(56%, 580px); height: 60%; }
 .hero-figures--original .hero-figures-front { filter: none; }
@@ -155,13 +156,11 @@ main { position: relative; }
   justify-content: space-between; align-items: end; gap: 20px; color: var(--paper);
 }
 .hero-bottom p { max-width: 135px; font-size: 10px; font-weight: 500; letter-spacing: .16em; line-height: 1.8; }
-.hero-bottom .quiet-link { min-height: 48px; padding: 12px 20px; border: 1px solid var(--poster-edge); border-radius: 999px; background: var(--paper); color: var(--poster-blue); font-size: 12px; letter-spacing: .02em; transition: transform 120ms var(--ease-out); }
-.hero-bottom .quiet-link:active { transform: scale(.97); opacity: 1; }
+.hero-bottom .quiet-link { color: var(--paper); }
 .hero-bottom :focus-visible { outline-color: #fff; }
 .quiet-link { display: inline-flex; gap: 14px; align-items: center; border-bottom: 1px solid currentColor; padding-bottom: 7px; color: var(--poster-blue); font-size: 10px; font-weight: 500; letter-spacing: .07em; white-space: nowrap; }
 @media (hover: hover) and (pointer: fine) {
   .quiet-link:hover { opacity: .65; }
-  .hero-bottom .quiet-link:hover { opacity: 1; background: var(--paper); }
 }
 .chapter-index, .section-note, .artist-number, .artist-row p {
   font-size: 10px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase;
@@ -333,7 +332,7 @@ main { position: relative; }
   .main-nav a, .header-book { font-size: 9px; letter-spacing: .025em; }
   .hero { --field-start: 52%; height: auto; min-height: 0; padding-top: 26px; }
   .hero h1 { position: relative; inset: auto; }
-  .title-top { font-size: 4.5vw; line-height: 1.6; }
+  .title-top { font-size: 6vw; }
   .title-name { font-size: 26vw; margin-top: 8px; }
   .hero-caption { display: none; }
   .hero-figures { position: relative; left: auto; bottom: auto; transform: none; width: 94%; height: auto; aspect-ratio: 920 / 510; margin: -13vw auto 0; }
@@ -505,7 +504,7 @@ section.chapter-music h2 em { -webkit-text-stroke-width: 1px; }
   .hero-caption br { display: none; }
   .hero-bottom { order: 3; padding: 24px 7% 32px; gap: 20px; align-items: center; }
   .hero-bottom p { font-size: 9px; line-height: 1.8; }
-  .hero-bottom .quiet-link { font-size: 11px; min-height: 48px; align-items: center; padding: 12px 18px; }
+  .hero-bottom .quiet-link { font-size: 11px; min-height: 44px; align-items: center; padding-block: 10px; }
   .chapter { padding-left: 7%; padding-right: 16%; }
   .quiet-link { font-size: 11px; min-height: 44px; align-items: center; white-space: normal; }
   .music-channel { line-height: 1.7; }
@@ -533,7 +532,6 @@ section.chapter-music h2 em { -webkit-text-stroke-width: 1px; }
 .sound-notes h2 > span { display: block; }
 .sound-notes h2 em { display: inline-block; color: var(--poster-red); font-family: 'Italiana', 'Times New Roman', serif; font-style: italic; font-weight: 400; letter-spacing: -.055em; transform: rotate(-4deg); }
 .sound-refrain { max-width: 34ch; margin-top: 28px; color: var(--muted); font-size: clamp(14px, 1.25vw, 18px); line-height: 1.7; }
-.hero-caption { top: auto; bottom: calc(100% - var(--field-start) + 20px); max-width: 170px; }
 
 /* The instrument has its own measured stage, clear of the portrait and copy. */
 .artist-row { grid-template-columns: 40px minmax(0, 1fr) 264px; gap: 24px; padding-block: 28px; }
@@ -556,7 +554,6 @@ section.chapter-music h2 em { -webkit-text-stroke-width: 1px; }
   .sound-notes { padding: 44px 16% 48px 7%; }
   .sound-notes h2 { font-size: clamp(34px, 8.7vw, 64px); line-height: 1.1; }
   .sound-refrain { margin-top: 20px; font-size: 14px; }
-  .hero-caption { bottom: auto; max-width: none; }
   .artist-row { grid-template-columns: minmax(0, 1fr); gap: 16px; padding-block: 28px 32px; }
   .artist-number { grid-column: 1; grid-row: 1; }
   .artist-media { grid-column: 1; grid-row: 2; gap: 16px; width: min(100%, 240px); }

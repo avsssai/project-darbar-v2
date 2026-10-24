@@ -55,7 +55,7 @@ test('the musician order retains the correct portrait, instrument, and name emph
     ['violin', 'Koundinya', '995 340 205 300'],
     ['keys', 'Manas', '558 375 250 265'],
     ['guitar', 'Mouli', '1175 385 195 265'],
-    ['drums', 'Meher', '793 385 215 265'],
+    ['drums', 'Meher', '788 385 220 265'],
   ]);
   for (const artist of artists) assert(artist.name.includes(artist.highlight));
 });
@@ -106,5 +106,19 @@ test('hero and every portrait use the clear source photograph rather than genera
   for (const artist of artists) {
     assert.equal(artist.image, site.heroImage);
     assert(Math.abs(artist.cutout.sourceWidth / artist.cutout.sourceHeight - 6456 / 3944) < 1e-10, 'Source framing preserves photographic proportions');
+  }
+});
+
+test('portrait contours are closed curves inside the chest-up crop bounds', () => {
+  for (const { name, cutout } of artists) {
+    assert(cutout.outline.startsWith('M') && cutout.outline.endsWith('Z'), `${name}: closed SVG path`);
+    assert(cutout.outline.includes('C'), `${name}: curved hair and shoulder contour`);
+    const [x, y, width, height] = cutout.viewBox.split(' ').map(Number);
+    const values = coordinates(cutout.outline);
+    assert.equal(values.length % 2, 0);
+    for (let i = 0; i < values.length; i += 2) {
+      assert(values[i] >= x && values[i] <= x + width, `${name}: contour remains in crop horizontally`);
+      assert(values[i + 1] >= y && values[i + 1] <= y + height, `${name}: contour remains in crop vertically`);
+    }
   }
 });

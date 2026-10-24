@@ -4,7 +4,7 @@
 
 The hero and all four ensemble portraits use `public/images/band-source-clear.webp`, the high-quality export of the user's clear temple photograph described below. `site.heroImageStyle` is `source-cutout`.
 
-`HeroPhoto.astro` displays the actual photograph inside a native SVG mask. It reuses the source-aligned portrait contours, extends the clothing to the waist, and includes the photographed guitar neck. No generative face correction, replacement, warping, or reconstruction is applied. The source image keeps its exact aspect ratio and the hero SVG uses `preserveAspectRatio="xMidYMin meet"`, keeping all four faces in frame. The hero applies the established warm duotone and parchment edge to the photograph. This is a display-only color treatment; the clear source faces and proportions are preserved without regeneration.
+`HeroPhoto.astro` displays the actual photograph inside a native SVG mask with curved source contours. It reuses the source-aligned portrait contours, extends the clothing to the waist, and includes the photographed guitar neck. No generative face correction, replacement, warping, or reconstruction is applied. The source image keeps its exact aspect ratio and the hero SVG uses main’s original 1454×1082 poster canvas and `preserveAspectRatio="xMidYMin slice"`, together with the same 124% image sizing. A uniform source transform aligns the new photograph to that frame without stretching faces. The hero applies the established warm duotone and parchment edge to the photograph. This is a display-only color treatment; the clear source faces and proportions are preserved without regeneration.
 
 The prior generated `band-cutout-v1.png` and `band-cutout-v2.png` remain as historical assets, but neither is used by the current hero or portraits. Their generation prompts below document their provenance rather than current usage.
 
@@ -36,9 +36,9 @@ All five AVIF thumbnails were recovered from cached responses matching the suppl
 
 The user supplied a clearer 6456×3944 temple photograph on October 24, 2026. `public/images/band-source-clear.webp` is its high-quality WebP delivery export at 3228×1972, preserving the original framing and aspect ratio. The export uses WebP quality 94; no generative face edits or reconstruction were performed.
 
-The four chest-up portraits use this single shared photograph through `ArtistCutout.astro`. Per-member SVG viewBoxes and polygon masks in `src/data/site.ts` isolate the hair, face, shoulders, and upper chest without changing facial geometry. Source dimensions are explicit, so the component no longer assumes the old generated PNG's proportions. Desktop portrait width is 120px, with 104px portraits beside the instrument stages on mobile. The established warm duotone, parchment keyline, names, ordering, and scroll-driven instrument drawings remain.
+The four chest-up portraits use this single shared photograph through `ArtistCutout.astro`. Per-member SVG viewBoxes and closed Bézier masks in `src/data/site.ts` isolate the hair, face, shoulders, and upper chest without changing facial geometry. Source dimensions are explicit, so the component preserves the photograph’s proportions. The contours were checked using enlarged source overlays and rendered duotone previews; these are manual traces, not a claim of pixel-perfect hair segmentation. Desktop portrait width is 120px, with 104px portraits beside the instrument stages on mobile. The established warm duotone, parchment keyline, names, ordering, and scroll-driven instrument drawings remain.
 
-The hero also uses this clear photograph, through the native SVG mask described above.
+The hero also uses this clear photograph, through the native SVG mask with curved source contours described above.
 
 ## Supplied logo
 

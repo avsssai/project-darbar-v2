@@ -13,7 +13,7 @@ const { source, sourceWidth, sourceHeight, viewBox, outline, label, clipId } = A
 ---
 <span class="artist-portrait">
   <svg class="artist-cutout" viewBox={viewBox} preserveAspectRatio="xMidYMax meet" role="img" aria-label={label} xmlns="http://www.w3.org/2000/svg">
-    <defs><clipPath id={clipId} clipPathUnits="userSpaceOnUse"><polygon points={outline} /></clipPath></defs>
+    <defs><clipPath id={clipId} clipPathUnits="userSpaceOnUse"><path d={outline} /></clipPath></defs>
     <image href={assetPath(source)} width={sourceWidth} height={sourceHeight} clip-path={`url(#${clipId})`} aria-hidden="true" />
   </svg>
 </span>
