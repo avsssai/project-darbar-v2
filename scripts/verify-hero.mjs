@@ -64,7 +64,7 @@ try {
     const page = await browser.newPage();
     await instrument(page);
     if (scenario === 'slow-image' || scenario === 'failed-image') {
-      await page.route('**/band-cutout-v2.png', async (route) => {
+      await page.route('**/band-source-clear.webp', async (route) => {
         if (scenario === 'failed-image') return route.abort();
         await new Promise((resolve) => setTimeout(resolve, 1100));
         await route.continue();
@@ -122,6 +122,11 @@ try {
     await mockYoutube(page);
     await page.goto(baseURL, { waitUntil: 'networkidle' });
     await page.evaluate(() => document.fonts.ready);
+    const bandPhotoLoaded = await page.locator('.band-photo').evaluateAll(async (photos) => (await Promise.all(photos.map(async (photo) => {
+      const probe = new Image();
+      probe.src = photo.getAttribute('href') || photo.getAttribute('src');
+      try { await probe.decode(); return probe.naturalWidth > 0; } catch { return false; }
+    }))).some(Boolean));
     const layout = await page.evaluate(() => {
       const box = (selector) => {
         const { x, y, width, height, bottom, right } = document.querySelector(selector).getBoundingClientRect();
@@ -136,7 +141,7 @@ try {
         hero: box('.hero'), header: box('.site-header'), band: box('.hero-figures'), field: box('.hero-field'),
         title: { x: titleInk.x, right: titleInk.right },
         figureCount: document.querySelectorAll('.hero-figures .figure').length,
-        bandPhotoLoaded: [...document.querySelectorAll('.band-photo')].some((photo) => photo.complete && photo.naturalWidth > 0),
+
         nav: [...document.querySelectorAll('.site-header a')].map((a) => {
           const r = a.getBoundingClientRect();
           return { x: r.x, right: r.right, y: r.y, bottom: r.bottom };
@@ -154,6 +159,7 @@ try {
       };
     });
     assert.equal(layout.overflow, false, `${viewport.width}: horizontal overflow`);
+    assert.equal(await page.locator('.hero-source-photo image').getAttribute('href'), await page.locator('.artist-cutout image').first().getAttribute('href'), 'Hero and portraits share the clear original photograph');
     assert.equal(await page.locator('.music-play-disc svg').count(), 5, 'Play controls use SVG on every platform');
     assert.equal(await page.locator('.showcase-arrows button svg').count(), 2, 'Navigation arrows use SVG');
     if (viewport.width <= 760) {
@@ -175,7 +181,7 @@ try {
     assert(layout.fieldPattern.includes('paisley-ink.svg'), 'Local textile pattern is present');
     if (!layout.originalPhoto) assert(layout.keyline.includes('ensemble-edge'), 'Cutout ensemble retains its printed keyline');
     assert(Math.abs(layout.inkBoundary - (layout.field.y - layout.header.height)) <= 1, 'Thread changes ink at the background divide');
-    assert(layout.bandPhotoLoaded || layout.figureCount === 4, 'Approved ensemble photo or four silhouette fallback loads');
+    assert(bandPhotoLoaded || layout.figureCount === 4, 'Approved ensemble photo or four silhouette fallback loads');
     assert.equal(await page.locator('.social-links--header a').count(), 2, 'Both header social links are visible');
     assert.equal(await page.locator('.social-links--footer a').count(), 2, 'Both footer social links are visible');
     assert.equal(await page.locator('.chakra-caption, .sound-thread > span, .mobile-finale > span').count(), 0, 'Thread helper captions are removed');

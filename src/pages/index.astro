@@ -1,6 +1,7 @@
 ---
 import Icon from '../components/Icon.astro';
 import HeroGroup from '../components/HeroGroup.astro';
+import HeroPhoto from '../components/HeroPhoto.astro';
 import MusicShowcase from '../components/MusicShowcase.astro';
 import ArtistCutout from '../components/ArtistCutout.astro';
 import BrandMark from '../components/BrandMark.astro';
@@ -54,9 +55,11 @@ const year = new Date().getFullYear();
           preparation = setTimeout(finish, 500);
           try {
             const photo = document.querySelector('.band-photo');
+            const photoProbe = photo instanceof HTMLImageElement ? photo : new Image();
+            if (photo && photoProbe !== photo) photoProbe.src = photo.getAttribute('href');
             const fonts = document.fonts.load('16px Italiana');
-            await Promise.all([fonts, photo ? photo.decode() : Promise.resolve()]);
-            if (!document.fonts.check('16px Italiana') || (photo && !photo.naturalWidth)) return finish();
+            await Promise.all([fonts, photo ? photoProbe.decode() : Promise.resolve()]);
+            if (!document.fonts.check('16px Italiana') || (photo && !photoProbe.naturalWidth)) return finish();
             // Commit the pending pose before starting, even with cached assets.
             requestAnimationFrame(() => requestAnimationFrame(() => {
               if (root.dataset.heroEntrance !== 'pending') return;
@@ -122,7 +125,7 @@ const year = new Date().getFullYear();
           <div class:list={['hero-figures', { 'hero-figures--original': site.heroImageStyle === 'original-photo' }]} role={site.heroImage ? undefined : 'img'} aria-label={site.heroImage ? undefined : 'Four band silhouettes, awaiting the ensemble photograph'}>
             <div class="hero-figures-front">
               <div class="hero-entrance">
-              {site.heroImage ? <img class="band-photo" src={assetPath(site.heroImage)} alt="The four members of The Project Darbar with their instruments" fetchpriority="high" /> : <HeroGroup />}
+              {site.heroImage ? site.heroImageStyle === 'source-cutout' ? <HeroPhoto source={site.heroImage} /> : <img class="band-photo" src={assetPath(site.heroImage)} alt="The four members of The Project Darbar with their instruments" fetchpriority="high" /> : <HeroGroup />}
               </div>
             </div>
           </div>

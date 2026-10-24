@@ -1,15 +1,12 @@
 # Media sources
 
-## Current ensemble image — temporary v2
+## Current hero — original source photograph
 
-- Current hero: `public/images/band-cutout-v2.png`, a transparent PNG generated with built-in `image_gen` edit mode.
-- Primary identity reference: the user-supplied video https://www.youtube.com/watch?v=5FVp1YWyd28, whose 360×202 thumbnail is saved as `public/images/band-source.png` and `public/images/music/5FVp1YWyd28.avif`.
-- Supporting identity reference: the user-supplied video https://www.youtube.com/watch?v=H-3IpmyzSzk, whose thumbnail is saved as `public/images/band-source-beach.png` and `public/images/music/H-3IpmyzSzk.avif`.
-- Edit target: `public/images/band-cutout-v1.png`. The revision asks for face/head/hair correction while preserving its clothes, instruments, poses, arrangement, and transparency.
-- The user initially approved v1, then noticed altered faces. After an interim switch to the original photograph, they explicitly requested keeping the cutout with improved faces for now and supplying a better photograph later.
-- V2 is a temporary AI-assisted likeness revision, not an exact photographic extraction. The low-resolution references do not support reliable reconstruction of facial details. No exact identity match is claimed.
-- `site.heroImage` points to `/images/band-cutout-v2.png`, with `heroImageStyle: cutout`. The site applies the maroon duotone, ochre edge, and torso crop in CSS/SVG.
-- The original source pixels and v1 remain available. `heroImageStyle: original-photo` disables the cutout treatment when displaying an unaltered photograph; clearing `heroImage` restores the silhouettes.
+The hero and all four ensemble portraits use `public/images/band-source-clear.webp`, the high-quality export of the user's clear temple photograph described below. `site.heroImageStyle` is `source-cutout`.
+
+`HeroPhoto.astro` displays the actual photograph inside a native SVG mask. It reuses the source-aligned portrait contours, extends the clothing to the waist, and includes the photographed guitar neck. No generative face correction, replacement, warping, or reconstruction is applied. The source image keeps its exact aspect ratio and the hero SVG uses `preserveAspectRatio="xMidYMin meet"`, keeping all four faces in frame. The hero uses the photograph's original colors with the existing parchment edge; it does not apply the duotone filter to the faces.
+
+The prior generated `band-cutout-v1.png` and `band-cutout-v2.png` remain as historical assets, but neither is used by the current hero or portraits. Their generation prompts below document their provenance rather than current usage.
 
 ### Initial cutout prompt (v1)
 
@@ -41,7 +38,7 @@ The user supplied a clearer 6456×3944 temple photograph on October 24, 2026. `p
 
 The four chest-up portraits use this single shared photograph through `ArtistCutout.astro`. Per-member SVG viewBoxes and polygon masks in `src/data/site.ts` isolate the hair, face, shoulders, and upper chest without changing facial geometry. Source dimensions are explicit, so the component no longer assumes the old generated PNG's proportions. Desktop portrait width is 120px, with 104px portraits beside the instrument stages on mobile. The established warm duotone, parchment keyline, names, ordering, and scroll-driven instrument drawings remain.
 
-The hero still uses the temporary v2 group cutout described above; the clearer photograph currently replaces the individual ensemble portraits only.
+The hero also uses this clear photograph, through the native SVG mask described above.
 
 ## Supplied logo
 

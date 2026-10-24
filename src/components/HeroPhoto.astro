@@ -1,0 +1,24 @@
+---
+import { assetPath } from '../lib/asset-path';
+import { artists } from '../data/site';
+interface Props { source: string }
+const { source } = Astro.props;
+// Continue the existing, source-aligned head/shoulder masks down to the waist.
+// The photograph itself is never repainted, warped, or reconstructed.
+const bodies = {
+  violin: '1200,690 1187,750 1169,780 1163,840 1000,840 997,710',
+  keys: '810,710 807,800 800,840 570,840 565,720',
+  guitar: '1370,720 1357,795 1350,840 1180,840 1178,710',
+  drums: '1012,740 1006,840 791,840 796,740',
+};
+---
+<svg class="hero-source-photo" viewBox="550 330 900 510" preserveAspectRatio="xMidYMin meet" role="img" aria-label="The four members of The Project Darbar with their instruments">
+  <defs>
+    <clipPath id="hero-photo-clip" clipPathUnits="userSpaceOnUse">
+      {artists.map((artist) => <polygon points={artist.cutout!.outline + ' ' + bodies[artist.instrument]} />)}
+      <!-- Keep the photographed guitar neck and headstock with its player. -->
+      <polygon points="1240,820 1284,692 1381,513 1402,501 1428,506 1433,527 1417,550 1317,736 1294,840" />
+    </clipPath>
+  </defs>
+  <image class="band-photo" href={assetPath(source)} width="2016" height={3944 * 2016 / 6456} clip-path="url(#hero-photo-clip)" />
+</svg>

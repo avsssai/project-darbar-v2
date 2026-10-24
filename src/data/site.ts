@@ -7,8 +7,8 @@ export const site = {
   title: 'The Project Darbar | Indian Classical & Contemporary Fusion Band',
   description:
     'Meet The Project Darbar, an instrumental band bringing Carnatic melodies together with piano, guitar, and drums. Listen, meet the musicians, and plan a performance.',
-  heroImage: '/images/band-cutout-v2.png',
-  heroImageStyle: 'cutout' as 'cutout' | 'original-photo',
+  heroImage: '/images/band-source-clear.webp',
+  heroImageStyle: 'source-cutout' as 'source-cutout' | 'cutout' | 'original-photo',
   email: 'theprojectdarbar@gmail.com',
   phone: '+917674918647',
   phoneLabel: '+91 76749 18647',

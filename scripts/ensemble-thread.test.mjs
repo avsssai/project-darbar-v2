@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { artistInstruments, artistInstrumentAt, ensembleThreadAt, sequenceInstrumentSpans } from '../src/data/ensemble-thread.ts';
-import { artists } from '../src/data/site.ts';
+import { artists, site } from '../src/data/site.ts';
 import { scrollStrokeDistance } from '../src/lib/rail-progress.ts';
 
 const coordinates = (path) => path.match(/-?\d+(?:\.\d+)?/g).map(Number);
@@ -97,5 +97,14 @@ test('overlapping visible stages receive ordered scroll spans with no skipped dr
       assert.equal(scrollStrokeDistance(span.scrollEnd, anchors), span.end);
       assert(Math.abs(scrollStrokeDistance((span.scrollStart + span.scrollEnd) / 2, anchors) - (span.start + span.end) / 2) < 1e-8);
     }
+  }
+});
+
+test('hero and every portrait use the clear source photograph rather than generated faces', () => {
+  assert.equal(site.heroImageStyle, 'source-cutout');
+  assert.equal(site.heroImage, '/images/band-source-clear.webp');
+  for (const artist of artists) {
+    assert.equal(artist.image, site.heroImage);
+    assert(Math.abs(artist.cutout.sourceWidth / artist.cutout.sourceHeight - 6456 / 3944) < 1e-10, 'Source framing preserves photographic proportions');
   }
 });
