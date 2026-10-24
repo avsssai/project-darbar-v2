@@ -1,17 +1,21 @@
 ---
 import Icon from '../components/Icon.astro';
 import HeroGroup from '../components/HeroGroup.astro';
+import HeroPhoto from '../components/HeroPhoto.astro';
 import MusicShowcase from '../components/MusicShowcase.astro';
 import ArtistCutout from '../components/ArtistCutout.astro';
 import BrandMark from '../components/BrandMark.astro';
+import HeroBrandMark from '../components/HeroBrandMark.astro';
 import SocialLinks from '../components/SocialLinks.astro';
-import { brandLineAt, brandLinePartsAt } from '../data/brand';
+import { brandLineAt, brandLinePartsAt, brandStringMaskAt } from '../data/brand';
 import { instrumentThreadAt } from '../data/instrument-thread';
-import { artists, site } from '../data/site';
+import { artists, site, copy } from '../data/site';
+import { artistInstrumentAt } from '../data/ensemble-thread';
 import '../styles/global.css';
 import { assetPath } from '../lib/asset-path';
 
 const year = new Date().getFullYear();
+const initialLogoMask = brandStringMaskAt(955, 900, .13);
 ---
 <!doctype html>
 <html lang="en">
@@ -23,17 +27,25 @@ const year = new Date().getFullYear();
         const motion = matchMedia('(prefers-reduced-motion: reduce)');
         const navigation = performance.getEntriesByType('navigation')[0];
         root.dataset.heroEntrance = 'complete';
+        root.dataset.heroCallouts = 'complete';
         if (motion.matches || location.hash || scrollY > 0 || navigation?.type === 'back_forward' || document.hidden) return;
         root.dataset.heroEntrance = 'pending';
+        root.dataset.heroCallouts = 'pending';
         const listeners = new AbortController();
-        let preparation;
         let playback;
-        const finish = () => {
+        let callouts;
+        const finish = (animateCallouts = false) => {
           root.dataset.heroEntrance = 'complete';
+          clearTimeout(callouts);
+          const drawNames = animateCallouts === true && !motion.matches && !document.hidden && scrollY === 0;
+          root.dataset.heroCallouts = drawNames ? 'running' : 'complete';
+          if (drawNames) {
+            callouts = setTimeout(() => { root.dataset.heroCallouts = 'complete'; listeners.abort(); }, 1400);
+          } else {
+            listeners.abort();
+          }
           clearTimeout(failOpen);
-          clearTimeout(preparation);
           clearTimeout(playback);
-          listeners.abort();
         };
         // Independent of the bundled page script: hidden content always fails open.
         const failOpen = setTimeout(finish, 1500);
@@ -48,28 +60,21 @@ const year = new Date().getFullYear();
           if (event.target.closest?.('.hero, .site-header, #main')) finish();
         }, options);
         motion.addEventListener('change', () => { if (motion.matches) finish(); }, options);
-        document.addEventListener('DOMContentLoaded', async () => {
+        document.addEventListener('DOMContentLoaded', () => {
           if (root.dataset.heroEntrance !== 'pending') return;
-          preparation = setTimeout(finish, 500);
-          try {
-            const photo = document.querySelector('.band-photo');
-            const fonts = document.fonts.load('16px Italiana');
-            await Promise.all([fonts, photo ? photo.decode() : Promise.resolve()]);
-            if (!document.fonts.check('16px Italiana') || (photo && !photo.naturalWidth)) return finish();
-            // Commit the pending pose before starting, even with cached assets.
-            requestAnimationFrame(() => requestAnimationFrame(() => {
-              if (root.dataset.heroEntrance !== 'pending') return;
-              if (scrollY > 0 || location.hash || motion.matches || document.hidden) return finish();
-              clearTimeout(preparation);
-              root.dataset.heroEntrance = 'running';
-              playback = setTimeout(finish, 900);
-            }));
-          } catch { finish(); }
+          // Start the title even when an image or font is slow or unavailable.
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            if (root.dataset.heroEntrance !== 'pending') return;
+            if (scrollY > 0 || location.hash || motion.matches || document.hidden) return finish();
+            clearTimeout(failOpen);
+            root.dataset.heroEntrance = 'running';
+            playback = setTimeout(() => finish(true), 900);
+          }));
         }, { ...options, once: true });
       })();
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#faf7f2" />
+    <meta name="theme-color" content="#f5f0e7" />
     <meta name="description" content={site.description} />
     <meta property="og:title" content={site.name} />
     <meta property="og:description" content={site.description} />
@@ -77,7 +82,7 @@ const year = new Date().getFullYear();
     <link rel="icon" type="image/svg+xml" href={assetPath('/favicon.svg')} />
     <link rel="preload" href={assetPath('/fonts/italiana-latin-400.woff2')} as="font" type="font/woff2" crossorigin />
     {site.heroImage && <link rel="preload" href={assetPath(site.heroImage)} as="image" fetchpriority="high" />}
-    <title>{site.name} — Carnatic fusion</title>
+    <title>{site.title}</title>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -94,20 +99,24 @@ const year = new Date().getFullYear();
         <svg class="journey-rail" viewBox="0 0 1000 1000" preserveAspectRatio="none" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <linearGradient id="rail-ink" x1="0" y1="0" x2="0" y2="1000" gradientUnits="userSpaceOnUse">
-              <stop offset="0" stop-color="#782b3a" />
-              <stop data-hero-dark-end offset=".1" stop-color="#782b3a" />
-              <stop data-hero-light-start offset=".101" stop-color="#dca83c" />
-              <stop data-hero-light-end offset=".18" stop-color="#dca83c" />
-              <stop data-hero-dark-start offset=".181" stop-color="#782b3a" />
-              <stop data-rail-dark-end offset=".8" stop-color="#782b3a" />
-              <stop data-rail-light-start offset=".801" stop-color="#fff" />
-              <stop offset="1" stop-color="#fff" />
+              <stop offset="0" stop-color="#344b70" />
+              <stop data-hero-dark-end offset=".1" stop-color="#344b70" />
+              <stop data-hero-light-start offset=".101" stop-color="#d8bc91" />
+              <stop data-hero-light-end offset=".18" stop-color="#d8bc91" />
+              <stop data-hero-dark-start offset=".181" stop-color="#344b70" />
+              <stop data-rail-dark-end offset=".8" stop-color="#344b70" />
+              <stop data-rail-light-start offset=".801" stop-color="#f5f0e7" />
+              <stop offset="1" stop-color="#f5f0e7" />
             </linearGradient>
+            <mask id="rail-logo-string-mask" maskUnits="userSpaceOnUse" x={initialLogoMask.x} y={initialLogoMask.y} width={initialLogoMask.width} height={initialLogoMask.height} style="mask-type:luminance">
+              <rect data-logo-mask-field x={initialLogoMask.x} y={initialLogoMask.y} width={initialLogoMask.width} height={initialLogoMask.height} fill="#fff" />
+              <path data-logo-triangle-mask d={initialLogoMask.triangle} fill="#000" />
+            </mask>
           </defs>
           <path data-rail-route d="M946 0V60C946 95 735 70 735 115S955 150 955 190V900" stroke="url(#rail-ink)" />
           <path data-rail-chakra d={brandLineAt(955, 900, .13)} visibility="hidden" />
-          <g stroke="#fff" data-rail-symbol>
-            {brandLinePartsAt(955, 900, .13).map((d) => <path data-rail-symbol-part d={d} />)}
+          <g stroke="#f5f0e7" data-rail-symbol>
+            {brandLinePartsAt(955, 900, .13).map((d, index) => <path data-rail-symbol-part d={d} mask={index === 0 ? 'url(#rail-logo-string-mask)' : undefined} />)}
           </g>
         </svg>
 
@@ -115,19 +124,18 @@ const year = new Date().getFullYear();
           <div class="hero-field" aria-hidden="true"></div>
           <h1 id="hero-heading" aria-label={site.name}>
             <span class="title-mask"><span class="title-top">THE PROJECT</span></span>
-            <span class="title-mask"><span class="title-name">DARB<span class="title-letter-mark"><span class="title-letter-placeholder">A</span><BrandMark class="title-brand-mark" width={335} height={680} /></span>R</span></span>
+            <span class="title-mask"><span class="title-name">DARB<span class="title-letter-mark"><span class="title-letter-placeholder">A</span><HeroBrandMark class="title-brand-mark" width={335} height={680} /></span>R</span></span>
           </h1>
-          <p class="hero-caption">Carnatic roots.<br /> New frequencies.</p>
-          <div class:list={['hero-figures', { 'hero-figures--original': site.heroImageStyle === 'original-photo' }]} role={site.heroImage ? undefined : 'img'} aria-label={site.heroImage ? undefined : 'Four band silhouettes, awaiting the ensemble photograph'}>
-            <div class="hero-figures-front">
+          <p class="hero-caption"><span>{copy.hero.taglineLines[0]}<br /> {copy.hero.taglineLines[1]}</span></p>
+          <div class:list={['hero-figures', { 'hero-figures--original': site.heroImageStyle === 'original-photo', 'hero-figures--source': site.heroImageStyle === 'source-cutout' }]} role={site.heroImage ? undefined : 'img'} aria-label={site.heroImage ? undefined : 'Four band silhouettes, awaiting the ensemble photograph'}>
+            <div class:list={['hero-figures-front', { 'hero-figures-front--source': site.heroImageStyle === 'source-cutout' }]}>
               <div class="hero-entrance">
-              {site.heroImage ? <img class="band-photo" src={assetPath(site.heroImage)} alt="The four members of The Project Darbar with their instruments" fetchpriority="high" /> : <HeroGroup />}
+              {site.heroImage ? site.heroImageStyle === 'source-cutout' ? <HeroPhoto source={site.heroImage} /> : <img class="band-photo" src={assetPath(site.heroImage)} alt="The four members of The Project Darbar with their instruments" fetchpriority="high" /> : <HeroGroup />}
               </div>
             </div>
           </div>
           <div class="hero-bottom">
             <p>INDIAN /<br />CARNATIC FUSION</p>
-            <a class="quiet-link" href="#music">Hear the sound <span aria-hidden="true"><Icon name="down" /></span></a>
           </div>
         </section>
 
@@ -140,16 +148,23 @@ const year = new Date().getFullYear();
             <p class="chapter-index" data-reveal><span>02</span> / THE BAND</p>
             <div class="about-layout">
               <div class="about-copy">
-                <h2 id="about-heading" data-reveal>OLD ROOTS.<br /><em>NEW FIRE.</em></h2>
-                <p class="chapter-prose" data-reveal>The Project Darbar brings Carnatic influence into a contemporary band setting, following melody and rhythm wherever they lead.</p>
+                <h2 id="about-heading" data-reveal>{copy.about.heading[0]}<br /><em>{copy.about.heading[1]}</em></h2>
+                <p class="chapter-prose" data-reveal>{copy.about.description}</p>
               </div>
               <figure class="instrument-figure">
-                <div class="instrument-stage" data-instrument-stage role="img" aria-label="One continuous thread forming a keyboard, percussion, violin and bass together">
+                <div class="instrument-stage" data-instrument-stage role="img" aria-label="One continuous thread forming keys, drums, violin, and guitar together">
                   <svg class="instrument-static" viewBox="0 0 600 480" aria-hidden="true"><path d={'M600 0' + instrumentThreadAt(0, 0, 600, 480)} /></svg>
                 </div>
-                <figcaption>KEYS / PERCUSSION / VIOLIN / BASS</figcaption>
+                <figcaption>{copy.about.instruments}</figcaption>
               </figure>
             </div>
+          </div>
+        </section>
+
+        <section class="sound-notes" id="our-sound" aria-labelledby="sound-heading">
+          <div class="chapter-inner">
+            <h2 id="sound-heading"><span>{copy.sound.heading[0]} <em>{copy.sound.heading[1]}</em></span><span>{copy.sound.heading[2]}</span></h2>
+            <p class="sound-refrain">{copy.sound.description}</p>
           </div>
         </section>
 
@@ -159,16 +174,21 @@ const year = new Date().getFullYear();
             <h2 id="artists-heading" data-reveal>THE<br /><em>ENSEMBLE.</em></h2>
             <div class="artist-list">
               {artists.map((artist, index) => (
-                <article class="artist-row" data-reveal style={'--stagger:' + index * 75 + 'ms'}>
+                <article class="artist-row" data-reveal data-artist-instrument={artist.instrument} style={'--stagger:' + index * 75 + 'ms'}>
                   <span class="artist-number">0{index + 1}</span>
                   <div class="artist-details">
-                    <h3>{artist.name || artist.role}</h3>
-                    <p class="artist-instrument">{artist.name ? artist.role : artist.bio}</p>
-                    {artist.name && <p class="artist-description">{artist.bio}</p>}
+                    <h3>{artist.name.indexOf(artist.highlight) > 0 && <span class="artist-name-secondary">{artist.name.slice(0, artist.name.indexOf(artist.highlight))}</span>}<strong>{artist.highlight}</strong><span class="artist-name-secondary">{artist.name.slice(artist.name.indexOf(artist.highlight) + artist.highlight.length)}</span></h3>
+                    <p class="artist-instrument">{artist.role}</p>
+                    <p class="artist-description">{artist.bio}</p>
                   </div>
+                  <div class="artist-media">
                   {artist.image && artist.cutout ? (
-                    <ArtistCutout source={artist.image} viewBox={artist.cutout.viewBox} outline={artist.cutout.outline} label={`${artist.role} player from The Project Darbar`} clipId={`artist-cutout-${index + 1}`} />
-                  ) : artist.image && <span class="artist-portrait"><img class="artist-cutout" src={assetPath(artist.image)} alt={artist.name || `${artist.role} player`} loading="lazy" /></span>}
+                    <ArtistCutout source={artist.image} sourceWidth={artist.cutout.sourceWidth} sourceHeight={artist.cutout.sourceHeight} viewBox={artist.cutout.viewBox} outline={artist.cutout.outline} label={`${artist.name}, ${artist.role}, The Project Darbar`} clipId={`artist-cutout-${index + 1}`} />
+                  ) : artist.image && <span class="artist-portrait"><img class="artist-cutout" src={assetPath(artist.image)} alt={`${artist.name}, ${artist.role}`} loading="lazy" /></span>}
+                  <div class="artist-instrument-stage" data-artist-stage aria-hidden="true">
+                    <svg class="artist-instrument-static" viewBox="0 0 120 160"><path d={'M120 0' + artistInstrumentAt(artist.instrument, { x: 0, y: 0, width: 120, height: 160 })} /></svg>
+                  </div>
+                  </div>
                 </article>
               ))}
             </div>
@@ -178,10 +198,11 @@ const year = new Date().getFullYear();
         <section class="chapter chapter-contact" id="contact" aria-labelledby="contact-heading">
           <div class="chapter-inner">
             <p class="chapter-index" data-reveal><span>04</span> / THE INVITATION</p>
-            <h2 id="contact-heading" data-reveal>LET'S<br /><em>PLAY.</em></h2>
-            <p class="contact-copy" data-reveal>For stages, festivals, private events, and collaborations, bring The Project Darbar into the room.</p>
+            <h2 id="contact-heading" data-reveal>{copy.contact.heading[0]}<br /><em>{copy.contact.heading[1]}</em></h2>
+            <p class="contact-copy" data-reveal>{copy.contact.invitation}</p>
             <div class="contact-actions" data-reveal>
-              {site.email ? <a class="pill-link pill-light" href={'mailto:' + site.email}>Send a booking enquiry <span aria-hidden="true"><Icon name="up-right" /></span></a> : <span class="pill-link pill-disabled">Booking email coming soon</span>}
+              {site.email ? <a class="pill-link pill-light" href={'mailto:' + site.email}>{copy.contact.action} <span aria-hidden="true"><Icon name="up-right" /></span></a> : <span class="pill-link pill-disabled">Booking email coming soon</span>}
+              <a class="quiet-link contact-phone" href={'tel:' + site.phone}>{site.phoneLabel}</a>
               {site.youtube && <a class="quiet-link" href={site.youtube} target="_blank" rel="noopener noreferrer">YouTube <Icon name="up-right" /></a>}
               {site.instagram && <a class="quiet-link" href={site.instagram} target="_blank" rel="noopener noreferrer">Instagram <Icon name="up-right" /></a>}
             </div>
@@ -196,26 +217,26 @@ const year = new Date().getFullYear();
       <defs>
         <filter id="ensemble-edge" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
           <feMorphology in="SourceAlpha" operator="dilate" radius="3" result="expanded" />
-          <feFlood flood-color="#dca83c" result="ochre" />
-          <feComposite in="ochre" in2="expanded" operator="in" result="edge" />
+          <feFlood flood-color="#d8bc91" result="brand-edge" />
+          <feComposite in="brand-edge" in2="expanded" operator="in" result="edge" />
           <feMerge><feMergeNode in="edge" /><feMergeNode in="SourceGraphic" /></feMerge>
         </filter>
         <filter id="ensemble-duotone" color-interpolation-filters="sRGB">
           <feColorMatrix type="saturate" values="0" />
           <feComponentTransfer>
-            <feFuncR type="table" tableValues=".24 .98" />
-            <feFuncG type="table" tableValues=".07 .91" />
-            <feFuncB type="table" tableValues=".12 .78" />
+            <feFuncR type="table" tableValues=".231 .961" />
+            <feFuncG type="table" tableValues=".200 .894" />
+            <feFuncB type="table" tableValues=".251 .773" />
           </feComponentTransfer>
         </filter>
       </defs>
     </svg>
 
     <script>
-      import { ensembleThreadAt } from '../data/ensemble-thread';
+      import { ensembleThreadAt, sequenceInstrumentSpans, type ArtistInstrument } from '../data/ensemble-thread';
       import { soundThreadAt } from '../data/sound-thread';
       import { railOffsets, scrollStrokeDistance, strokePartOffsets, type StrokeAnchor } from '../lib/rail-progress';
-      import { brandLineAt, brandLinePartsAt } from '../data/brand';
+      import { brandLineAt, brandLinePartsAt, brandStringMaskAt } from '../data/brand';
       import { instrumentThreadAt } from '../data/instrument-thread';
 
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -227,10 +248,15 @@ const year = new Date().getFullYear();
       const darkEnd = rail?.querySelector<SVGStopElement>('[data-rail-dark-end]');
       const lightStart = rail?.querySelector<SVGStopElement>('[data-rail-light-start]');
       const railInk = rail?.querySelector<SVGLinearGradientElement>('#rail-ink');
+      const logoStringMask = rail?.querySelector<SVGMaskElement>('#rail-logo-string-mask');
+      const logoMaskField = rail?.querySelector<SVGRectElement>('[data-logo-mask-field]');
+      const logoTriangleMask = rail?.querySelector<SVGPathElement>('[data-logo-triangle-mask]');
       const heroField = document.querySelector<HTMLElement>('.hero-field');
       const sections = ['music', 'about', 'artists', 'contact'].map((id) => document.getElementById(id));
       const hero = document.querySelector<HTMLElement>('.hero');
+      const heroHeading = document.querySelector<HTMLElement>('.hero h1');
       const figures = document.querySelector<HTMLElement>('.hero-figures');
+      const figuresFront = document.querySelector<HTMLElement>('.hero-figures-front');
       const instrumentStage = document.querySelector<HTMLElement>('[data-instrument-stage]');
       const soundStage = document.querySelector<HTMLElement>('[data-sound-stage]');
       const logoStage = document.querySelector<HTMLElement>('[data-logo-stage]');
@@ -251,8 +277,8 @@ const year = new Date().getFullYear();
         let instrumentStartLength = 0;
         let instrumentEndLength = 0;
         const sectionCheckpoints: StrokeAnchor[] = [];
-        const ensembleSpans: { start: number; end: number; scrollStart: number; scrollEnd: number }[] = [];
-        // offset bounds exclude the portrait's entrance transform and SVG filter.
+        let ensembleSpans: { start: number; end: number; scrollStart: number; scrollEnd: number }[] = [];
+        // Layout bounds exclude the portrait's entrance transform.
         const layoutBox = (element: HTMLElement) => {
           let x = 0;
           let y = 0;
@@ -317,21 +343,25 @@ const year = new Date().getFullYear();
           }
           if (index === 2 && artistRows.length) {
             for (const row of artistRows) {
-              const portrait = row.querySelector<HTMLElement>('.artist-portrait');
-              if (!portrait) continue;
+              const instrumentStage = row.querySelector<HTMLElement>('[data-artist-stage]');
+              if (!instrumentStage) continue;
               const bounds = layoutBox(row);
-              const cutout = layoutBox(portrait);
+              const stageBounds = layoutBox(instrumentStage);
+              const instrument = row.dataset.artistInstrument as ArtistInstrument;
               const rowBottom = bounds.y + bounds.height;
               d += ` L${x} ${bounds.y}`;
               route.setAttribute('d', d);
               const start = route.getTotalLength();
-              d += ensembleThreadAt(x, cutout, bounds.y, rowBottom);
+              d += ensembleThreadAt(instrument, x, stageBounds, bounds.y, rowBottom);
               route.setAttribute('d', d);
               const end = route.getTotalLength();
-              const scrollStart = mainTop + bounds.y - window.innerHeight * .62;
-              const scrollEnd = mainTop + rowBottom - window.innerHeight * .62;
-              sectionCheckpoints.push({ scroll: scrollStart, length: start }, { scroll: scrollEnd, length: end });
+              const scrollStart = mainTop + stageBounds.y - window.innerHeight * .72;
+              const scrollEnd = mainTop + stageBounds.y + stageBounds.height - window.innerHeight * .4;
               ensembleSpans.push({ start, end, scrollStart, scrollEnd });
+            }
+            ensembleSpans = sequenceInstrumentSpans(ensembleSpans);
+            for (const span of ensembleSpans) {
+              sectionCheckpoints.push({ scroll: span.scrollStart, length: span.start }, { scroll: span.scrollEnd, length: span.end });
             }
             continue;
           }
@@ -348,6 +378,12 @@ const year = new Date().getFullYear();
         route.setAttribute('d', d);
         // Join the thread to the upper terminal of the supplied logo.
         chakra.setAttribute('d', brandLineAt(logoX, logoJoinY, logoScale));
+        const mask = brandStringMaskAt(logoX, logoJoinY, logoScale);
+        for (const key of ['x', 'y', 'width', 'height'] as const) {
+          logoStringMask?.setAttribute(key, String(mask[key]));
+          logoMaskField?.setAttribute(key, String(mask[key]));
+        }
+        logoTriangleMask?.setAttribute('d', mask.triangle);
         const symbolPaths = brandLinePartsAt(logoX, logoJoinY, logoScale);
         symbolParts.forEach((part, index) => part.setAttribute('d', symbolPaths[index]));
         const contact = sections[3];
@@ -404,8 +440,8 @@ const year = new Date().getFullYear();
         symbolParts.forEach((part, index) => { part.style.strokeDashoffset = String(symbolOffsets[index]); });
         const heroProgress = Math.max(0, Math.min(1, -hero.getBoundingClientRect().top / Math.max(1, hero.offsetHeight)));
         const travel = window.innerWidth <= 760 ? 0.45 : 1;
-        hero.style.setProperty('--title-shift', heroProgress * -20 * travel + 'px');
-        figures.style.setProperty('--front-shift', heroProgress * -60 * travel + 'px');
+        if (heroHeading) heroHeading.style.transform = `translateY(${heroProgress * -20 * travel}px)`;
+        if (figuresFront) figuresFront.style.transform = `translateY(${heroProgress * -60 * travel}px)`;
 
         ticking = false;
       }
@@ -427,11 +463,12 @@ const year = new Date().getFullYear();
       if (main) new ResizeObserver(measureRail).observe(main);
       reduceMotion.addEventListener('change', () => {
         if (reduceMotion.matches) {
+          document.documentElement.dataset.heroCallouts = 'complete';
           document.documentElement.classList.remove('motion-ready');
           observer?.disconnect();
           window.removeEventListener('scroll', schedule);
-          hero?.style.removeProperty('--title-shift');
-          figures?.style.removeProperty('--front-shift');
+          heroHeading?.style.removeProperty('transform');
+          figuresFront?.style.removeProperty('transform');
           measureRail();
         } else {
           document.querySelectorAll<HTMLElement>('[data-reveal]').forEach((element) => element.classList.add('is-visible'));

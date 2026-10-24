@@ -14,3 +14,17 @@ export function brandLineAt(x: number, y: number, scale = .2) {
 export function brandLinePartsAt(x: number, y: number, scale = .2) {
   return brandLineAt(x, y, scale).match(/M[^M]+/g) ?? [];
 }
+
+/** Occlude only the sweeping string beneath the upper triangle. The mask stays
+ * transparent, so the same mark works on paper and on the colored finale.
+ */
+export function brandStringMaskAt(x: number, y: number, scale = .2) {
+  const p = (px: number, py: number) => `${x + (px - 332) * scale} ${y + (py - 116) * scale}`;
+  return {
+    x: x - 270 * scale,
+    y: y - 70 * scale,
+    width: 370 * scale,
+    height: 750 * scale,
+    triangle: `M${p(95, 168)}L${p(365, 168)}L${p(233, 397)}Z`,
+  };
+}

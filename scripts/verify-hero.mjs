@@ -41,6 +41,7 @@ try {
     await instrument(page);
     await page.goto(baseURL, { waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => document.documentElement.dataset.heroEntrance === 'running');
+    await page.waitForFunction(() => document.documentElement.dataset.heroLogo === 'running');
     const timing = await page.evaluate(() => {
       const selectors = ['.title-top', '.title-name', '.hero-entrance'];
       return selectors.map((selector) => {
@@ -48,11 +49,25 @@ try {
         return [style.animationDuration, style.animationDelay, style.animationTimingFunction];
       });
     });
-    assert.deepEqual(timing.map((t) => t.slice(0, 2)), [['0.6s', '0s'], ['0.72s', '0.08s'], ['0.7s', '0.2s']]);
+    assert.deepEqual(timing.map((t) => t.slice(0, 2)), [['0.7s', '0s'], ['0.8s', '0.07s'], ['0.7s', '0.2s']]);
     assert(timing.every((t) => t[2] === 'cubic-bezier(0.23, 1, 0.32, 1)'));
-    assert(await page.locator('.hero-bottom a').isVisible());
+    for (const selector of ['.title-top', '.title-name']) {
+      assert.deepEqual(await page.locator(selector).evaluate((title) => title.getAnimations()[0].effect.getKeyframes().map((frame) => frame.opacity)), ['0', '1'], 'Both title lines fade in while rising');
+    }
+    const logoTiming = await page.evaluate(() => {
+      const timingFor = (selector) => getComputedStyle(document.querySelector(selector)).animationDelay;
+      return ['.hero-logo-triangle-trace', '.hero-logo-dot', '.hero-logo-string', '.hero-brand-motion'].map(timingFor);
+    });
+    assert.deepEqual(logoTiming, ['0s, 0.45s', '0s', '0.48s', '1.08s'], 'Triangles and dot begin immediately together, followed by strings and the damaru twist');
+    assert.equal(await page.locator('.hero-bottom a').count(), 0, 'Hero has no redundant listening link');
     assert(await page.locator('.main-nav').isVisible());
     await settled(page);
+    await page.waitForFunction(() => document.documentElement.dataset.heroCallouts === 'running');
+    assert(await page.locator('.hero-source-photo:visible .hero-callout-arrow:not(.hero-callout-arrow--underlay)').evaluateAll((arrows) => arrows.every((arrow) => getComputedStyle(arrow).animationName === 'callout-draw')), 'Arrow strokes draw after the photo settles');
+    await page.waitForFunction(() => document.documentElement.dataset.heroCallouts === 'complete');
+    await page.waitForFunction(() => document.documentElement.dataset.heroLogo === 'complete');
+    assert.equal(await page.evaluate(() => document.documentElement.dataset.heroLogo), 'complete');
+    assert.equal(await page.locator('.hero-brand-motion').evaluate((mark) => getComputedStyle(mark).transform), 'none', 'Logo settles without a residual transform');
     const trace = await page.evaluate(() => ({ states: window.heroStates, shifts: window.heroShifts }));
     assert.deepEqual(trace.states.map((s) => s.state), ['pending', 'running', 'complete']);
     assert(trace.states[2].time - trace.states[1].time <= 1000, '900ms playback plus scheduling tolerance');
@@ -64,7 +79,7 @@ try {
     const page = await browser.newPage();
     await instrument(page);
     if (scenario === 'slow-image' || scenario === 'failed-image') {
-      await page.route('**/band-cutout-v2.png', async (route) => {
+      await page.route('**/band-cutout-clear.webp', async (route) => {
         if (scenario === 'failed-image') return route.abort();
         await new Promise((resolve) => setTimeout(resolve, 1100));
         await route.continue();
@@ -82,7 +97,7 @@ try {
     if (['scroll', 'focus', 'reduced', 'hidden'].includes(scenario)) {
       await page.waitForFunction(() => document.documentElement.dataset.heroEntrance === 'running');
       if (scenario === 'scroll') await page.evaluate(() => scrollTo({ top: 100, behavior: 'instant' }));
-      if (scenario === 'focus') await page.locator('.hero-bottom a').focus();
+      if (scenario === 'focus') await page.locator('.main-nav a').first().focus();
       if (scenario === 'reduced') await page.emulateMedia({ reducedMotion: 'reduce' });
       if (scenario === 'hidden') await page.evaluate(() => {
         Object.defineProperty(document, 'hidden', { configurable: true, value: true });
@@ -103,7 +118,8 @@ try {
     await page.waitForTimeout(1100);
     await settled(page);
     const states = await page.evaluate(() => window.heroStates.map((s) => s.state));
-    if (['slow-image', 'failed-image', 'delayed-font', 'hash', 'fail-open'].includes(scenario)) assert(!states.includes('running'), `${scenario}: skips entrance`);
+    if (['hash', 'fail-open'].includes(scenario)) assert(!states.includes('running'), `${scenario}: skips entrance`);
+    if (['slow-image', 'failed-image', 'delayed-font'].includes(scenario)) assert(states.includes('running'), `${scenario}: title still rises and fades independently of asset loading`);
     assert(states.filter((s) => s === 'running').length <= 1, `${scenario}: no replay`);
     console.log(`PASS entrance ${scenario}`);
     await page.close();
@@ -112,6 +128,9 @@ try {
   await staticPage.goto(baseURL);
   assert.equal(await staticPage.locator('.hero-entrance').evaluate((element) => getComputedStyle(element).opacity), '1');
   assert.equal(await staticPage.locator('.title-name').evaluate((element) => getComputedStyle(element).transform), 'none');
+  assert.equal(await staticPage.locator('.hero-logo-dot').evaluate((element) => getComputedStyle(element).opacity), '1', 'Logo remains complete without JavaScript');
+  assert.equal(await staticPage.locator('[data-artist-stage]').count(), 4);
+  assert(await staticPage.locator('.artist-instrument-static').evaluateAll((icons) => icons.every((icon) => getComputedStyle(icon).visibility === 'visible')), 'All instruments remain visible without JavaScript');
   await staticPage.close();
   for (const viewport of [{ width: 1440, height: 900 }, { width: 1280, height: 720 }, { width: 768, height: 1024 }, { width: 390, height: 844 }, { width: 320, height: 720 }]) {
     const page = await browser.newPage({ viewport, reducedMotion: 'reduce' });
@@ -120,6 +139,11 @@ try {
     await mockYoutube(page);
     await page.goto(baseURL, { waitUntil: 'networkidle' });
     await page.evaluate(() => document.fonts.ready);
+    const bandPhotoLoaded = await page.locator('.band-photo').evaluateAll(async (photos) => (await Promise.all(photos.map(async (photo) => {
+      const probe = new Image();
+      probe.src = photo.getAttribute('href') || photo.getAttribute('src');
+      try { await probe.decode(); return probe.naturalWidth > 0; } catch { return false; }
+    }))).some(Boolean));
     const layout = await page.evaluate(() => {
       const box = (selector) => {
         const { x, y, width, height, bottom, right } = document.querySelector(selector).getBoundingClientRect();
@@ -134,7 +158,7 @@ try {
         hero: box('.hero'), header: box('.site-header'), band: box('.hero-figures'), field: box('.hero-field'),
         title: { x: titleInk.x, right: titleInk.right },
         figureCount: document.querySelectorAll('.hero-figures .figure').length,
-        bandPhotoLoaded: [...document.querySelectorAll('.band-photo')].some((photo) => photo.complete && photo.naturalWidth > 0),
+
         nav: [...document.querySelectorAll('.site-header a')].map((a) => {
           const r = a.getBoundingClientRect();
           return { x: r.x, right: r.right, y: r.y, bottom: r.bottom };
@@ -146,16 +170,33 @@ try {
         staticRail: getComputedStyle(document.querySelector('[data-rail-route]')).strokeDashoffset,
         titleTransform: getComputedStyle(document.querySelector('.hero h1')).transform,
         fieldPattern: getComputedStyle(document.querySelector('.hero-field'), '::before').backgroundImage,
-        keyline: getComputedStyle(document.querySelector('.hero-figures-front')).filter,
+        keyline: getComputedStyle(document.querySelector('.hero-photo-layer') || document.querySelector('.hero-figures-front')).filter,
         originalPhoto: document.querySelector('.hero-figures--original') !== null,
         inkBoundary: Number(document.querySelector('[data-hero-light-start]').getAttribute('offset')) * document.querySelector('main').offsetHeight,
       };
     });
     assert.equal(layout.overflow, false, `${viewport.width}: horizontal overflow`);
+    assert.equal(await page.locator('.hero h1').evaluate((title) => getComputedStyle(title).userSelect), 'text', 'The band name remains selectable');
+    assert((await page.locator('.title-name').innerText()).replace(/\s/g, '').includes('DARBAR'), 'The logo placeholder retains the A when copying the title');
+    assert.equal(await page.locator('.hero-brand-motion').evaluate((mark) => getComputedStyle(mark).animationName), 'none', 'Reduced motion skips the logo twist');
+    assert((await page.locator('.hero-source-photo:visible image').getAttribute('href')).endsWith('/images/band-cutout-clear.webp'), 'Hero uses the supplied transparent four-person cutout');
+    assert((await page.locator('.hero-source-photo:visible image').evaluate((photo) => getComputedStyle(photo).filter)).includes('ensemble-duotone'), 'Hero retains the styled duotone treatment on the clear photograph');
+    assert(await page.locator('.hero-source-photo:visible .hero-callout-arrow:not(.hero-callout-arrow--underlay)').evaluateAll((arrows) => arrows.every((arrow) => parseFloat(getComputedStyle(arrow).strokeWidth) >= 1.75)), 'Arrow strokes remain legible on phones');
+    assert.deepEqual(await page.locator('.hero-source-photo:visible .hero-callout-name').allTextContents(), ['Manas', 'Meher', 'Koundinya', 'Mouli']);
+    assert(await page.locator('.hero-source-photo:visible .hero-callout-name').evaluateAll((names) => names.every((name) => {
+      const box = name.getBoundingClientRect();
+      return box.left >= 0 && box.right <= innerWidth && box.height >= 12 && getComputedStyle(name).opacity === '1';
+    })), 'Handwritten names remain readable, visible, and inside the viewport');
     assert.equal(await page.locator('.music-play-disc svg').count(), 5, 'Play controls use SVG on every platform');
     assert.equal(await page.locator('.showcase-arrows button svg').count(), 2, 'Navigation arrows use SVG');
     if (viewport.width <= 760) {
-      assert(await page.locator('.hero-caption').isVisible(), 'Mobile caption has its own space');
+      assert.equal(await page.locator('.hero-caption').isVisible(), false, 'Mobile hero omits the Carnatic roots tagline');
+      assert(Math.abs(layout.hero.height - viewport.height) <= 1, 'Mobile hero fills 100dvh');
+      assert.equal(await page.locator('.hero-source-photo--desktop').isVisible(), false);
+      assert(await page.locator('.hero-source-photo--mobile').isVisible());
+      assert(await page.locator('.hero-figures--source').evaluate((frame) => Math.abs(frame.getBoundingClientRect().height - innerHeight) <= 1), 'Image layer is genuinely 100dvh');
+      assert.equal(await page.locator('.hero-source-photo--mobile .hero-callout--keys .hero-callout-name').evaluate((name) => getComputedStyle(name).fill), 'rgb(245, 240, 231)', 'Manas stays white on mobile');
+      assert(await page.locator('.hero-source-photo--mobile .hero-callout:not(.hero-callout--keys) .hero-callout-name').evaluateAll((names) => names.every((name) => getComputedStyle(name).fill === 'rgb(35, 53, 79)')), 'Other mobile names use blue');
       const targets = await page.locator('.main-nav a, .header-book, .showcase-arrows button').evaluateAll((links) => links.map((link) => link.getBoundingClientRect().height));
       assert(targets.every((height) => height >= 44), 'Mobile controls have 44px touch targets');
       const controls = await page.locator('.showcase-navigation').evaluate((element) => {
@@ -168,12 +209,12 @@ try {
 
     assert(layout.title.x >= 0 && layout.title.right <= viewport.width, 'Complete DARBAR title fits');
     assert(layout.band.x >= 0 && layout.band.right <= viewport.width, 'Band fits');
-    assert(layout.band.y < layout.field.y && layout.band.bottom > layout.field.y, 'Ensemble bridges cream and maroon');
-    assert(layout.field.height / layout.hero.height >= .44, 'Maroon field occupies the lower composition');
+    assert(layout.band.y < layout.field.y && layout.band.bottom > layout.field.y, 'Ensemble bridges the cream and muted red textile field');
+    assert(layout.field.height / layout.hero.height >= .44, 'Muted red field occupies the lower composition');
     assert(layout.fieldPattern.includes('paisley-ink.svg'), 'Local textile pattern is present');
-    if (!layout.originalPhoto) assert(layout.keyline.includes('ensemble-edge'), 'Cutout ensemble has an ochre edge');
+    if (!layout.originalPhoto) assert(layout.keyline.includes('ensemble-edge'), 'Cutout ensemble retains its printed keyline');
     assert(Math.abs(layout.inkBoundary - (layout.field.y - layout.header.height)) <= 1, 'Thread changes ink at the background divide');
-    assert(layout.bandPhotoLoaded || layout.figureCount === 4, 'Approved ensemble photo or four silhouette fallback loads');
+    assert(bandPhotoLoaded || layout.figureCount === 4, 'Approved ensemble photo or four silhouette fallback loads');
     assert.equal(await page.locator('.social-links--header a').count(), 2, 'Both header social links are visible');
     assert.equal(await page.locator('.social-links--footer a').count(), 2, 'Both footer social links are visible');
     assert.equal(await page.locator('.chakra-caption, .sound-thread > span, .mobile-finale > span').count(), 0, 'Thread helper captions are removed');
@@ -186,6 +227,41 @@ try {
     assert(layout.route.startsWith(`M${viewport.width * 0.946} 0`), 'Thread joins the header rule');
     if (viewport.width > 760) assert(Math.abs(layout.hero.bottom - viewport.height) <= 1, 'Header and hero fill one viewport');
     await page.screenshot({ path: new URL(`${viewport.width}x${viewport.height}.png`, output).pathname });
+
+    assert.deepEqual(await page.locator('.artist-row h3').allTextContents(), ['Koundinya Pannala', 'Manas Kanukollu', 'Chandra Mouli Mangudi', 'M. Meher Sri']);
+    assert.deepEqual(await page.locator('.artist-row h3 strong').allTextContents(), ['Koundinya', 'Manas', 'Mouli', 'Meher']);
+    assert(await page.locator('.artist-row h3').evaluateAll((headings) => headings.every((heading) => {
+      const primary = getComputedStyle(heading.querySelector('strong'));
+      const secondary = getComputedStyle(heading.querySelector('.artist-name-secondary'));
+      return parseFloat(primary.fontSize) > parseFloat(secondary.fontSize) && parseFloat(secondary.fontSize) >= 20;
+    })), 'Main names are larger than readable secondary names');
+    assert.deepEqual(await page.locator('.artist-row').evaluateAll((rows) => rows.map((row) => row.dataset.artistInstrument)), ['violin', 'keys', 'guitar', 'drums']);
+    assert.equal(await page.locator('#sound-heading > span').count(), 2);
+    assert((await page.locator('#sound-heading').textContent()).includes('ROOM TO PLAY.'));
+    assert(await page.locator('#sound-heading').evaluate((heading) => {
+      const range = document.createRange();
+      range.selectNodeContents(heading);
+      const ink = range.getBoundingClientRect();
+      return ink.left >= 0 && ink.right <= innerWidth;
+    }), 'Poster refrain fits without clipping');
+    assert.equal(await page.locator('#contact a[href="mailto:theprojectdarbar@gmail.com"]').count(), 1);
+    assert.equal(await page.locator('#contact a[href="tel:+917674918647"]').count(), 1);
+    const artistLayouts = await page.locator('.artist-row').evaluateAll((rows) => rows.map((row) => {
+      const box = (selector) => {
+        const rect = row.querySelector(selector).getBoundingClientRect();
+        return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width };
+      };
+      return { portrait: box('.artist-portrait'), stage: box('[data-artist-stage]'), media: box('.artist-media'), text: box('.artist-details') };
+    }));
+    for (const artist of artistLayouts) {
+      assert(artist.portrait.right <= artist.stage.left, 'Instrument does not overlap its portrait');
+      assert(artist.stage.left >= 0 && artist.stage.right <= viewport.width, 'Instrument remains inside viewport');
+      assert(artist.stage.width >= 100, 'Instrument stays large enough to read');
+      assert(artist.text.left >= 0 && artist.text.right <= viewport.width, 'Full names and bios fit');
+      if (viewport.width <= 760) assert(artist.text.top >= artist.media.bottom, 'Mobile visuals sit above names and bios');
+      else assert(artist.text.right <= artist.media.left, 'Desktop visuals sit beside the text');
+    }
+    await page.locator('#artists').screenshot({ path: new URL(`${viewport.width}x${viewport.height}-artists.png`, output).pathname });
 
     // The skip link and all header links must be reachable in the intended order.
     for (const href of ['#main', '#top', '#music', '#about', '#artists', '#contact']) {
@@ -202,8 +278,8 @@ try {
     await page.evaluate(() => window.scrollTo(0, document.querySelector('.hero').offsetHeight / 2));
     await page.waitForTimeout(100);
     const shifts = await page.evaluate(() => ({
-      title: parseFloat(document.querySelector('.hero').style.getPropertyValue('--title-shift')),
-      band: parseFloat(document.querySelector('.hero-figures').style.getPropertyValue('--front-shift')),
+      title: new DOMMatrixReadOnly(getComputedStyle(document.querySelector('.hero h1')).transform).m42,
+      band: new DOMMatrixReadOnly(getComputedStyle(document.querySelector('.hero-figures-front')).transform).m42,
     }));
     assert(shifts.title >= -20 && shifts.title <= 0 && shifts.band >= -60 && shifts.band <= 0, 'Parallax stays within limits');
 
@@ -276,7 +352,7 @@ try {
     for (const [index, expected] of [0, .5, 1, .5, 0].entries()) assert(Math.abs(formation[index] - expected) < .01, 'Instrument motif draws and undraws with section scroll');
 
     const ensemble = await page.locator('.journey-rail').evaluate((rail) => JSON.parse(rail.dataset.ensembleSpans));
-    assert.equal(ensemble.length, 4, 'The thread visits all four musician cutouts');
+    assert.equal(ensemble.length, 4, 'The thread visits all four musician instrument stages');
     for (const span of ensemble) {
       for (const progress of [0, .5, 1, .5, 0]) {
         const drawn = await page.evaluate(async ({ span, progress }) => {
@@ -285,9 +361,35 @@ try {
           const route = document.querySelector('[data-rail-route]');
           return route.getTotalLength() - parseFloat(route.style.strokeDashoffset);
         }, { span, progress });
-        assert(Math.abs(drawn - (span.start + (span.end - span.start) * progress)) < 2, 'Each musician loop follows scroll in both directions');
+        assert(Math.abs(drawn - (span.start + (span.end - span.start) * progress)) < 2, 'Each musician instrument follows scroll in both directions');
       }
     }
+
+    const instrumentClearance = await page.evaluate(() => {
+      const main = document.querySelector('main').getBoundingClientRect();
+      const route = document.querySelector('[data-rail-route]');
+      const spans = JSON.parse(document.querySelector('.journey-rail').dataset.ensembleSpans);
+      return [...document.querySelectorAll('.artist-row')].every((row, index) => {
+        const bounds = row.getBoundingClientRect();
+        const stage = row.querySelector('[data-artist-stage]').getBoundingClientRect();
+        for (let fraction = 0; fraction <= 1; fraction += .01) {
+          const point = route.getPointAtLength(spans[index].start + (spans[index].end - spans[index].start) * fraction);
+          if (point.x < stage.left - main.left - 1 || point.y < bounds.top - main.top - 1 || point.y > bounds.bottom - main.top + 1) return false;
+        }
+        return true;
+      });
+    });
+    assert(instrumentClearance, 'Measured thread avoids portraits, text, and adjacent rows');
+    await page.setViewportSize({ width: viewport.width, height: viewport.height + 80 });
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    const resizedSpans = await page.locator('.journey-rail').evaluate((rail) => JSON.parse(rail.dataset.ensembleSpans));
+    assert.equal(resizedSpans.length, 4);
+    for (let i = 0; i < resizedSpans.length; i++) {
+      assert(resizedSpans[i].scrollEnd > resizedSpans[i].scrollStart, 'Resizing preserves each instrument scroll range');
+      if (i) assert(resizedSpans[i].scrollStart >= resizedSpans[i - 1].scrollEnd, 'Resized instrument ranges stay ordered');
+    }
+    await page.setViewportSize(viewport);
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 
     // Exercise verified video entries when present, without depending on YouTube playback/network.
     const previews = page.locator('[data-youtube-id]');

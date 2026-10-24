@@ -1,15 +1,12 @@
 # Media sources
 
-## Current ensemble image — temporary v2
+## Current hero — supplied transparent four-person cutout
 
-- Current hero: `public/images/band-cutout-v2.png`, a transparent PNG generated with built-in `image_gen` edit mode.
-- Primary identity reference: the user-supplied video https://www.youtube.com/watch?v=5FVp1YWyd28, whose 360×202 thumbnail is saved as `public/images/band-source.png` and `public/images/music/5FVp1YWyd28.avif`.
-- Supporting identity reference: the user-supplied video https://www.youtube.com/watch?v=H-3IpmyzSzk, whose thumbnail is saved as `public/images/band-source-beach.png` and `public/images/music/H-3IpmyzSzk.avif`.
-- Edit target: `public/images/band-cutout-v1.png`. The revision asks for face/head/hair correction while preserving its clothes, instruments, poses, arrangement, and transparency.
-- The user initially approved v1, then noticed altered faces. After an interim switch to the original photograph, they explicitly requested keeping the cutout with improved faces for now and supplying a better photograph later.
-- V2 is a temporary AI-assisted likeness revision, not an exact photographic extraction. The low-resolution references do not support reliable reconstruction of facial details. No exact identity match is claimed.
-- `site.heroImage` points to `/images/band-cutout-v2.png`, with `heroImageStyle: cutout`. The site applies the maroon duotone, ochre edge, and torso crop in CSS/SVG.
-- The original source pixels and v1 remain available. `heroImageStyle: original-photo` disables the cutout treatment when displaying an unaltered photograph; clearing `heroImage` restores the silhouettes.
+The user supplied a transparent 1448×1086 PNG of the four members on October 24, 2026. `public/images/band-cutout-clear.webp` is a lossless WebP export made with `cwebp -lossless -exact`. A decoded RGBA comparison confirmed that the delivery export preserves the uploaded pixels, including transparency, exactly. No face generation, warping, or hand-drawn background mask is applied to this asset.
+
+`HeroPhoto.astro` renders that alpha cutout directly with the established warm duotone and parchment edge. The source aspect ratio is preserved inside main’s 1454×1082 poster canvas. The current size trial is 132% rather than main’s 124%. Four handwritten main-name callouts and curved arrows share the same coordinate system, with the photo edge filter isolated from the lettering.
+
+Individual ensemble portraits continue to use chest-up crops of the earlier clear temple photograph described below. Previous generated cutouts and the intermediate hand-traced hero masks are historical approaches, not the active hero image.
 
 ### Initial cutout prompt (v1)
 
@@ -35,10 +32,14 @@ The three track names were read from the thumbnail artwork. Neutral labels are u
 
 All five AVIF thumbnails were recovered from cached responses matching the supplied video IDs, without altering the image pixels. The first three are 360×202; the last two are 720×404. No browser cache paths or request signatures are needed by the site.
 
-## Ensemble portraits
+## Ensemble portraits — clear source photograph
 
-The four individual views reuse `band-cutout-v2.png`. `ArtistCutout.astro` uses native SVG viewBoxes and polygon clipping to isolate the members, preserving the shared image pixels and facial treatment. No additional generative portrait edits were made. The rows display Keys, Percussion, Violin, and Bass with instrument details. Empty `name` fields can be populated later. CSS applies the same duotone and ochre edge as the hero, at a smaller size with a short one-time entrance. These are temporary cropped views of an overlapping group photo; occluded body details are not reconstructed.
+The user supplied a clearer 6456×3944 temple photograph on October 24, 2026. `public/images/band-source-clear.webp` is its high-quality WebP delivery export at 3228×1972, preserving the original framing and aspect ratio. The export uses WebP quality 94; no generative face edits or reconstruction were performed.
+
+The four chest-up portraits use this single shared photograph through `ArtistCutout.astro`. Per-member SVG viewBoxes and closed Bézier masks in `src/data/site.ts` isolate the hair, face, shoulders, and upper chest without changing facial geometry. Source dimensions are explicit, so the component preserves the photograph’s proportions. The contours were checked using enlarged source overlays and rendered duotone previews; these are manual traces, not a claim of pixel-perfect hair segmentation. Desktop portrait width is 120px, with 104px portraits beside the instrument stages on mobile. The established warm duotone, parchment keyline, names, ordering, and scroll-driven instrument drawings remain.
+
+The hero uses the separately supplied transparent cutout described above.
 
 ## Supplied logo
 
-The user's supplied raster drawing is retained at `public/images/darbar-logo-source.png`. The adapted native vector is `public/images/darbar-mark.svg`, with maroon replacing the upper red triangle/dot and ochre replacing the blue lower triangle/loop. Its asymmetric geometry and paired terminal circles follow the source. The header and footer share that file, while the favicon has thicker strokes and compact proportions for small display. The scroll-line finale uses a stroke-only variant of the same mark. This is a manual vector redraw; image generation was not used for the logo.
+The user's supplied raster drawing is retained at `public/images/darbar-logo-source.png`. The adapted native vector is `public/images/darbar-mark.svg`, with the original deep red (`#c81d11`) on the upper triangle/dot and blue (`#1951A8`) on the lower triangle/loop. Its asymmetric geometry and paired terminal circles follow the source. The header and footer share that file, while the favicon has thicker strokes and compact proportions for small display. The scroll-line finale uses a stroke-only variant of the same mark. A transparent luminance mask hides the sweeping string inside the upper triangle in the shared SVG, favicon, and measured scroll finale. This is a manual vector redraw; image generation was not used for the logo.

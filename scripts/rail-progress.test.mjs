@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { railOffsets, scrollStrokeDistance, strokePartOffsets } from '../src/lib/rail-progress.ts';
 import { instrumentThreadAt } from '../src/data/instrument-thread.ts';
-import { brandLinePartsAt } from '../src/data/brand.ts';
+import { brandLinePartsAt, brandStringMaskAt } from '../src/data/brand.ts';
 
 test('equal scroll steps reveal equal stroke lengths, including the final symbol', () => {
   // Deliberately unequal route/symbol proportions expose a fixed-percentage handoff.
@@ -80,4 +80,21 @@ test('ensemble and contact checkpoints do not finish the line before the actual 
   assert(scrollStrokeDistance(3999, anchors) < 6300);
   assert.equal(scrollStrokeDistance(4000, anchors), 6300);
   assert.equal(scrollStrokeDistance(3700, anchors), 5800);
+});
+
+test('the logo string mask follows the upper triangle at desktop and mobile finale scales', () => {
+  for (const [x, y, scale] of [[955, 900, .13], [1359, 6000, .2], [221, 7200, .32]]) {
+    const mask = brandStringMaskAt(x, y, scale);
+    const vertices = mask.triangle.match(/-?\d+(?:\.\d+)?/g).map(Number);
+    assert.equal(vertices.length, 6, 'A filled triangle hides the string, not its outline or center dot');
+    assert(mask.triangle.startsWith('M') && mask.triangle.endsWith('Z'));
+    for (let i = 0; i < vertices.length; i += 2) {
+      assert(vertices[i] >= mask.x && vertices[i] <= mask.x + mask.width);
+      assert(vertices[i + 1] >= mask.y && vertices[i + 1] <= mask.y + mask.height);
+    }
+    assert.equal(vertices[0], x + (95 - 332) * scale);
+    assert.equal(vertices[1], y + (168 - 116) * scale);
+    assert.equal(vertices[4], x + (233 - 332) * scale);
+    assert.equal(vertices[5], y + (397 - 116) * scale);
+  }
 });
