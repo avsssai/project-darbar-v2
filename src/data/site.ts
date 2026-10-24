@@ -7,7 +7,7 @@ export const site = {
   title: 'The Project Darbar | Indian Classical & Contemporary Fusion Band',
   description:
     'Meet The Project Darbar, an instrumental band bringing Carnatic melodies together with piano, guitar, and drums. Listen, meet the musicians, and plan a performance.',
-  heroImage: '/images/band-source-clear.webp',
+  heroImage: '/images/band-cutout-clear.webp',
   heroImageStyle: 'source-cutout' as 'source-cutout' | 'cutout' | 'original-photo',
   email: 'theprojectdarbar@gmail.com',
   phone: '+917674918647',
@@ -19,7 +19,6 @@ export const site = {
 export const copy = {
   hero: {
     taglineLines: ['Carnatic roots.', 'New frequencies.'],
-    listen: 'Hear the sound',
   },
   about: {
     heading: ['OLD ROOTS.', 'NEW FIRE.'],

@@ -25,13 +25,20 @@ const year = new Date().getFullYear();
         const motion = matchMedia('(prefers-reduced-motion: reduce)');
         const navigation = performance.getEntriesByType('navigation')[0];
         root.dataset.heroEntrance = 'complete';
+        root.dataset.heroCallouts = 'complete';
         if (motion.matches || location.hash || scrollY > 0 || navigation?.type === 'back_forward' || document.hidden) return;
         root.dataset.heroEntrance = 'pending';
+        root.dataset.heroCallouts = 'pending';
         const listeners = new AbortController();
         let preparation;
         let playback;
-        const finish = () => {
+        let callouts;
+        const finish = (animateCallouts = false) => {
           root.dataset.heroEntrance = 'complete';
+          clearTimeout(callouts);
+          const drawNames = animateCallouts === true && !motion.matches && !document.hidden && scrollY === 0;
+          root.dataset.heroCallouts = drawNames ? 'running' : 'complete';
+          if (drawNames) callouts = setTimeout(() => { root.dataset.heroCallouts = 'complete'; }, 1400);
           clearTimeout(failOpen);
           clearTimeout(preparation);
           clearTimeout(playback);
@@ -66,7 +73,7 @@ const year = new Date().getFullYear();
               if (scrollY > 0 || location.hash || motion.matches || document.hidden) return finish();
               clearTimeout(preparation);
               root.dataset.heroEntrance = 'running';
-              playback = setTimeout(finish, 900);
+              playback = setTimeout(() => finish(true), 900);
             }));
           } catch { finish(); }
         }, { ...options, once: true });
@@ -123,7 +130,7 @@ const year = new Date().getFullYear();
           </h1>
           <p class="hero-caption"><span>{copy.hero.taglineLines[0]}<br /> {copy.hero.taglineLines[1]}</span></p>
           <div class:list={['hero-figures', { 'hero-figures--original': site.heroImageStyle === 'original-photo' }]} role={site.heroImage ? undefined : 'img'} aria-label={site.heroImage ? undefined : 'Four band silhouettes, awaiting the ensemble photograph'}>
-            <div class="hero-figures-front">
+            <div class:list={['hero-figures-front', { 'hero-figures-front--source': site.heroImageStyle === 'source-cutout' }]}>
               <div class="hero-entrance">
               {site.heroImage ? site.heroImageStyle === 'source-cutout' ? <HeroPhoto source={site.heroImage} /> : <img class="band-photo" src={assetPath(site.heroImage)} alt="The four members of The Project Darbar with their instruments" fetchpriority="high" /> : <HeroGroup />}
               </div>
@@ -131,7 +138,6 @@ const year = new Date().getFullYear();
           </div>
           <div class="hero-bottom">
             <p>INDIAN /<br />CARNATIC FUSION</p>
-            <a class="quiet-link" href="#music">{copy.hero.listen} <span aria-hidden="true"><Icon name="down" /></span></a>
           </div>
         </section>
 
@@ -448,6 +454,7 @@ const year = new Date().getFullYear();
       if (main) new ResizeObserver(measureRail).observe(main);
       reduceMotion.addEventListener('change', () => {
         if (reduceMotion.matches) {
+          document.documentElement.dataset.heroCallouts = 'complete';
           document.documentElement.classList.remove('motion-ready');
           observer?.disconnect();
           window.removeEventListener('scroll', schedule);

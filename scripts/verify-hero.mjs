@@ -50,9 +50,12 @@ try {
     });
     assert.deepEqual(timing.map((t) => t.slice(0, 2)), [['0.6s', '0s'], ['0.72s', '0.08s'], ['0.7s', '0.2s']]);
     assert(timing.every((t) => t[2] === 'cubic-bezier(0.23, 1, 0.32, 1)'));
-    assert(await page.locator('.hero-bottom a').isVisible());
+    assert.equal(await page.locator('.hero-bottom a').count(), 0, 'Hero has no redundant listening link');
     assert(await page.locator('.main-nav').isVisible());
     await settled(page);
+    await page.waitForFunction(() => document.documentElement.dataset.heroCallouts === 'running');
+    assert(await page.locator('.hero-callout-arrow:not(.hero-callout-arrow--underlay)').evaluateAll((arrows) => arrows.every((arrow) => getComputedStyle(arrow).animationName === 'callout-draw')), 'Arrow strokes draw after the photo settles');
+    await page.waitForFunction(() => document.documentElement.dataset.heroCallouts === 'complete');
     const trace = await page.evaluate(() => ({ states: window.heroStates, shifts: window.heroShifts }));
     assert.deepEqual(trace.states.map((s) => s.state), ['pending', 'running', 'complete']);
     assert(trace.states[2].time - trace.states[1].time <= 1000, '900ms playback plus scheduling tolerance');
@@ -64,7 +67,7 @@ try {
     const page = await browser.newPage();
     await instrument(page);
     if (scenario === 'slow-image' || scenario === 'failed-image') {
-      await page.route('**/band-source-clear.webp', async (route) => {
+      await page.route('**/band-cutout-clear.webp', async (route) => {
         if (scenario === 'failed-image') return route.abort();
         await new Promise((resolve) => setTimeout(resolve, 1100));
         await route.continue();
@@ -153,14 +156,20 @@ try {
         staticRail: getComputedStyle(document.querySelector('[data-rail-route]')).strokeDashoffset,
         titleTransform: getComputedStyle(document.querySelector('.hero h1')).transform,
         fieldPattern: getComputedStyle(document.querySelector('.hero-field'), '::before').backgroundImage,
-        keyline: getComputedStyle(document.querySelector('.hero-figures-front')).filter,
+        keyline: getComputedStyle(document.querySelector('.hero-photo-layer') || document.querySelector('.hero-figures-front')).filter,
         originalPhoto: document.querySelector('.hero-figures--original') !== null,
         inkBoundary: Number(document.querySelector('[data-hero-light-start]').getAttribute('offset')) * document.querySelector('main').offsetHeight,
       };
     });
     assert.equal(layout.overflow, false, `${viewport.width}: horizontal overflow`);
-    assert.equal(await page.locator('.hero-source-photo image').getAttribute('href'), await page.locator('.artist-cutout image').first().getAttribute('href'), 'Hero and portraits share the clear original photograph');
+    assert((await page.locator('.hero-source-photo image').getAttribute('href')).endsWith('/images/band-cutout-clear.webp'), 'Hero uses the supplied transparent four-person cutout');
     assert((await page.locator('.hero-source-photo image').evaluate((photo) => getComputedStyle(photo).filter)).includes('ensemble-duotone'), 'Hero retains the styled duotone treatment on the clear photograph');
+    assert(await page.locator('.hero-callout-arrow:not(.hero-callout-arrow--underlay)').evaluateAll((arrows) => arrows.every((arrow) => parseFloat(getComputedStyle(arrow).strokeWidth) >= 1.75)), 'Arrow strokes remain legible on phones');
+    assert.deepEqual(await page.locator('.hero-callout-name').allTextContents(), ['Manas', 'Meher', 'Koundinya', 'Mouli']);
+    assert(await page.locator('.hero-callout-name').evaluateAll((names) => names.every((name) => {
+      const box = name.getBoundingClientRect();
+      return box.left >= 0 && box.right <= innerWidth && box.height >= 12 && getComputedStyle(name).opacity === '1';
+    })), 'Handwritten names remain readable, visible, and inside the viewport');
     assert.equal(await page.locator('.music-play-disc svg').count(), 5, 'Play controls use SVG on every platform');
     assert.equal(await page.locator('.showcase-arrows button svg').count(), 2, 'Navigation arrows use SVG');
     if (viewport.width <= 760) {

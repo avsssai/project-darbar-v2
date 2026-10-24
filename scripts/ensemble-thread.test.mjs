@@ -100,11 +100,11 @@ test('overlapping visible stages receive ordered scroll spans with no skipped dr
   }
 });
 
-test('hero and every portrait use the clear source photograph rather than generated faces', () => {
+test('hero uses the supplied cutout while portraits retain the clear source photograph', () => {
   assert.equal(site.heroImageStyle, 'source-cutout');
-  assert.equal(site.heroImage, '/images/band-source-clear.webp');
+  assert.equal(site.heroImage, '/images/band-cutout-clear.webp');
   for (const artist of artists) {
-    assert.equal(artist.image, site.heroImage);
+    assert.equal(artist.image, '/images/band-source-clear.webp');
     assert(Math.abs(artist.cutout.sourceWidth / artist.cutout.sourceHeight - 6456 / 3944) < 1e-10, 'Source framing preserves photographic proportions');
   }
 });
