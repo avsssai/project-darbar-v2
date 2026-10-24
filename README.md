@@ -41,7 +41,7 @@ The script checks 1440×900, 1280×720, 390×844, and 320×720, captures the her
 
 ## Logo and ensemble styling
 
-The header, footer, navigation, headings, and page illustration use brand blue (`#1951A8`); booking accents, outlined headings, the hero field, and the contact section use deep red (`#c81d11`). Shared palette tokens are in `src/styles/global.css`. White details keep the rail and textile pattern visible on red.
+Brand blue (`#1951A8`) anchors the masthead, section headings, footer identity, and page illustration. Deep red (`#c81d11`) marks booking and play actions, the selected session, and the hero/contact fields. Navigation uses dark ink; social links, labels, and copyright use muted text so they sit below primary content. Section headings use solid blue, while the contact heading retains white outline lettering. The smaller masthead prefix and white hero listening button establish the title/action hierarchy. Shared palette tokens are in `src/styles/global.css`. White details keep the rail and restrained textile pattern visible on red.
 
 The supplied logo is redrawn as a transparent, native SVG at `public/images/darbar-mark.svg`. Its two opposing triangles, central dot, sweeping loop, and terminal circles are retained in the original deep red (`#c81d11`) and blue (`#1951A8`). The header and footer use this asset through `BrandMark.astro`; `public/favicon.svg` is an optically simplified favicon variant. The original supplied artwork is retained at `public/images/darbar-logo-source.png`. The scroll finale uses `src/data/brand.ts` to draw the same geometry in white, with the logo's upper terminal connected to the thread. Scale is baked into the path coordinates so the final logo keeps the same stroke-distance-per-scroll-pixel calculation.
 
