@@ -650,13 +650,13 @@ section.chapter-music h2 em { -webkit-text-stroke-width: 1px; }
 [data-hero-logo="pending"] :is(.hero-logo-triangle-fill, .hero-logo-dot, .hero-logo-terminal) { opacity: 0; }
 [data-hero-logo="pending"] .hero-logo-string { stroke-dashoffset: 1; }
 @media (prefers-reduced-motion: no-preference) {
-  [data-hero-logo="running"] .hero-logo-triangle-trace { animation: hero-triangle-draw 450ms var(--ease-out) 320ms both, hero-trace-retire 120ms ease 770ms both; }
-  [data-hero-logo="running"] .hero-logo-triangle-fill { animation: hero-mark-appear 160ms ease 770ms both; }
-  [data-hero-logo="running"] .hero-logo-dot { animation: hero-mark-appear 350ms var(--ease-out) 320ms both; }
-  [data-hero-logo="running"] .hero-logo-string { animation: hero-triangle-draw 550ms var(--ease-out) 800ms both; }
-  [data-hero-logo="running"] .hero-logo-terminal--top { animation: hero-mark-appear 120ms ease 800ms both; }
-  [data-hero-logo="running"] .hero-logo-terminal--bottom { animation: hero-mark-appear 120ms ease 1240ms both; }
-  [data-hero-logo="running"] .hero-brand-motion { animation: hero-damaru 650ms var(--ease-in-out) 1400ms both; }
+  [data-hero-logo="running"] .hero-logo-triangle-trace { animation: hero-triangle-draw 450ms var(--ease-out) both, hero-trace-retire 120ms ease 450ms both; }
+  [data-hero-logo="running"] .hero-logo-triangle-fill { animation: hero-mark-appear 160ms ease 450ms both; }
+  [data-hero-logo="running"] .hero-logo-dot { animation: hero-mark-appear 350ms var(--ease-out) both; }
+  [data-hero-logo="running"] .hero-logo-string { animation: hero-triangle-draw 550ms var(--ease-out) 480ms both; }
+  [data-hero-logo="running"] .hero-logo-terminal--top { animation: hero-mark-appear 120ms ease 480ms both; }
+  [data-hero-logo="running"] .hero-logo-terminal--bottom { animation: hero-mark-appear 120ms ease 920ms both; }
+  [data-hero-logo="running"] .hero-brand-motion { animation: hero-damaru 650ms var(--ease-in-out) 1080ms both; }
 }
 @keyframes hero-triangle-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 @keyframes hero-trace-retire { from { opacity: 1; } to { opacity: 0; } }

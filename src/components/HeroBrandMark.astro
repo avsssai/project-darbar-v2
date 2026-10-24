@@ -32,11 +32,8 @@ const { class: className = '', width = 335, height = 680 } = Astro.props;
 
     const listeners = new AbortController();
     const options = { signal: listeners.signal };
-    let startTimer;
     let endTimer;
-    let ready = document.readyState !== 'loading';
     const finish = () => {
-      clearTimeout(startTimer);
       clearTimeout(endTimer);
       root.dataset.heroLogo = 'complete';
       listeners.abort();
@@ -45,22 +42,15 @@ const { class: className = '', width = 335, height = 680 } = Astro.props;
       const hero = document.querySelector('.hero');
       return hero && hero.getBoundingClientRect().top >= -hero.offsetHeight * .35;
     };
-    const start = () => {
-      startTimer = undefined;
-      if (motion.matches) return finish();
-      if (document.hidden || !heroVisible()) return;
-      root.dataset.heroLogo = 'running';
-      endTimer = setTimeout(finish, 2150);
-    };
     const prepare = () => {
-      if (!ready || document.hidden || !heroVisible() || startTimer !== undefined || root.dataset.heroLogo !== 'pending') return;
-      // Let the title land, without waiting for fonts or the photograph to decode.
-      startTimer = setTimeout(start, 850);
+      if (motion.matches) return finish();
+      if (document.hidden || !heroVisible() || root.dataset.heroLogo !== 'pending') return;
+      // The inline SVG already exists: draw with the title, without a loading delay.
+      root.dataset.heroLogo = 'running';
+      endTimer = setTimeout(finish, 1830);
     };
     const waitForView = () => {
-      clearTimeout(startTimer);
       clearTimeout(endTimer);
-      startTimer = undefined;
       root.dataset.heroLogo = 'pending';
     };
     addEventListener('scroll', () => {
@@ -73,8 +63,6 @@ const { class: className = '', width = 335, height = 680 } = Astro.props;
       if (document.hidden) waitForView();
       else prepare();
     }, options);
-    if (!ready) {
-      document.addEventListener('DOMContentLoaded', () => { ready = true; prepare(); }, { ...options, once: true });
-    } else prepare();
+    prepare();
   })();
 </script>

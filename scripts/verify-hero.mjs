@@ -55,7 +55,7 @@ try {
       const timingFor = (selector) => getComputedStyle(document.querySelector(selector)).animationDelay;
       return ['.hero-logo-triangle-trace', '.hero-logo-dot', '.hero-logo-string', '.hero-brand-motion'].map(timingFor);
     });
-    assert.deepEqual(logoTiming, ['0.32s, 0.77s', '0.32s', '0.8s', '1.4s'], 'Triangles and dot begin together, followed by strings and the damaru twist');
+    assert.deepEqual(logoTiming, ['0s, 0.45s', '0s', '0.48s', '1.08s'], 'Triangles and dot begin immediately together, followed by strings and the damaru twist');
     assert.equal(await page.locator('.hero-bottom a').count(), 0, 'Hero has no redundant listening link');
     assert(await page.locator('.main-nav').isVisible());
     await settled(page);

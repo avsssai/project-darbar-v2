@@ -46,13 +46,11 @@ function setup({ reduce = false, hash = '', navigation = 'navigate', hidden = fa
   };
 }
 
-test('logo plays and settles even when the photo/font entrance has skipped', () => {
+test('logo starts before DOM ready without waiting for the photo or font', () => {
   const logo = setup();
-  assert.equal(logo.state(), 'pending');
-  logo.ready();
-  logo.tick(850);
   assert.equal(logo.state(), 'running');
-  logo.tick(2149);
+  logo.ready();
+  logo.tick(1829);
   assert.equal(logo.state(), 'running');
   logo.tick(1);
   assert.equal(logo.state(), 'complete');
@@ -62,14 +60,12 @@ test('small browser scroll adjustments do not cancel the logo', () => {
   const logo = setup();
   logo.ready();
   logo.scroll(-1);
-  logo.tick(850);
   assert.equal(logo.state(), 'running');
   logo.scroll(-400);
   assert.equal(logo.state(), 'pending');
   logo.tick(3000);
   assert.equal(logo.state(), 'pending');
   logo.scroll(0);
-  logo.tick(850);
   assert.equal(logo.state(), 'running');
 });
 
@@ -83,7 +79,6 @@ test('reduced motion keeps a static logo', () => {
 test('changing to reduced motion completes playback immediately', () => {
   const logo = setup();
   logo.ready();
-  logo.tick(850);
   logo.motion.matches = true;
   logo.motion.dispatchEvent(new Event('change'));
   assert.equal(logo.state(), 'complete');
@@ -98,23 +93,20 @@ test('opening in a background tab waits to play until the page is visible', () =
   assert.equal(logo.state(), 'pending');
   logo.document.hidden = false;
   logo.document.dispatchEvent(new Event('visibilitychange'));
-  logo.tick(850);
   assert.equal(logo.state(), 'running');
-  logo.tick(2150);
+  logo.tick(1830);
   assert.equal(logo.state(), 'complete');
 });
 
 test('returning from a background tab restarts an interrupted sequence', () => {
   const logo = setup();
   logo.ready();
-  logo.tick(850);
   logo.document.hidden = true;
   logo.document.dispatchEvent(new Event('visibilitychange'));
   logo.tick(5000);
   assert.equal(logo.state(), 'pending');
   logo.document.hidden = false;
   logo.document.dispatchEvent(new Event('visibilitychange'));
-  logo.tick(850);
   assert.equal(logo.state(), 'running');
 });
 
@@ -124,7 +116,6 @@ test('a deep link plays when the user actually reaches the hero', () => {
   logo.tick(5000);
   assert.equal(logo.state(), 'pending');
   logo.scroll(0);
-  logo.tick(850);
   assert.equal(logo.state(), 'running');
 });
 
